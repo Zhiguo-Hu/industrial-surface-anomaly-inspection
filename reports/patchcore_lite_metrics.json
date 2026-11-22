@@ -1,0 +1,30 @@
+{
+  "method": "PatchCore-style ResNet18 layer2+layer3 / projected greedy 1% / max patch score",
+  "device": "cuda",
+  "training_patch_count": 171008,
+  "bank_shape": [
+    1710,
+    384
+  ],
+  "threshold": 1.6921217024326325,
+  "visual_scale": 3.9348199367523193,
+  "validation_false_positive_rate": 0.07142857142857142,
+  "image_auroc": 1.0,
+  "pixel_auroc_at_256": 0.9822414309047806,
+  "pixel_metric_scope": "All 83 images, masks nearest-resized to 256; not original-resolution pixel AUROC",
+  "confusion": {
+    "tn": 19,
+    "fp": 1,
+    "fn": 0,
+    "tp": 63
+  },
+  "recall": 1.0,
+  "false_positive_rate": 0.05,
+  "build_seconds": 3.829092699998,
+  "test_wall_seconds": 1.3707098999984737,
+  "timing_note": "Includes data loading/processing, not warmed-up latency benchmark",
+  "peak_torch_allocated_mib": 335.78466796875,
+  "bank_bytes": 2651149,
+  "manifest_sha256": "e5d7247fa6dfa8fbe561cb488fcd249f7c61062dfa0edc7182fcd6872b2185a8",
+  "reload_check": "passed (first test batch)"
+}
