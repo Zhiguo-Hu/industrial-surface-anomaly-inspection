@@ -1,0 +1,8 @@
+# Tested on Python 3.12.16 / Windows x64.
+# Install the GPU wheels from the official cu132 index (see README).
+torch==2.15.0+cu132
+torchvision==0.29.2+cu132
+# Exact versions of remaining installed packages: reports/environment.json.
+numpy==2.5.5
+Pillow==13.0.0
+scikit-learn==1.9.1

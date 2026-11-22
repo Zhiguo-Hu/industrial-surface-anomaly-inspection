@@ -1,0 +1,21 @@
+__pycache__/
+*.py[cod]
+.venv/
+data/*
+!data/.gitkeep
+weights/*
+!weights/.gitkeep
+runs/*
+!runs/.gitkeep
+
+# Local machine snapshots and dataset-derived previews stay local.
+reports/environment.json
+reports/environment-freeze.txt
+reports/bottle_data_audit.json
+reports/severstal_data_audit.json
+reports/*preview.png
+*.log
+.env
+.env.*
+.vscode/
+.idea/
