@@ -1,0 +1,45 @@
+{
+  "method": "Frozen ResNet18 global features + L2 normalization + nearest neighbor",
+  "input_size": 256,
+  "batch_size": 8,
+  "device": "cuda",
+  "counts": {
+    "train": 167,
+    "val": 42,
+    "test": 83
+  },
+  "feature_bank_shape": [
+    167,
+    512
+  ],
+  "threshold": 0.13106341660022736,
+  "threshold_policy": "Normal val 95th percentile, linear; predict anomaly iff score > threshold",
+  "validation_false_positive_rate": 0.07142857142857142,
+  "test_image_auroc": 0.9928571428571429,
+  "test_confusion": {
+    "tn": 18,
+    "fp": 2,
+    "fn": 0,
+    "tp": 63
+  },
+  "test_anomaly_recall": 1.0,
+  "test_false_positive_rate": 0.1,
+  "test_accuracy": 0.9759036144578314,
+  "extraction_wall_seconds": {
+    "train": 2.8797921999994287,
+    "val": 0.6432847000005495,
+    "test": 1.2832163000002765
+  },
+  "timing_note": "End-to-end feature extraction incl. image I/O and cold start; not steady-state latency",
+  "peak_torch_allocated_mib": 118.73828125,
+  "bank_file_bytes": 352724,
+  "manifest_sha256": "e5d7247fa6dfa8fbe561cb488fcd249f7c61062dfa0edc7182fcd6872b2185a8",
+  "gpu": "NVIDIA GeForce RTX 5060 Laptop GPU",
+  "per_defect_recall": {
+    "broken_large": 1.0,
+    "broken_small": 1.0,
+    "contamination": 1.0
+  },
+  "saved_bank_reload_check": "passed",
+  "error_examples_shown": 2
+}
