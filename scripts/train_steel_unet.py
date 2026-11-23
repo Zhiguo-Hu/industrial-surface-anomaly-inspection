@@ -1,5 +1,6 @@
 """Resource-bounded supervised pilot; development validation only, test untouched."""
 import argparse,csv,hashlib,json,random,sys,time
+from collections import Counter,defaultdict
 from pathlib import Path
 import numpy as np
 import torch
@@ -14,6 +15,8 @@ from src.tiling import Stitcher
 from scripts.run_steel_pilot import read_image
 from scripts.audit_severstal import decode_rle
 from src.baseline import validation_threshold
+from src.training_selection import coverage_balanced_rows
+from src.resnet_unet import ResNet18UNet
 
 
 @torch.inference_mode()
@@ -27,11 +30,17 @@ def predict(model,image,device):
 
 def main():
     parser=argparse.ArgumentParser(description=__doc__);parser.add_argument('--image',type=Path)
+    parser.add_argument('--coverage-balanced',action='store_true',help='Class coverage intervention with the same model and update budget')
+    parser.add_argument('--encoder',choices=['small','random-resnet18','pretrained-resnet18'],default='small')
     args=parser.parse_args()
+    if args.encoder!='small' and not args.coverage_balanced:parser.error('ResNet18 comparisons require --coverage-balanced')
     torch.manual_seed(42);np.random.seed(42);random.seed(42);torch.set_num_threads(4)
     device='cuda' if torch.cuda.is_available() else 'cpu'
-    output=ROOT/'runs/steel_unet';output.mkdir(parents=True,exist_ok=True)
-    model=SmallUNet().to(device)
+    experiment='steel_unet_balanced' if args.coverage_balanced else 'steel_unet'
+    if args.encoder!='small':experiment+='_'+args.encoder.replace('-','_')
+    output=ROOT/'runs'/experiment;output.mkdir(parents=True,exist_ok=True)
+    model=(SmallUNet() if args.encoder=='small' else ResNet18UNet(
+        ROOT/'weights/resnet18-f37072fd.pth' if args.encoder=='pretrained-resnet18' else None)).to(device)
     if args.image:
         saved=torch.load(output/'best.pt',map_location=device,weights_only=True);model.load_state_dict(saved['model']);model.eval()
         with Image.open(args.image) as image:array=np.asarray(image.convert('RGB')).copy()
@@ -57,29 +66,48 @@ def main():
     evaluation=[rows[i] for i in pilot['evaluation']];calibration=[rows[i] for i in pilot['calibration']]
     assert len(development)==80 and all(r['split']=='val' for r in development+evaluation+calibration)
     assert not {r['image_id'] for r in development}&used
+    baseline_rows=list(dataset.rows)
+    if args.coverage_balanced:
+        dataset.rows=coverage_balanced_rows(manifest['samples'],baseline_rows)
     selection={'train':[r['image_id'] for r in dataset.rows],'checkpoint_validation':[r['image_id'] for r in development],
                'calibration':pilot['calibration'],'evaluation':pilot['evaluation']}
-    (ROOT/'configs/steel_unet_selection.json').write_text(json.dumps(selection,indent=2),encoding='utf-8')
+    if args.coverage_balanced:
+        previous=json.loads((ROOT/'configs/steel_unet_selection.json').read_text())
+        for key in ('checkpoint_validation','calibration','evaluation'):
+            assert selection[key]==previous[key],f'Changed validation set: {key}'
+        assert {r['image_id'] for r in dataset.rows if not r['label']}=={r['image_id'] for r in baseline_rows if not r['label']}
+    (ROOT/f'configs/{experiment}_selection.json').write_text(json.dumps(selection,indent=2),encoding='utf-8')
     annotations=dataset.annotations
     def mask_for(row):
         mask=np.zeros((256,1600),dtype=np.uint8)
         for text in annotations[row['image_id']]:mask|=decode_rle(text)
         return mask
     print('Indexing supervised training tiles (500 parent images)',flush=True)
-    positive=[];negative=[]
+    positive=[];negative=[];tile_classes={};class_annotations=defaultdict(dict)
+    with (ROOT/manifest['annotation_csv']).open(encoding='utf-8-sig',newline='') as file:
+        for row in csv.DictReader(file):
+            if row['EncodedPixels'].strip():class_annotations[row['ImageId']][int(row['ClassId'])]=row['EncodedPixels']
+    parent_index=-1;class_masks={}
     for i in range(len(dataset)):
         sample=dataset[i];(positive if sample['tile_label'] else negative).append(i)
+        current=i//len(dataset.layout)
+        if current!=parent_index:
+            class_masks={c:decode_rle(text) for c,text in class_annotations[sample['image_id']].items()}
+            parent_index=current
+        x,y,x2,y2=sample['box'].tolist()
+        tile_classes[i]=[c for c,m in class_masks.items() if m[y:y2,x:x2].any()]
     print(f'Tiles: {len(positive)} positive / {len(negative)} negative',flush=True)
     if not positive or not negative:raise ValueError('Both tile classes required')
     optimizer=torch.optim.AdamW(model.parameters(),lr=1e-3,weight_decay=1e-4)
     scaler=torch.amp.GradScaler('cuda',enabled=device=='cuda')
-    start=time.perf_counter();history=[];best=-1;best_state=None
+    start=time.perf_counter();history=[];best=-1;best_state=None;class_draws=Counter()
     if device=='cuda':torch.cuda.reset_peak_memory_stats()
     # Each round is 80 sampled updates, not one exhaustive pass over the dataset.
     for round_number in range(1,7):
         model.train();losses=[]
         for step in range(80):
             indices=rng.choices(positive,k=4)+rng.choices(negative,k=4)
+            class_draws.update(c for i in indices for c in tile_classes[i])
             samples=[dataset[i] for i in indices]
             x=torch.stack([s['image'] for s in samples]);y=torch.stack([s['mask'] for s in samples])
             if rng.random()<.5:x=x.flip(-1);y=y.flip(-1)
@@ -118,7 +146,8 @@ def main():
     image_threshold=validation_threshold(cal_scores)
     saved={'model':best_state,'image_threshold':image_threshold,'pixel_threshold':pixel_threshold,
            'best_round':best_round,'manifest_sha256':hashlib.sha256(manifest_path.read_bytes()).hexdigest(),
-           'architecture':'SmallUNet base16 GroupNorm, scratch; binary union of four classes'}
+           'architecture':('SmallUNet base16 GroupNorm, scratch' if args.encoder=='small' else
+                           f'ResNet18UNet encoder={args.encoder}, all layers fine-tuned; BatchNorm encoder/GroupNorm decoder')+'; binary union of four classes'}
     torch.save(saved,output/'best.pt')
     scores=[];pixel_auc=[];aggregate=np.zeros(3,dtype=np.int64);per_defect_dice=[];preview=[];seen=set();pred_rows=[]
     for i,row in enumerate(evaluation):
@@ -136,6 +165,11 @@ def main():
     a,b,c=map(int,aggregate)
     report={'scope':'Supervised pilot; same evaluation images as anomaly pilot; NO test images',
             'architecture':saved['architecture'],'parameters':sum(p.numel() for p in model.parameters()),
+            'experiment':experiment,'coverage_minimum_per_class':60 if args.coverage_balanced else None,
+            'training_images_per_class':{str(c):sum(c in r['classes'] for r in dataset.rows) for c in (1,2,3,4)},
+            'positive_tiles_per_class':{str(c):sum(c in cs for cs in tile_classes.values()) for c in (1,2,3,4)},
+            'actual_sampled_tiles_per_class':{str(c):class_draws[c] for c in (1,2,3,4)},
+            'original_training_images_retained':len({r['image_id'] for r in dataset.rows}&{r['image_id'] for r in baseline_rows}),
             'train_images':500,'training_positive_tiles':len(positive),'training_negative_tiles':len(negative),
             'sampling':'Each batch 4 positive + 4 negative tiles, replacement; paired horizontal/vertical flips',
             'loss':'BCEWithLogits + per-sample soft Dice','optimizer':'AdamW lr=0.001 weight_decay=0.0001',
@@ -165,7 +199,7 @@ def main():
     with (output/'validation_predictions.csv').open('w',newline='',encoding='utf-8-sig') as f:
         w=csv.DictWriter(f,fieldnames=list(pred_rows[0]));w.writeheader();w.writerows(pred_rows)
     text=json.dumps(report,indent=2);(output/'metrics.json').write_text(text,encoding='utf-8')
-    (ROOT/'reports/steel_unet_metrics.json').write_text(text,encoding='utf-8');print(text,flush=True)
+    (ROOT/f'reports/{experiment}_metrics.json').write_text(text,encoding='utf-8');print(text,flush=True)
 
 
 if __name__=='__main__':main()

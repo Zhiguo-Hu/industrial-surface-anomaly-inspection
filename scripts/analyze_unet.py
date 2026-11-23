@@ -1,5 +1,5 @@
 """Validation-only class/area and false-positive diagnosis of the saved U-Net."""
-import csv,hashlib,json,sys
+import argparse,csv,hashlib,json,sys
 from collections import defaultdict
 from pathlib import Path
 import numpy as np
@@ -8,6 +8,7 @@ from PIL import Image,ImageDraw
 
 ROOT=Path(__file__).resolve().parents[1];sys.path.insert(0,str(ROOT))
 from src.unet import SmallUNet
+from src.resnet_unet import ResNet18UNet
 from src.segmentation_diagnostics import mask_statistics,area_group,summarize
 from src.steel import heat_rgb
 from scripts.train_steel_unet import predict
@@ -16,13 +17,20 @@ from scripts.audit_severstal import decode_rle
 
 
 def main():
+    parser=argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--coverage-balanced',action='store_true')
+    parser.add_argument('--encoder',choices=['small','random-resnet18','pretrained-resnet18'],default='small')
+    args=parser.parse_args()
+    if args.encoder!='small' and not args.coverage_balanced:parser.error('Use --coverage-balanced for ResNet18 comparisons')
+    experiment='steel_unet_balanced' if args.coverage_balanced else 'steel_unet'
+    if args.encoder!='small':experiment+='_'+args.encoder.replace('-','_')
     torch.set_num_threads(4);torch.manual_seed(42)
     device='cuda' if torch.cuda.is_available() else 'cpu'
-    saved=torch.load(ROOT/'runs/steel_unet/best.pt',map_location=device,weights_only=True)
+    saved=torch.load(ROOT/f'runs/{experiment}/best.pt',map_location=device,weights_only=True)
     manifest_path=ROOT/'configs/severstal_manifest.json'
     assert hashlib.sha256(manifest_path.read_bytes()).hexdigest()==saved['manifest_sha256']
     manifest=json.loads(manifest_path.read_text());byid={r['image_id']:r for r in manifest['samples']}
-    selection=json.loads((ROOT/'configs/steel_unet_selection.json').read_text())
+    selection=json.loads((ROOT/f'configs/{experiment}_selection.json').read_text())
     assert all(byid[n]['split']=='train' for n in selection['train'])
     assert all(byid[n]['split']=='val' for n in selection['evaluation'])
     assert not set(selection['evaluation']) & set(selection['checkpoint_validation']+selection['calibration'])
@@ -32,7 +40,8 @@ def main():
     with annotation.open(encoding='utf-8-sig',newline='') as f:
         for r in csv.DictReader(f):
             if r['EncodedPixels'].strip():annotations[r['ImageId']][int(r['ClassId'])]=r['EncodedPixels']
-    model=SmallUNet().to(device);model.load_state_dict(saved['model']);model.eval()
+    model=(SmallUNet() if args.encoder=='small' else ResNet18UNet()).to(device)
+    model.load_state_dict(saved['model']);model.eval()
     records=[];cases={}
     class_hits=defaultdict(lambda:[0,0])
     for i,name in enumerate(selection['evaluation']):
@@ -78,11 +87,11 @@ def main():
                           'Pixel masks and image alarms have different thresholds; the map is not gated by the alarm.',
                           'No defect class names inferred from numeric class IDs.'],
             'failure_examples':{k:{'image_id':v[1]['image_id'],'dice':v[6]['dice'],'score':v[6]['score']} for k,v in cases.items()}}
-    previous=json.loads((ROOT/'reports/steel_unet_metrics.json').read_text())
+    previous=json.loads((ROOT/f'reports/{experiment}_metrics.json').read_text())
     assert sum(r['alarm'] for r in defects)==previous['confusion']['tp']
     assert sum(r['alarm'] for r in normals)==previous['confusion']['fp']
     np.testing.assert_allclose(report['overall']['pooled_union_dice'],previous['pooled_pixel_dice_all_200_images'])
-    out=ROOT/'runs/steel_unet_diagnosis';out.mkdir(parents=True,exist_ok=True)
+    out=ROOT/f'runs/{experiment}_diagnosis';out.mkdir(parents=True,exist_ok=True)
     with (out/'per_image.csv').open('w',newline='',encoding='utf-8-sig') as f:
         w=csv.DictWriter(f,fieldnames=list(records[0]));w.writeheader();w.writerows(records)
     canvas=Image.new('RGB',(1600,len(cases)*590),'white');draw=ImageDraw.Draw(canvas)
@@ -94,7 +103,7 @@ def main():
         draw.text((5,i*590+5),f"{key} {row['image_id']} dice={stats['dice']:.3f}; original / official mask / overlay / predicted mask",fill='black')
     canvas.save(out/'failure_preview.png')
     text=json.dumps(report,indent=2)
-    (ROOT/'reports/steel_unet_diagnosis.json').write_text(text,encoding='utf-8');print(text,flush=True)
+    (ROOT/f'reports/{experiment}_diagnosis.json').write_text(text,encoding='utf-8');print(text,flush=True)
 
 
 if __name__=='__main__':main()

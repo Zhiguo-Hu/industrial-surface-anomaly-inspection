@@ -258,3 +258,37 @@ Model and thresholds are unchanged, test data remains untouched, and all 24 test
 下一步分析正常/缺陷分数重叠、边缘与接缝响应、候选抽样和纹理差异，再选择受控改动或监督分割对照。上述原因目前是待验证假设，不能作为已确认结论。钢材测试集保留用于最终配置评价。
 
 Next: investigate score overlap, boundary/seam responses, candidate sampling, and texture variation, then run controlled changes or supervised segmentation. These are hypotheses, not confirmed causes. The steel test split remains reserved for final evaluation.
+
+## 类别覆盖与预训练对照 / Coverage and pretraining experiments
+
+已完成三组新增训练，详见 [中英文对照报告 / Bilingual experiment report](reports/unet_controlled_experiments.md)。保持原数据划分、检查点/校准/评估身份、损失与 480 次优化步骤预算；不使用测试图片。
+
+Three additional runs are complete. Original splits, validation identities, loss and 480-step budget are held fixed; test images remain untouched.
+
+| 方法 / Method | Image AUROC | TP/100 | FP/100 | Pooled Dice |
+|---|---:|---:|---:|---:|
+| 原小 U-Net / Original | 0.7204 | 25 | 7 | 0.2877 |
+| 类别覆盖 / Balanced coverage | 0.7204 | 15 | 8 | 0.2883 |
+| ResNet18 随机 / Random encoder | 0.6541 | 5 | 2 | 0.2750 |
+| ResNet18 预训练 / Pretrained encoder | 0.6121 | 10 | 3 | 0.3443 |
+
+```powershell
+python scripts/train_steel_unet.py --coverage-balanced
+python scripts/train_steel_unet.py --coverage-balanced --encoder random-resnet18
+python scripts/train_steel_unet.py --coverage-balanced --encoder pretrained-resnet18
+python scripts/compare_unet_experiments.py
+```
+
+平衡版仍为 250 正常+250 缺陷，正常图完全不变，每个缺陷类别至少 60 张（多类图有重叠）。预训练与随机编码器结构相同、解码器初始参数相同，所有层参与训练。各实验输出独立保存为 `runs/steel_unet_balanced*`，对应清单和指标也分别保存。
+
+Coverage-balanced runs retain the same 250 normal images and 250 defective images with at least 60 examples/class (overlapping classes). Matched random/pretrained encoders share architecture and initial decoder weights, with all layers trainable. Separate `runs/steel_unet_balanced*` outputs and matching selections/metrics preserve the original run.
+
+单图推理 / Single-image inference:
+
+```powershell
+python scripts/train_steel_unet.py --coverage-balanced --encoder pretrained-resnet18 --image data/severstal/034941f9d.jpg
+```
+
+28 项测试通过。预训练提高本轮分割重叠，但未提升整体报警；类别覆盖改善第 2 类像素召回，但不保证总体改善。单一种子、短预算结果不能说明复杂模型或预训练必然更好/无用。下一阶段优先验证整图评分与区域级误报，测试集保持保留。
+
+All 28 tests pass. Pretraining improves overlap but not overall alarms in this run. Better coverage helps class-2 pixel recall but not aggregate detection. Single-seed short-budget results do not establish universal superiority or futility. Next investigate image scoring and region-level false positives; keep test data reserved.

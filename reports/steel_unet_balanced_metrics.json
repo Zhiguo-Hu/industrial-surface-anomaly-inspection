@@ -1,0 +1,98 @@
+{
+  "scope": "Supervised pilot; same evaluation images as anomaly pilot; NO test images",
+  "architecture": "SmallUNet base16 GroupNorm, scratch; binary union of four classes",
+  "parameters": 488001,
+  "experiment": "steel_unet_balanced",
+  "coverage_minimum_per_class": 60,
+  "training_images_per_class": {
+    "1": 60,
+    "2": 60,
+    "3": 108,
+    "4": 60
+  },
+  "positive_tiles_per_class": {
+    "1": 197,
+    "2": 121,
+    "3": 526,
+    "4": 289
+  },
+  "actual_sampled_tiles_per_class": {
+    "1": 341,
+    "2": 209,
+    "3": 938,
+    "4": 505
+  },
+  "original_training_images_retained": 406,
+  "train_images": 500,
+  "training_positive_tiles": 1091,
+  "training_negative_tiles": 4909,
+  "sampling": "Each batch 4 positive + 4 negative tiles, replacement; paired horizontal/vertical flips",
+  "loss": "BCEWithLogits + per-sample soft Dice",
+  "optimizer": "AdamW lr=0.001 weight_decay=0.0001",
+  "amp": true,
+  "rounds": 6,
+  "total_updates": 480,
+  "checkpoint_validation_images": 80,
+  "best_round": 6,
+  "history": [
+    {
+      "round": 1,
+      "updates": 80,
+      "training_loss": 1.2176156058907508,
+      "checkpoint_validation_pooled_dice_at_05": 2.895596377029813e-06
+    },
+    {
+      "round": 2,
+      "updates": 160,
+      "training_loss": 1.1126640781760215,
+      "checkpoint_validation_pooled_dice_at_05": 0.23854611227901037
+    },
+    {
+      "round": 3,
+      "updates": 240,
+      "training_loss": 1.0520341485738753,
+      "checkpoint_validation_pooled_dice_at_05": 0.2683619982691443
+    },
+    {
+      "round": 4,
+      "updates": 320,
+      "training_loss": 1.0353473089635372,
+      "checkpoint_validation_pooled_dice_at_05": 0.27865841492439464
+    },
+    {
+      "round": 5,
+      "updates": 400,
+      "training_loss": 1.0145655922591685,
+      "checkpoint_validation_pooled_dice_at_05": 0.2762519354185702
+    },
+    {
+      "round": 6,
+      "updates": 480,
+      "training_loss": 1.0275837622582913,
+      "checkpoint_validation_pooled_dice_at_05": 0.2802068097554339
+    }
+  ],
+  "pixel_threshold": 0.5,
+  "image_threshold": 0.9756954550743102,
+  "threshold_note": "Pixel threshold maximizes pooled Dice on checkpoint validation; image threshold normal calibration q95",
+  "evaluation_normal_images": 100,
+  "evaluation_defect_images": 100,
+  "image_auroc": 0.7204,
+  "confusion": {
+    "tn": 92,
+    "fp": 8,
+    "fn": 85,
+    "tp": 15
+  },
+  "recall": 0.15,
+  "false_positive_rate": 0.08,
+  "pooled_pixel_dice_all_200_images": 0.28829598286714664,
+  "pooled_pixel_iou_all_200_images": 0.16842630500455888,
+  "mean_per_defect_image_dice": 0.4299926317610727,
+  "mean_per_defect_image_pixel_auroc": 0.9265143574005166,
+  "metric_note": "Full 256x1600 reconstruction; pixel AUROC is per-defect-image mean, not pooled.",
+  "wall_seconds": 71.11471710000023,
+  "peak_torch_allocated_mib": 788.556640625,
+  "limitations": "Small development pilot, validation already inspected; supervision differs from normal-only baseline. Not production validated.",
+  "reload_check": "passed"
+}

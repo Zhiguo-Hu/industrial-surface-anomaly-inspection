@@ -1,0 +1,75 @@
+{
+  "scope": "Single-seed short-budget validation experiments; no test result",
+  "controls": {
+    "validation_identities_equal": true,
+    "loss_optimizer_and_budget_equal": true,
+    "balanced_variants_training_identities_equal": true,
+    "encoder_pair_architecture_and_tile_class_draws_equal": true
+  },
+  "results": {
+    "steel_unet": {
+      "parameters": 488001,
+      "best_round": 5,
+      "image_auroc": 0.7203999999999999,
+      "confusion": {
+        "tn": 93,
+        "fp": 7,
+        "fn": 75,
+        "tp": 25
+      },
+      "pooled_pixel_dice_all_200_images": 0.2877042770497766,
+      "pooled_pixel_iou_all_200_images": 0.16802254026195462,
+      "mean_per_defect_image_pixel_auroc": 0.9143447120629753,
+      "peak_torch_allocated_mib": 788.556640625,
+      "wall_seconds": 73.80595230000017
+    },
+    "steel_unet_balanced": {
+      "parameters": 488001,
+      "best_round": 6,
+      "image_auroc": 0.7204,
+      "confusion": {
+        "tn": 92,
+        "fp": 8,
+        "fn": 85,
+        "tp": 15
+      },
+      "pooled_pixel_dice_all_200_images": 0.28829598286714664,
+      "pooled_pixel_iou_all_200_images": 0.16842630500455888,
+      "mean_per_defect_image_pixel_auroc": 0.9265143574005166,
+      "peak_torch_allocated_mib": 788.556640625,
+      "wall_seconds": 71.11471710000023
+    },
+    "steel_unet_balanced_random_resnet18": {
+      "parameters": 12456209,
+      "best_round": 6,
+      "image_auroc": 0.6541000000000001,
+      "confusion": {
+        "tn": 98,
+        "fp": 2,
+        "fn": 95,
+        "tp": 5
+      },
+      "pooled_pixel_dice_all_200_images": 0.27498074885951984,
+      "pooled_pixel_iou_all_200_images": 0.15940735077461826,
+      "mean_per_defect_image_pixel_auroc": 0.8608993596876922,
+      "peak_torch_allocated_mib": 464.34619140625,
+      "wall_seconds": 65.23679300000003
+    },
+    "steel_unet_balanced_pretrained_resnet18": {
+      "parameters": 12456209,
+      "best_round": 4,
+      "image_auroc": 0.6121000000000001,
+      "confusion": {
+        "tn": 97,
+        "fp": 3,
+        "fn": 90,
+        "tp": 10
+      },
+      "pooled_pixel_dice_all_200_images": 0.3442988238193526,
+      "pooled_pixel_iou_all_200_images": 0.20794744170779492,
+      "mean_per_defect_image_pixel_auroc": 0.9313429944889658,
+      "peak_torch_allocated_mib": 464.34619140625,
+      "wall_seconds": 64.82432969999991
+    }
+  }
+}
