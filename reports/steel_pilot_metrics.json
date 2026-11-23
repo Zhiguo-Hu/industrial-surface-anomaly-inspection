@@ -1,0 +1,42 @@
+{
+  "stage": "Steel pilot, validation only; test set untouched",
+  "seed": 42,
+  "device": "cuda",
+  "train_normal_images": 300,
+  "candidate_features": 115200,
+  "candidate_sampling": "32 random patches per tile, seed 42",
+  "bank_shape": [
+    2048,
+    384
+  ],
+  "calibration_normal_images": 200,
+  "evaluation_normal_images": 100,
+  "evaluation_defect_images": 100,
+  "threshold": 2.800575065612793,
+  "calibration_fpr": 0.05,
+  "validation_image_auroc": 0.5205,
+  "validation_confusion": {
+    "tn": 89,
+    "fp": 11,
+    "fn": 97,
+    "tp": 3
+  },
+  "validation_recall": 0.03,
+  "validation_fpr": 0.11,
+  "mean_per_defect_image_pixel_auroc": 0.930567575988107,
+  "pixel_metric_note": "Mean of separate per-defect-image AUROCs at original 256x1600, NOT pooled pixel AUROC; no normal images included",
+  "validation_class_counts": {
+    "1": 9,
+    "2": 6,
+    "3": 75,
+    "4": 14
+  },
+  "bank_build_seconds": 6.076793700000053,
+  "pipeline_wall_seconds": 26.41635670000005,
+  "peak_torch_allocated_mib": 225.50439453125,
+  "bank_bytes": 3147476,
+  "reload_check": "passed",
+  "manifest_sha256": "aa6b563d0cbc48c5be78f74b00bfd8c9072e2d2a5e26bda82dbaed205c2e5d5c",
+  "visual_scale": 8.156804459095,
+  "limitations": "Small pilot; validation can guide development, no final test claim; no probability or binary segmentation calibration."
+}

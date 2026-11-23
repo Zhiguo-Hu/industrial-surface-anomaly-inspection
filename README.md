@@ -13,7 +13,7 @@ A PyTorch project for industrial surface anomaly detection and localization. MVT
 | bottle 局部特征与热力图 / Local features and heatmaps | 已完成 / Complete |
 | 钢材 RLE 检查与固定划分 / Steel RLE audit and fixed split | 已完成 / Complete |
 | 钢材滑窗与拼接 / Steel tiling and stitching | 已完成 / Complete |
-| 钢材异常检测 / Steel anomaly detection | 待实现 / Planned |
+| 钢材异常检测首轮试验 / Steel anomaly pilot | 已跑通，效果不合格 / Runs; inadequate detection |
 | 监督分割与实际采集验证 / Supervised segmentation and field validation | 待实现 / Planned |
 
 ## 方法 / Methods
@@ -154,3 +154,47 @@ All 16 tests pass. Five real training examples covering normal and all defect cl
 This stage validates geometry and loading, not steel detection performance. Overlap averaging does not guarantee seam-free model predictions; boundary defects and seam responses require later evaluation.
 
 下一步 / Next: steel anomaly experiments with bounded memory, followed by a supervised segmentation baseline.
+
+## 钢材首轮实验 / Steel pilot (2026-11-23)
+
+```powershell
+python scripts/run_steel_pilot.py
+python -m unittest discover -s tests -v
+```
+
+固定选择 300 张正常训练图、200 张正常验证图校准阈值，以及另外 100 张正常+100 张缺陷验证图作开发评估。选择清单在 `configs/steel_pilot_selection.json`，彼此不重叠，不读取测试图片。
+
+Fixed selection: 300 normal training images, 200 normal validation images for threshold calibration, and a disjoint validation evaluation subset of 100 normal and 100 defective images. Identities are in `configs/steel_pilot_selection.json`. No test images are accessed.
+
+每块随机抽取 32 个局部特征，产生 115200 个候选，再投影贪心选取 2048 个原始 384 维特征。模型保持冻结。每张图的分数是滑窗异常图平滑、拼接后的最大值；阈值取正常校准图分数的第 95 百分位。
+
+Sample 32 local features per tile, yielding 115200 candidates, then select 2048 original 384-D descriptors by projected greedy coreset. The frozen model scores each image by the maximum stitched smoothed anomaly map. Threshold calibration uses the normal-score 95th percentile.
+
+| 开发验证指标 / Development-validation metric | 结果 / Result |
+|---|---:|
+| Image AUROC | 0.5205 |
+| 缺陷检出 / Defects detected | 3/100 |
+| 正常误报 / Normal false alarms | 11/100 |
+| 缺陷图逐图像素 AUROC 的均值 / Mean per-defective-image pixel AUROC | 0.930568 |
+
+**检测效果不合格，不能作为可用钢材检测器。** 最后一项只衡量每张缺陷图内部的像素排序，是 100 张缺陷图各自 AUROC 的均值，不是跨图汇总像素 AUROC，也不包含正常图片。因此不能据此认为检测成功或与瓶子像素指标直接比较。
+
+**Detection is inadequate; this is not a usable steel detector.** The last metric averages within-image pixel AUROC across 100 defective images. It is not pooled pixel AUROC and excludes normal images, so it cannot establish successful image detection or be directly compared to bottle's pixel metric.
+
+实测峰值 PyTorch 显存约 225.5 MiB、建库约 6.1 秒、全流程约 26.4 秒（含 I/O、校准和验证，不是标准延迟基准）。17 项测试通过，保存重载和单图入口均验证。详情在 `reports/steel_pilot_metrics.json`。
+
+Measured peak PyTorch allocation: ~225.5 MiB. Bank construction: ~6.1 s; complete pipeline: ~26.4 s including I/O, calibration, and validation (not a latency benchmark). All 17 tests pass; bank reloading and single-image inference are verified. See `reports/steel_pilot_metrics.json`.
+
+输出 / Outputs: `runs/steel_pilot/bank.pt`, `validation_predictions.csv`, `validation_preview.png`, `metrics.json`. 单图模式 / Single-image mode (after bank construction):
+
+```powershell
+python scripts/run_steel_pilot.py --image data/severstal/034941f9d.jpg
+```
+
+该图为本轮缺陷验证图，当前模型漏检；保留它用于展示失败，不作为成功演示。生成 `single_overlay.png`、`single_map.npy`、`single_prediction.json`。不同目录布局时替换为存在的路径。
+
+This is a defective validation example missed by the pilot, intentionally retained as a failure case. Outputs are `single_overlay.png`, `single_map.npy`, and `single_prediction.json`; adjust the path if the data layout differs.
+
+下一步分析正常/缺陷分数重叠、边缘与接缝响应、候选抽样和纹理差异，再选择受控改动或监督分割对照。上述原因目前是待验证假设，不能作为已确认结论。钢材测试集保留用于最终配置评价。
+
+Next: investigate score overlap, boundary/seam responses, candidate sampling, and texture variation, then run controlled changes or supervised segmentation. These are hypotheses, not confirmed causes. The steel test split remains reserved for final evaluation.
