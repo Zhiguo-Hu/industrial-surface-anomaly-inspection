@@ -10,7 +10,7 @@ from PIL import Image,ImageDraw
 
 ROOT=Path(__file__).resolve().parents[1];sys.path.insert(0,str(ROOT))
 from src.unet import SmallUNet
-from src.resnet_unet import ResNet18UNet
+from src.resnet_unet import ResNet18UNet,JointResNet18UNet
 from src.reproducibility import configure
 from src.segmentation_diagnostics import mask_statistics,area_group,summarize
 from src.steel import heat_rgb
@@ -27,6 +27,7 @@ def main():
     parser.add_argument('--rounds',type=int,default=6)
     parser.add_argument('--deterministic',action='store_true')
     parser.add_argument('--seed',type=int,default=42)
+    parser.add_argument('--classification-weight',type=float,default=None)
     args=parser.parse_args()
     if args.encoder!='small' and not args.coverage_balanced:parser.error('Use --coverage-balanced for ResNet18 comparisons')
     experiment='steel_unet_balanced' if args.coverage_balanced else 'steel_unet'
@@ -35,6 +36,7 @@ def main():
     if args.rounds!=6:experiment+=f'_r{args.rounds}'
     if args.deterministic:experiment+=f'_det_s{args.seed}'
     elif args.seed!=42:experiment+=f'_s{args.seed}'
+    if args.classification_weight is not None:experiment+=f'_cls{args.classification_weight:g}'.replace('.','p')
     configure(args.seed,args.deterministic);torch.set_num_threads(4)
     device='cuda' if torch.cuda.is_available() else 'cpu'
     saved=torch.load(ROOT/f'runs/{experiment}/best.pt',map_location=device,weights_only=True)
@@ -51,7 +53,8 @@ def main():
     with annotation.open(encoding='utf-8-sig',newline='') as f:
         for r in csv.DictReader(f):
             if r['EncodedPixels'].strip():annotations[r['ImageId']][int(r['ClassId'])]=r['EncodedPixels']
-    model=(SmallUNet() if args.encoder=='small' else ResNet18UNet()).to(device)
+    factory=JointResNet18UNet if args.classification_weight is not None else ResNet18UNet
+    model=(SmallUNet() if args.encoder=='small' else factory()).to(device)
     model.load_state_dict(saved['model']);model.eval()
     records=[];cases={}
     class_hits=defaultdict(lambda:[0,0])

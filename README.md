@@ -1,8 +1,8 @@
 # 工业表面异常检测与定位 / Industrial Surface Anomaly Inspection
 
-基于 PyTorch 的工业表面视觉检测项目：已完成瓶子验证、钢材滑窗、异常检测、监督分割与训练扩展。最新确定性3种子开发实验：Dice均值0.5237±0.0185、图像AUROC均值0.8161±0.0352；报警召回仍波动明显，尚不可部署，测试集保留。下文按阶段记录，最新结论见[复现报告](reports/deterministic_replication.md)。
+基于 PyTorch 的工业表面视觉检测项目：已完成瓶子验证、钢材滑窗、异常检测、监督分割、训练扩展与显式分类监督。最新seed=42联合模型开发实验：分类AUROC 0.8801、检出53/100、正常误报3/100；原始分割Dice 0.5124，仍漏检47张缺陷图，尚不可部署。测试集保留，详见[分类监督报告](reports/joint_classification_experiments.md)及[此前3种子复验](reports/deterministic_replication.md)。
 
-A PyTorch surface-inspection project with bottle validation, steel tiling, anomaly detection, segmentation and expanded training. Latest deterministic three-seed development mean±sample SD: Dice 0.5237±0.0185, image AUROC 0.8161±0.0352. Alarms remain unstable; not deployable, test data reserved. See the latest [replication report](reports/deterministic_replication.md).
+A PyTorch surface-inspection project with bottle validation, steel tiling, anomaly detection, segmentation, expanded training and explicit classification supervision. Latest seed-42 joint development run: classification AUROC 0.8801, TP=53/100, FP=3/100, raw segmentation Dice 0.5124. It still misses 47 defective images and is not deployable; test data stays reserved. See the [joint report](reports/joint_classification_experiments.md) and [earlier three-seed replication](reports/deterministic_replication.md).
 
 ## 进展 / Progress
 
@@ -17,6 +17,7 @@ A PyTorch surface-inspection project with bottle validation, steel tiling, anoma
 | 轻量 U-Net 监督分割对照 / Supervised U-Net pilot | 已完成首轮，效果仍不足 / Initial run complete, inadequate |
 | 预训练编码器与训练扩展 / Pretraining and training expansion | 已完成开发实验，未达部署要求 / Development runs complete, not deployable |
 | 本机确定性与3种子复验 / Local determinism and three seeds | 80步训练状态及单图跨进程一致性通过 / 80-step state and single-input replay verified |
+| 显式分类监督对照 / Explicit classification supervision | seed=42整图报警改善，定位与小缺陷仍不足 / Better seed-42 alarms; localization and small defects remain weak |
 | 实际采集验证 / Field validation | 待实现 / Planned |
 
 ## 方法 / Methods
@@ -392,3 +393,35 @@ python scripts/plot_multiseed.py
 All 35 tests pass. Runs reuse 200 images, not 600 independent examples; SD describes training variation only. Strict mode changes arithmetic and RNG handling, so historical differences are not solely attributable to removing nondeterminism. Follow-up controls use predeclared seed 42 and investigate explicit classification supervision; test data stays reserved.
 
 ![Three-seed development curves](reports/steel_multiseed_curves.png)
+
+## 显式分类监督 / Explicit classification supervision
+
+完整结构、对照、失败分析与单图入口见[中英文报告 / Bilingual report](reports/joint_classification_experiments.md)。同一联合结构、同一初始状态、4000张训练图、确定性seed=42、2400次更新尝试，仅改变分类损失权重0→0.5。联合组AMP跳过3次，实际更新2397次；对照为2400次。
+
+The matched joint architecture, initial state, 4000-image pool, deterministic seed 42 and 2400 attempted updates are fixed; change classification-loss weight from 0 to 0.5. Joint AMP skips three steps (2397 successful updates); control completes 2400.
+
+| Scoring method | Image AUROC | TP/100 | FP/100 | Raw pooled Dice |
+|---|---:|---:|---:|---:|
+| Segmentation-only, max pixel | 0.7759 | 6 | 5 | 0.5096 |
+| Joint training, max pixel | 0.8163 | 27 | 6 | 0.5124 |
+| Joint training, classification head | 0.8801 | 53 | 3 | 0.5124 |
+
+后两行为同一模型、同一原始掩码的不同报警分数。分类分支从每个256×256分块学习是否含缺陷，整图分数取12块最大值；阈值在200张正常校准图上独立确定。默认掩码不按分类结果清空。探索性门控虽使Dice变成0.5414，却删除约14%的原本正确定位像素，缺陷像素召回由50.81%降至43.70%。
+
+The final two rows use one model and shared raw masks. The head learns tile defect presence; image scores take the maximum across 12 tiles, independently calibrated on 200 normal images. Default masks remain ungated. Exploratory gating raises Dice to 0.5414 but removes about 14% of raw true-positive pixels and reduces defect-pixel recall from 50.81% to 43.70%.
+
+```powershell
+foreach ($clsLossWeight in @(0,0.5)) {
+  python scripts/train_steel_unet.py --coverage-balanced --encoder pretrained-resnet18 --expanded --rounds 30 --deterministic --seed 42 --classification-weight $clsLossWeight
+  if ($LASTEXITCODE -ne 0) { break }
+}
+python scripts/analyze_unet.py --coverage-balanced --encoder pretrained-resnet18 --expanded --rounds 30 --deterministic --seed 42 --classification-weight 0.5
+python scripts/compare_joint_training.py
+python scripts/plot_joint_training.py
+```
+
+38项测试通过。权重0对照完全重现历史seed=42的30轮损失/开发Dice记录和最佳分割状态哈希；两组分类及分割分数重加载检查通过。此轮仍是单种子开发结果；类别2仅检出1/6、小面积组仅6/26。下一步先在seed=43、44复验分类收益，再做稀有类别/小缺陷分块抽样对照，测试集继续保留。
+
+All 38 tests pass. The zero-weight control exactly reproduces historical seed-42 30-round loss/development-Dice records and best segmentation state hash; head and mask-score reload checks pass. This is single-seed development evidence: class 2 detects only 1/6, small-area group 6/26. Next replicate on seeds 43/44, then examine rare-class/small-defect tile sampling; keep test data reserved.
+
+![Joint training curves](reports/steel_joint_training_curves.png)

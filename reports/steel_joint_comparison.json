@@ -1,0 +1,171 @@
+{
+  "scope": "Seed42 deterministic, matched architecture/data/initialization/update budget; no test images",
+  "changed_factor": "Classification loss weight 0 -> 0.5; checkpoint selection still segmentation development Dice",
+  "controls_verified": true,
+  "control_head_warning": "Weight-0 classifier is untrained; do not present its chance scores as a learned detector.",
+  "historical_segmentation_best_state_reproduced": true,
+  "historical_segmentation_full_history_reproduced": true,
+  "checkpoint_reload_checks": {
+    "steel_unet_balanced_pretrained_resnet18_expanded_r30_det_s42_cls0": {
+      "status": "passed",
+      "image_id": "515f9551b.jpg",
+      "mask_max": 0.9700680375099182,
+      "classification_score": 0.7332838773727417
+    },
+    "steel_unet_balanced_pretrained_resnet18_expanded_r30_det_s42_cls0p5": {
+      "status": "passed",
+      "image_id": "515f9551b.jpg",
+      "mask_max": 0.9725413918495178,
+      "classification_score": 0.8743171691894531
+    }
+  },
+  "paired_alarm_transitions": {
+    "normal_images": {
+      "baseline_0_joint_head_0": 92,
+      "baseline_0_joint_head_1": 3,
+      "baseline_1_joint_head_0": 5,
+      "baseline_1_joint_head_1": 0
+    },
+    "defective_images": {
+      "baseline_0_joint_head_0": 45,
+      "baseline_0_joint_head_1": 49,
+      "baseline_1_joint_head_0": 2,
+      "baseline_1_joint_head_1": 4
+    }
+  },
+  "joint_classification_diagnosis": {
+    "score_quantiles_10_50_90": {
+      "normal": [
+        0.20410516411066054,
+        0.5763058066368103,
+        0.8380249440670013
+      ],
+      "defective": [
+        0.5904875695705414,
+        0.9261272847652435,
+        0.9850013196468353
+      ]
+    },
+    "per_class_overlapping_image_groups": {
+      "1": {
+        "images": 9,
+        "head_true_positives": 2
+      },
+      "2": {
+        "images": 6,
+        "head_true_positives": 1
+      },
+      "3": {
+        "images": 75,
+        "head_true_positives": 48
+      },
+      "4": {
+        "images": 14,
+        "head_true_positives": 4
+      }
+    },
+    "gating_pixel_tradeoff": {
+      "raw_pixel_recall": 0.508050196270608,
+      "gated_pixel_recall": 0.4369786230891595,
+      "true_positive_pixels_removed": 184477,
+      "fraction_raw_tp_removed": 0.139890848784542,
+      "defective_images_with_some_true_positive_pixels_but_negative_head": 45
+    },
+    "head_recall_by_gt_area": {
+      "under_0.1pct": {
+        "images": 0,
+        "detected": 0
+      },
+      "0.1_to_1pct": {
+        "images": 26,
+        "detected": 6
+      },
+      "1_to_5pct": {
+        "images": 42,
+        "detected": 25
+      },
+      "at_least_5pct": {
+        "images": 32,
+        "detected": 22
+      }
+    }
+  },
+  "results": {
+    "steel_unet_balanced_pretrained_resnet18_expanded_r30_det_s42_cls0": {
+      "classification_weight": 0.0,
+      "best_round": 24,
+      "image_auroc": 0.7759,
+      "confusion": {
+        "tn": 95,
+        "fp": 5,
+        "fn": 94,
+        "tp": 6
+      },
+      "pooled_pixel_dice_all_200_images": 0.5095773032684503,
+      "pooled_pixel_iou_all_200_images": 0.34190119647663536,
+      "normal_masks": {
+        "nonempty_of_100": 94,
+        "normal_pixel_fpr": 0.011597802734375
+      },
+      "classification_metrics": {
+        "head_trained": false,
+        "threshold": 0.7630855381488798,
+        "image_auroc": 0.644,
+        "confusion": {
+          "tn": 89,
+          "fp": 11,
+          "fn": 74,
+          "tp": 26
+        },
+        "recall": 0.26,
+        "false_positive_rate": 0.11,
+        "gated_masks_exploratory": {
+          "pooled_dice": 0.4275270838423591,
+          "normal_nonempty_of_100": 11,
+          "normal_pixel_fpr": 0.00237626953125
+        },
+        "gating_warning": "Optional analysis only: suppressing masks can hide defects; raw masks remain default output."
+      },
+      "completed_optimizer_steps": 2400,
+      "wall_seconds": 336.5685983999974
+    },
+    "steel_unet_balanced_pretrained_resnet18_expanded_r30_det_s42_cls0p5": {
+      "classification_weight": 0.5,
+      "best_round": 20,
+      "image_auroc": 0.8162999999999999,
+      "confusion": {
+        "tn": 94,
+        "fp": 6,
+        "fn": 73,
+        "tp": 27
+      },
+      "pooled_pixel_dice_all_200_images": 0.5124493441184191,
+      "pooled_pixel_iou_all_200_images": 0.3444920292914136,
+      "normal_masks": {
+        "nonempty_of_100": 96,
+        "normal_pixel_fpr": 0.0154785400390625
+      },
+      "classification_metrics": {
+        "head_trained": true,
+        "threshold": 0.9196770548820495,
+        "image_auroc": 0.8800999999999999,
+        "confusion": {
+          "tn": 97,
+          "fp": 3,
+          "fn": 47,
+          "tp": 53
+        },
+        "recall": 0.53,
+        "false_positive_rate": 0.03,
+        "gated_masks_exploratory": {
+          "pooled_dice": 0.541439106693545,
+          "normal_nonempty_of_100": 3,
+          "normal_pixel_fpr": 0.0018236083984375
+        },
+        "gating_warning": "Optional analysis only: suppressing masks can hide defects; raw masks remain default output."
+      },
+      "completed_optimizer_steps": 2397,
+      "wall_seconds": 342.80810049999855
+    }
+  }
+}

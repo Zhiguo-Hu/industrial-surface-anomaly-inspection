@@ -18,17 +18,25 @@ from scripts.run_steel_pilot import read_image
 from scripts.audit_severstal import decode_rle
 from src.baseline import validation_threshold
 from src.training_selection import coverage_balanced_rows,expanded_training_rows
-from src.resnet_unet import ResNet18UNet
+from src.resnet_unet import ResNet18UNet,JointResNet18UNet
 from src.reproducibility import configure,state_hash
 
 
 @torch.inference_mode()
-def predict(model,image,device):
+def predict_outputs(model,image,device):
     stitch=Stitcher(*image.shape[:2])
+    classification=[]
     for batch,layout in tile_batches(image,device):
-        maps=model(batch).sigmoid()[:,0].cpu().numpy()
+        if isinstance(model,JointResNet18UNet):
+            logits,cls=model.forward_joint(batch);classification.extend(cls.sigmoid().cpu().tolist())
+        else:logits=model(batch)
+        maps=logits.sigmoid()[:,0].cpu().numpy()
         for heat,box in zip(maps,layout):stitch.add(heat,box)
-    return stitch.finish()
+    return stitch.finish(),max(classification) if classification else None
+
+
+def predict(model,image,device):
+    return predict_outputs(model,image,device)[0]
 
 
 def main():
@@ -39,10 +47,14 @@ def main():
     parser.add_argument('--rounds',type=int,default=6,help='80 optimization attempts per round')
     parser.add_argument('--deterministic',action='store_true')
     parser.add_argument('--seed',type=int,default=42,help='Training seed; data selection stays fixed at 42')
+    parser.add_argument('--classification-weight',type=float,default=None,help='Enable matched joint architecture; 0 is segmentation-only control, 0.5 is joint loss')
     args=parser.parse_args()
     if args.encoder!='small' and not args.coverage_balanced:parser.error('ResNet18 comparisons require --coverage-balanced')
     if args.rounds<1:parser.error('rounds must be positive')
     if args.expanded and not args.coverage_balanced:parser.error('Expansion requires --coverage-balanced')
+    if args.classification_weight is not None and (args.classification_weight<0 or not np.isfinite(args.classification_weight)):
+        parser.error('classification-weight must be finite and nonnegative')
+    if args.classification_weight is not None and args.encoder!='pretrained-resnet18':parser.error('Joint comparisons require pretrained-resnet18')
     reproducibility=configure(args.seed,args.deterministic);torch.set_num_threads(4)
     device='cuda' if torch.cuda.is_available() else 'cpu'
     experiment='steel_unet_balanced' if args.coverage_balanced else 'steel_unet'
@@ -51,19 +63,26 @@ def main():
     if args.rounds!=6:experiment+=f'_r{args.rounds}'
     if args.deterministic:experiment+=f'_det_s{args.seed}'
     elif args.seed!=42:experiment+=f'_s{args.seed}'
+    if args.classification_weight is not None:experiment+=f'_cls{args.classification_weight:g}'.replace('.','p')
     output=ROOT/'runs'/experiment;output.mkdir(parents=True,exist_ok=True)
-    model=(SmallUNet() if args.encoder=='small' else ResNet18UNet(
+    encoder_model=JointResNet18UNet if args.classification_weight is not None else ResNet18UNet
+    model=(SmallUNet() if args.encoder=='small' else encoder_model(
         ROOT/'weights/resnet18-f37072fd.pth' if args.encoder=='pretrained-resnet18' else None)).to(device)
     initial_state_sha256=state_hash(model.state_dict())
     if args.image:
         saved=torch.load(output/'best.pt',map_location=device,weights_only=True);model.load_state_dict(saved['model']);model.eval()
         with Image.open(args.image) as image:array=np.asarray(image.convert('RGB')).copy()
-        heat=predict(model,array,device)
+        heat,classification_score=predict_outputs(model,array,device)
         Image.fromarray((.6*array+.4*heat_rgb(heat,1)).astype(np.uint8)).save(output/'single_overlay.png')
         Image.fromarray((heat>saved['pixel_threshold']).astype(np.uint8)*255).save(output/'single_mask.png')
         np.save(output/'single_probability.npy',heat)
-        print(json.dumps({'score':float(heat.max()),'threshold':saved['image_threshold'],
-                          'prediction':int(heat.max()>saved['image_threshold'])}));return
+        result={'score':float(heat.max()),'threshold':saved['image_threshold'],
+                'prediction':int(heat.max()>saved['image_threshold'])}
+        if classification_score is not None:
+            result.update({'classification_score':classification_score,'classification_threshold':saved['classification_threshold'],
+                           'classification_alarm':int(classification_score>saved['classification_threshold']),
+                           'classification_head_trained':args.classification_weight>0,'mask_not_gated':True})
+        print(json.dumps(result));return
     dataset=SeverstalTiles(ROOT,'train');rng=random.Random(42)
     train=[]
     for label in (0,1):
@@ -127,7 +146,7 @@ def main():
     skipped_steps=0
     first_round_state_sha256=None
     for round_number in range(1,args.rounds+1):
-        model.train();losses=[]
+        model.train();losses=[];seg_losses=[];cls_losses=[]
         for step in range(80):
             indices=rng.choices(positive,k=4)+rng.choices(negative,k=4)
             class_draws.update(c for i in indices for c in tile_classes[i])
@@ -138,7 +157,14 @@ def main():
             x,y=x.to(device),y.to(device)
             optimizer.zero_grad(set_to_none=True)
             with torch.autocast(device_type=device,dtype=torch.float16,enabled=device=='cuda'):
-                logits=model(x);loss=segmentation_loss(logits,y)
+                if args.classification_weight is not None:
+                    logits,cls=model.forward_joint(x)
+                    seg_loss=segmentation_loss(logits,y)
+                    cls_loss=torch.nn.functional.binary_cross_entropy_with_logits(cls,y.flatten(1).amax(1))
+                    loss=seg_loss+args.classification_weight*cls_loss
+                    seg_losses.append(float(seg_loss.item()));cls_losses.append(float(cls_loss.item()))
+                else:
+                    logits=model(x);loss=segmentation_loss(logits,y)
             if not torch.isfinite(loss):raise ValueError('Nonfinite training loss')
             scaler.scale(loss).backward();scaler.unscale_(optimizer)
             torch.nn.utils.clip_grad_norm_(model.parameters(),1)
@@ -153,6 +179,8 @@ def main():
         dice=2*tp/max(1,2*tp+fp+fn)
         history.append({'round':round_number,'updates':round_number*80,'training_loss':float(np.mean(losses)),
                         'checkpoint_validation_pooled_dice_at_05':dice})
+        if args.classification_weight is not None:
+            history[-1].update({'segmentation_loss':float(np.mean(seg_losses)),'classification_loss':float(np.mean(cls_losses))})
         if round_number==1:first_round_state_sha256=state_hash(model.state_dict())
         print(json.dumps(history[-1]),flush=True)
         if dice>best:
@@ -168,28 +196,43 @@ def main():
             p=heat>t;counts[i]+=[int((p&mask).sum()),int((p&~mask).sum()),int((~p&mask).sum())]
     dice_values=2*counts[:,0]/np.maximum(1,2*counts[:,0]+counts[:,1]+counts[:,2])
     pixel_threshold=float(thresholds[dice_values.argmax()])
-    cal_scores=[]
+    cal_scores=[];cal_classification=[]
     for i,row in enumerate(calibration):
-        cal_scores.append(float(predict(model,read_image(row),device).max()))
+        heat,cls_score=predict_outputs(model,read_image(row),device)
+        cal_scores.append(float(heat.max()))
+        if cls_score is not None:cal_classification.append(cls_score)
         if (i+1)%100==0:print(f'Normal calibration {i+1}/200',flush=True)
     image_threshold=validation_threshold(cal_scores)
+    classification_threshold=validation_threshold(cal_classification) if cal_classification else None
     saved={'model':best_state,'image_threshold':image_threshold,'pixel_threshold':pixel_threshold,
            'reproducibility':reproducibility,'model_state_sha256':state_hash(best_state),
+           'classification_weight':args.classification_weight,'classification_threshold':classification_threshold,
            'best_round':best_round,'manifest_sha256':hashlib.sha256(manifest_path.read_bytes()).hexdigest(),
            'architecture':('SmallUNet base16 GroupNorm, scratch' if args.encoder=='small' else
                            f'ResNet18UNet encoder={args.encoder}, all layers fine-tuned; BatchNorm encoder/GroupNorm decoder')+'; binary union of four classes'}
     torch.save(saved,output/'best.pt')
     scores=[];pixel_auc=[];aggregate=np.zeros(3,dtype=np.int64);per_defect_dice=[];preview=[];seen=set();pred_rows=[]
+    cls_scores=[];gated_counts=np.zeros(3,dtype=np.int64);normal_pixel_fp=0;gated_normal_fp=0;normal_nonempty=0;gated_normal_nonempty=0
     for i,row in enumerate(evaluation):
-        array=read_image(row);heat=predict(model,array,device);mask=mask_for(row)>0;p=heat>pixel_threshold
+        array=read_image(row);heat,cls_score=predict_outputs(model,array,device);mask=mask_for(row)>0;p=heat>pixel_threshold
         score=float(heat.max());scores.append(score)
         a,b,c=int((p&mask).sum()),int((p&~mask).sum()),int((~p&mask).sum());aggregate+=[a,b,c]
+        if not row['label']:
+            normal_pixel_fp+=int(p.sum());normal_nonempty+=int(p.any())
+        if cls_score is not None:
+            cls_scores.append(cls_score)
+            gated=p if cls_score>classification_threshold else np.zeros_like(p)
+            gated_counts+=[int((gated&mask).sum()),int((gated&~mask).sum()),int((~gated&mask).sum())]
+            if not row['label']:
+                gated_normal_fp+=int(gated.sum());gated_normal_nonempty+=int(gated.any())
         if mask.any():
             pixel_auc.append(float(roc_auc_score(mask.ravel(),heat.ravel())))
             per_defect_dice.append(2*a/max(1,2*a+b+c))
         key=tuple(row['classes'])
         if key not in seen and len(preview)<6:seen.add(key);preview.append((row,array,mask,heat,score))
         pred_rows.append({'image_id':row['image_id'],'label':row['label'],'score':score,'prediction':int(score>image_threshold)})
+        if cls_score is not None:
+            pred_rows[-1].update({'classification_score':cls_score,'classification_alarm':int(cls_score>classification_threshold)})
         if (i+1)%50==0:print(f'Development evaluation {i+1}/200',flush=True)
     labels=np.array([r['label'] for r in evaluation]);tn,fp,fn,tp=confusion_matrix(labels,np.array(scores)>image_threshold,labels=[0,1]).ravel()
     a,b,c=map(int,aggregate)
@@ -206,6 +249,7 @@ def main():
             'train_images':len(dataset.rows),'training_positive_tiles':len(positive),'training_negative_tiles':len(negative),
             'sampling':'Each batch 4 positive + 4 negative tiles, replacement; paired horizontal/vertical flips',
             'loss':'BCEWithLogits + per-sample soft Dice','optimizer':'AdamW lr=0.001 weight_decay=0.0001',
+            'classification_weight':args.classification_weight,'classification_target':'Tile mask nonempty; image score=max of 12 tile-head probabilities' if cls_scores else None,
             'amp':device=='cuda','rounds':args.rounds,'total_updates':args.rounds*80,'checkpoint_validation_images':80,
             'optimizer_steps_skipped_by_amp':skipped_steps,'completed_optimizer_steps':args.rounds*80-skipped_steps,
             'budget_note':'total_updates is attempted optimization steps; AMP skipped steps are counted separately',
@@ -220,6 +264,17 @@ def main():
             'metric_note':'Full 256x1600 reconstruction; pixel AUROC is per-defect-image mean, not pooled.',
             'wall_seconds':time.perf_counter()-start,'peak_torch_allocated_mib':torch.cuda.max_memory_allocated()/2**20 if device=='cuda' else None,
             'limitations':'Small development pilot, validation already inspected; supervision differs from normal-only baseline. Not production validated.'}
+    report['normal_masks']={'nonempty_of_100':normal_nonempty,'normal_pixel_fpr':normal_pixel_fp/(100*256*1600)}
+    if cls_scores:
+        ct,cfp,cfn,ctp=confusion_matrix(labels,np.array(cls_scores)>classification_threshold,labels=[0,1]).ravel()
+        ga,gb,gc=map(int,gated_counts)
+        report['classification_metrics']={'head_trained':args.classification_weight>0,'threshold':classification_threshold,
+            'image_auroc':float(roc_auc_score(labels,cls_scores)),
+            'confusion':dict(zip(['tn','fp','fn','tp'],map(int,[ct,cfp,cfn,ctp]))),
+            'recall':float(ctp/(ctp+cfn)),'false_positive_rate':float(cfp/(cfp+ct)),
+            'gated_masks_exploratory':{'pooled_dice':2*ga/max(1,2*ga+gb+gc),'normal_nonempty_of_100':gated_normal_nonempty,
+                                       'normal_pixel_fpr':gated_normal_fp/(100*256*1600)},
+            'gating_warning':'Optional analysis only: suppressing masks can hide defects; raw masks remain default output.'}
     restored=torch.load(output/'best.pt',map_location=device,weights_only=True);model.load_state_dict(restored['model'])
     repeat=predict(model,read_image(evaluation[0]),device)
     np.testing.assert_allclose(repeat.max(),scores[0],rtol=1e-5,atol=1e-5);report['reload_check']='passed'
