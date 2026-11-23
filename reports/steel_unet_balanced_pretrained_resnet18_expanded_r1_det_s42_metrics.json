@@ -1,0 +1,87 @@
+{
+  "scope": "Supervised pilot; same evaluation images as anomaly pilot; NO test images",
+  "architecture": "ResNet18UNet encoder=pretrained-resnet18, all layers fine-tuned; BatchNorm encoder/GroupNorm decoder; binary union of four classes",
+  "parameters": 12456209,
+  "experiment": "steel_unet_balanced_pretrained_resnet18_expanded_r1_det_s42",
+  "coverage_minimum_per_class": 120,
+  "reproducibility": {
+    "seed": 42,
+    "deterministic_algorithms": true,
+    "cudnn_benchmark": false,
+    "cudnn_deterministic": true,
+    "cudnn_allow_tf32": false,
+    "matmul_allow_tf32": false,
+    "cublas_workspace_config": ":4096:8",
+    "torch": "2.15.0+cu132",
+    "cuda_build": "13.2",
+    "scope": "Same code, data, hardware/software runtime only; not a cross-version reproducibility guarantee"
+  },
+  "initial_state_sha256": "d080d478e1f00dd1e391ec453b8fcd5038091962a6c991dfb58a179545468c24",
+  "first_80_steps_state_sha256": "7625b384cec3b639aaec40308383fd85802df8eea736b97c6a3d0bb6d807f092",
+  "best_state_sha256": "7625b384cec3b639aaec40308383fd85802df8eea736b97c6a3d0bb6d807f092",
+  "training_rng_policy": "Dedicated Random(training seed) reset before optimizer",
+  "training_images_per_class": {
+    "1": 310,
+    "2": 120,
+    "3": 1471,
+    "4": 241
+  },
+  "positive_tiles_per_class": {
+    "1": 1120,
+    "2": 242,
+    "3": 7135,
+    "4": 1240
+  },
+  "actual_sampled_tiles_per_class": {
+    "1": 45,
+    "2": 7,
+    "3": 224,
+    "4": 53
+  },
+  "original_training_images_retained": 406,
+  "train_images": 4000,
+  "training_positive_tiles": 9530,
+  "training_negative_tiles": 38470,
+  "sampling": "Each batch 4 positive + 4 negative tiles, replacement; paired horizontal/vertical flips",
+  "loss": "BCEWithLogits + per-sample soft Dice",
+  "optimizer": "AdamW lr=0.001 weight_decay=0.0001",
+  "amp": true,
+  "rounds": 1,
+  "total_updates": 80,
+  "checkpoint_validation_images": 80,
+  "optimizer_steps_skipped_by_amp": 0,
+  "completed_optimizer_steps": 80,
+  "budget_note": "total_updates is attempted optimization steps; AMP skipped steps are counted separately",
+  "best_round": 1,
+  "history": [
+    {
+      "round": 1,
+      "updates": 80,
+      "training_loss": 1.1974094778299331,
+      "checkpoint_validation_pooled_dice_at_05": 0.0
+    }
+  ],
+  "pixel_threshold": 0.4,
+  "image_threshold": 0.4723958373069763,
+  "threshold_note": "Pixel threshold maximizes pooled Dice on checkpoint validation; image threshold normal calibration q95",
+  "evaluation_normal_images": 100,
+  "evaluation_defect_images": 100,
+  "image_auroc": 0.53015,
+  "confusion": {
+    "tn": 100,
+    "fp": 0,
+    "fn": 100,
+    "tp": 0
+  },
+  "recall": 0.0,
+  "false_positive_rate": 0.0,
+  "pooled_pixel_dice_all_200_images": 0.29634823003869465,
+  "pooled_pixel_iou_all_200_images": 0.1739488287829065,
+  "mean_per_defect_image_dice": 0.41702643856248955,
+  "mean_per_defect_image_pixel_auroc": 0.8891923636284692,
+  "metric_note": "Full 256x1600 reconstruction; pixel AUROC is per-defect-image mean, not pooled.",
+  "wall_seconds": 42.0919769000011,
+  "peak_torch_allocated_mib": 465.42236328125,
+  "limitations": "Small development pilot, validation already inspected; supervision differs from normal-only baseline. Not production validated.",
+  "reload_check": "passed"
+}

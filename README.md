@@ -1,8 +1,8 @@
 # 工业表面异常检测与定位 / Industrial Surface Anomaly Inspection
 
-基于 PyTorch 的工业表面视觉检测项目：已完成 MVTec bottle 流程验证、Severstal 钢材划分与滑窗、异常检测和监督分割对照。最新4,000图/2,400步实验的开发集Dice为0.5218、图像AUROC为0.7926，仍有明显漏报与正常掩码误报；测试集保留。下文按阶段记录，最新结论见[训练扩展报告](reports/training_scale_experiments.md)。
+基于 PyTorch 的工业表面视觉检测项目：已完成瓶子验证、钢材滑窗、异常检测、监督分割与训练扩展。最新确定性3种子开发实验：Dice均值0.5237±0.0185、图像AUROC均值0.8161±0.0352；报警召回仍波动明显，尚不可部署，测试集保留。下文按阶段记录，最新结论见[复现报告](reports/deterministic_replication.md)。
 
-A PyTorch industrial surface inspection project with bottle validation, steel tiling, anomaly detection and supervised segmentation experiments. The latest 4,000-image/2,400-step run achieves development Dice 0.5218 and image AUROC 0.7926, with substantial remaining misses/false masks. Test data remains reserved. Sections below record successive stages; see the latest [training-scale report](reports/training_scale_experiments.md).
+A PyTorch surface-inspection project with bottle validation, steel tiling, anomaly detection, segmentation and expanded training. Latest deterministic three-seed development mean±sample SD: Dice 0.5237±0.0185, image AUROC 0.8161±0.0352. Alarms remain unstable; not deployable, test data reserved. See the latest [replication report](reports/deterministic_replication.md).
 
 ## 进展 / Progress
 
@@ -16,6 +16,7 @@ A PyTorch industrial surface inspection project with bottle validation, steel ti
 | 钢材异常检测首轮试验 / Steel anomaly pilot | 已跑通，效果不合格 / Runs; inadequate detection |
 | 轻量 U-Net 监督分割对照 / Supervised U-Net pilot | 已完成首轮，效果仍不足 / Initial run complete, inadequate |
 | 预训练编码器与训练扩展 / Pretraining and training expansion | 已完成开发实验，未达部署要求 / Development runs complete, not deployable |
+| 本机确定性与3种子复验 / Local determinism and three seeds | 80步训练状态及单图跨进程一致性通过 / 80-step state and single-input replay verified |
 | 实际采集验证 / Field validation | 待实现 / Planned |
 
 ## 方法 / Methods
@@ -358,3 +359,36 @@ python scripts/plot_training_scale.py
 ```
 
 ![Training-scale development curves](reports/steel_training_scale_curves.png)
+
+## 确定性与多种子 / Determinism and predefined seeds
+
+完整方法与全部结果见[中英文复验报告 / Bilingual replication report](reports/deterministic_replication.md)。使用原4000张训练图和相同开发/校准/评估身份，每个预定种子训练2400步；不选评估成绩最好的种子。
+
+Use the same 4000 training images and all original validation identities; each predefined seed trains 2400 steps. Do not select the best evaluation seed.
+
+| Seed | Image AUROC | TP/100 | FP/100 | Pooled Dice |
+|---|---:|---:|---:|---:|
+| 42 | 0.7759 | 6 | 5 | 0.5096 |
+| 43 | 0.8413 | 49 | 9 | 0.5168 |
+| 44 | 0.8310 | 44 | 6 | 0.5446 |
+
+开启严格确定性算法，关闭benchmark/TF32，CUDA初始化前设置cuBLAS工作区；训练随机流与数据选择分离。相同种子的初始状态、前80步后全部参数/缓冲区及首轮记录完全一致；一次单图概率图在两个独立进程逐像素一致。不是重复了两次完整2400步，也不保证跨软硬件复现。
+
+Strict deterministic algorithms, benchmark/TF32 disabled, cuBLAS workspace configured before CUDA, and training RNG isolated from data selection. Same-seed initial state, 80-step parameter/buffer state and first-round history match exactly; one probability map matches across separate processes. This is not two complete 2400-step repeats or a cross-runtime guarantee.
+
+```powershell
+python scripts/train_steel_unet.py --coverage-balanced --encoder pretrained-resnet18 --expanded --rounds 1 --deterministic --seed 42
+foreach ($trainingSeed in @(42,43,44)) {
+  python scripts/train_steel_unet.py --coverage-balanced --encoder pretrained-resnet18 --expanded --rounds 30 --deterministic --seed $trainingSeed
+  python scripts/analyze_unet.py --coverage-balanced --encoder pretrained-resnet18 --expanded --rounds 30 --deterministic --seed $trainingSeed
+}
+python scripts/check_deterministic_inference.py
+python scripts/summarize_reproducibility.py
+python scripts/plot_multiseed.py
+```
+
+35项测试通过。三次共用200张评估图，不是600个独立样本；标准差只描述训练波动。严格模式也改变了数值设置和训练随机流，不能与历史版本作纯粹“去掉随机性”的因果比较。下一步以预先指定seed=42为参考，检验显式分类监督，继续保留最终测试集。
+
+All 35 tests pass. Runs reuse 200 images, not 600 independent examples; SD describes training variation only. Strict mode changes arithmetic and RNG handling, so historical differences are not solely attributable to removing nondeterminism. Follow-up controls use predeclared seed 42 and investigate explicit classification supervision; test data stays reserved.
+
+![Three-seed development curves](reports/steel_multiseed_curves.png)

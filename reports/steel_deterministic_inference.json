@@ -1,0 +1,19 @@
+{
+  "scope": "Same-runtime inference in two separate processes, same saved seed-42 model",
+  "image_id": "034941f9d.jpg",
+  "image_sha256": "979f657566d1e9a6fcbe86252c5c7f3889e50c6355ef225cc022911c9bd5dbd7",
+  "model": "steel_unet_balanced_pretrained_resnet18_expanded_r30_det_s42",
+  "probability_shape": [
+    256,
+    1600
+  ],
+  "all_probability_pixels_bitwise_equal": true,
+  "decision_records_equal": true,
+  "probability_bytes_sha256": "221b2069b1c4a97011afdf1708f4d3698c830905e06067bd9022c35b36638f21",
+  "prediction": {
+    "score": 0.979659914970398,
+    "threshold": 0.9845351219177246,
+    "prediction": 0
+  },
+  "limitation": "One input on this runtime; not a universal cross-runtime guarantee"
+}

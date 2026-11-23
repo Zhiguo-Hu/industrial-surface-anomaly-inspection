@@ -1,5 +1,7 @@
 """Resource-bounded supervised pilot; development validation only, test untouched."""
-import argparse,csv,hashlib,json,random,sys,time
+import argparse,csv,hashlib,json,os,random,sys,time
+if '--deterministic' in sys.argv:
+    os.environ['CUBLAS_WORKSPACE_CONFIG']=':4096:8'
 from collections import Counter,defaultdict
 from pathlib import Path
 import numpy as np
@@ -17,6 +19,7 @@ from scripts.audit_severstal import decode_rle
 from src.baseline import validation_threshold
 from src.training_selection import coverage_balanced_rows,expanded_training_rows
 from src.resnet_unet import ResNet18UNet
+from src.reproducibility import configure,state_hash
 
 
 @torch.inference_mode()
@@ -34,19 +37,24 @@ def main():
     parser.add_argument('--encoder',choices=['small','random-resnet18','pretrained-resnet18'],default='small')
     parser.add_argument('--expanded',action='store_true',help='4000 train images including the coverage-balanced 500')
     parser.add_argument('--rounds',type=int,default=6,help='80 optimization attempts per round')
+    parser.add_argument('--deterministic',action='store_true')
+    parser.add_argument('--seed',type=int,default=42,help='Training seed; data selection stays fixed at 42')
     args=parser.parse_args()
     if args.encoder!='small' and not args.coverage_balanced:parser.error('ResNet18 comparisons require --coverage-balanced')
     if args.rounds<1:parser.error('rounds must be positive')
     if args.expanded and not args.coverage_balanced:parser.error('Expansion requires --coverage-balanced')
-    torch.manual_seed(42);np.random.seed(42);random.seed(42);torch.set_num_threads(4)
+    reproducibility=configure(args.seed,args.deterministic);torch.set_num_threads(4)
     device='cuda' if torch.cuda.is_available() else 'cpu'
     experiment='steel_unet_balanced' if args.coverage_balanced else 'steel_unet'
     if args.encoder!='small':experiment+='_'+args.encoder.replace('-','_')
     if args.expanded:experiment+='_expanded'
     if args.rounds!=6:experiment+=f'_r{args.rounds}'
+    if args.deterministic:experiment+=f'_det_s{args.seed}'
+    elif args.seed!=42:experiment+=f'_s{args.seed}'
     output=ROOT/'runs'/experiment;output.mkdir(parents=True,exist_ok=True)
     model=(SmallUNet() if args.encoder=='small' else ResNet18UNet(
         ROOT/'weights/resnet18-f37072fd.pth' if args.encoder=='pretrained-resnet18' else None)).to(device)
+    initial_state_sha256=state_hash(model.state_dict())
     if args.image:
         saved=torch.load(output/'best.pt',map_location=device,weights_only=True);model.load_state_dict(saved['model']);model.eval()
         with Image.open(args.image) as image:array=np.asarray(image.convert('RGB')).copy()
@@ -108,12 +116,16 @@ def main():
         if (parent+1)%1000==0:print(f'Indexed {parent+1}/{len(dataset.rows)} parents',flush=True)
     print(f'Tiles: {len(positive)} positive / {len(negative)} negative',flush=True)
     if not positive or not negative:raise ValueError('Both tile classes required')
+    if args.deterministic:
+        # Isolate training randomness from fixed data-selection shuffles.
+        rng=random.Random(args.seed)
     optimizer=torch.optim.AdamW(model.parameters(),lr=1e-3,weight_decay=1e-4)
     scaler=torch.amp.GradScaler('cuda',enabled=device=='cuda')
     start=time.perf_counter();history=[];best=-1;best_state=None;class_draws=Counter()
     if device=='cuda':torch.cuda.reset_peak_memory_stats()
     # Each round is 80 sampled updates, not one exhaustive pass over the dataset.
     skipped_steps=0
+    first_round_state_sha256=None
     for round_number in range(1,args.rounds+1):
         model.train();losses=[]
         for step in range(80):
@@ -141,6 +153,7 @@ def main():
         dice=2*tp/max(1,2*tp+fp+fn)
         history.append({'round':round_number,'updates':round_number*80,'training_loss':float(np.mean(losses)),
                         'checkpoint_validation_pooled_dice_at_05':dice})
+        if round_number==1:first_round_state_sha256=state_hash(model.state_dict())
         print(json.dumps(history[-1]),flush=True)
         if dice>best:
             best=dice;best_state={k:v.detach().cpu().clone() for k,v in model.state_dict().items()};best_round=round_number
@@ -161,6 +174,7 @@ def main():
         if (i+1)%100==0:print(f'Normal calibration {i+1}/200',flush=True)
     image_threshold=validation_threshold(cal_scores)
     saved={'model':best_state,'image_threshold':image_threshold,'pixel_threshold':pixel_threshold,
+           'reproducibility':reproducibility,'model_state_sha256':state_hash(best_state),
            'best_round':best_round,'manifest_sha256':hashlib.sha256(manifest_path.read_bytes()).hexdigest(),
            'architecture':('SmallUNet base16 GroupNorm, scratch' if args.encoder=='small' else
                            f'ResNet18UNet encoder={args.encoder}, all layers fine-tuned; BatchNorm encoder/GroupNorm decoder')+'; binary union of four classes'}
@@ -182,6 +196,9 @@ def main():
     report={'scope':'Supervised pilot; same evaluation images as anomaly pilot; NO test images',
             'architecture':saved['architecture'],'parameters':sum(p.numel() for p in model.parameters()),
             'experiment':experiment,'coverage_minimum_per_class':120 if args.expanded else (60 if args.coverage_balanced else None),
+            'reproducibility':reproducibility,'initial_state_sha256':initial_state_sha256,
+            'first_80_steps_state_sha256':first_round_state_sha256,'best_state_sha256':state_hash(best_state),
+            'training_rng_policy':'Dedicated Random(training seed) reset before optimizer' if args.deterministic else 'Historical selection-and-training RNG stream',
             'training_images_per_class':{str(c):sum(c in r['classes'] for r in dataset.rows) for c in (1,2,3,4)},
             'positive_tiles_per_class':{str(c):sum(c in cs for cs in tile_classes.values()) for c in (1,2,3,4)},
             'actual_sampled_tiles_per_class':{str(c):class_draws[c] for c in (1,2,3,4)},

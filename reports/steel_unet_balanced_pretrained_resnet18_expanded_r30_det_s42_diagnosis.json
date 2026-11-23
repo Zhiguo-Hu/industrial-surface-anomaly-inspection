@@ -1,0 +1,149 @@
+{
+  "scope": "Fixed saved U-Net, original validation-evaluation subset only; no model/threshold changes, test untouched",
+  "image_threshold": 0.9845351219177246,
+  "pixel_threshold": 0.5,
+  "overall": {
+    "images": 200,
+    "defective": 100,
+    "image_detections": 6,
+    "image_recall": 0.06,
+    "mean_defective_image_dice": 0.5181237059134322,
+    "pooled_union_dice": 0.5095773032684503,
+    "pooled_union_pixel_recall": 0.4492025314651315,
+    "pooled_union_pixel_precision": 0.5887013180449211
+  },
+  "per_class": {
+    "1": {
+      "images": 9,
+      "defective": 9,
+      "image_detections": 0,
+      "image_recall": 0.0,
+      "mean_defective_image_dice": 0.4317227369050803,
+      "pooled_union_dice": 0.4161428799862237,
+      "pooled_union_pixel_recall": 0.28233801782554996,
+      "pooled_union_pixel_precision": 0.7910217442132336,
+      "training_images_with_class": 310,
+      "training_pixels_of_class": 1424382,
+      "class_specific_pixel_recall": 0.2727254194442746
+    },
+    "2": {
+      "images": 6,
+      "defective": 6,
+      "image_detections": 0,
+      "image_recall": 0.0,
+      "mean_defective_image_dice": 0.27460686974425114,
+      "pooled_union_dice": 0.2471937831503639,
+      "pooled_union_pixel_recall": 0.20104333868378813,
+      "pooled_union_pixel_precision": 0.3208453410182517,
+      "training_images_with_class": 120,
+      "training_pixels_of_class": 390217,
+      "class_specific_pixel_recall": 0.18438500228623686
+    },
+    "3": {
+      "images": 75,
+      "defective": 75,
+      "image_detections": 6,
+      "image_recall": 0.08,
+      "mean_defective_image_dice": 0.5589956154615325,
+      "pooled_union_dice": 0.5962808170364913,
+      "pooled_union_pixel_recall": 0.4706812842301179,
+      "pooled_union_pixel_precision": 0.813309366741576,
+      "training_images_with_class": 1471,
+      "training_pixels_of_class": 36741141,
+      "class_specific_pixel_recall": 0.46900741129834783
+    },
+    "4": {
+      "images": 14,
+      "defective": 14,
+      "image_detections": 1,
+      "image_recall": 0.07142857142857142,
+      "mean_defective_image_dice": 0.41672044998633634,
+      "pooled_union_dice": 0.49352314992946006,
+      "pooled_union_pixel_recall": 0.3962116148936927,
+      "pooled_union_pixel_precision": 0.6541972297696215,
+      "training_images_with_class": 241,
+      "training_pixels_of_class": 8002764,
+      "class_specific_pixel_recall": 0.3990945171359687
+    }
+  },
+  "class_metric_note": "Binary union output. Image groups overlap for multi-class images; group Dice uses union masks, not class-specific Dice. class_specific_pixel_recall uses only that class GT pixels.",
+  "by_gt_area": {
+    "under_0.1pct": {
+      "images": 0
+    },
+    "0.1_to_1pct": {
+      "images": 26,
+      "defective": 26,
+      "image_detections": 3,
+      "image_recall": 0.11538461538461539,
+      "mean_defective_image_dice": 0.4836055543480998,
+      "pooled_union_dice": 0.4795069940330627,
+      "pooled_union_pixel_recall": 0.550349535200515,
+      "pooled_union_pixel_precision": 0.42482262947470595
+    },
+    "1_to_5pct": {
+      "images": 42,
+      "defective": 42,
+      "image_detections": 2,
+      "image_recall": 0.047619047619047616,
+      "mean_defective_image_dice": 0.5131672113911984,
+      "pooled_union_dice": 0.5291561370461407,
+      "pooled_union_pixel_recall": 0.4515172551475059,
+      "pooled_union_pixel_precision": 0.6390397082007533
+    },
+    "at_least_5pct": {
+      "images": 32,
+      "defective": 32,
+      "image_detections": 1,
+      "image_recall": 0.03125,
+      "mean_defective_image_dice": 0.5526751031206965,
+      "pooled_union_dice": 0.5821632355969235,
+      "pooled_union_pixel_recall": 0.4454778903973656,
+      "pooled_union_pixel_precision": 0.8398546341022979
+    }
+  },
+  "normal_diagnostics": {
+    "images": 100,
+    "alarms": 5,
+    "images_with_any_predicted_pixels": 94,
+    "pooled_pixel_fpr": 0.011597802734375,
+    "predicted_pixel_area_quantiles_50_90_100": [
+      0.006644287109375,
+      0.029359130859375002,
+      0.12236083984375
+    ]
+  },
+  "missed_image_diagnostics": {
+    "missed": 94,
+    "with_any_predicted_pixels": 92,
+    "with_union_dice_at_least_05": 53
+  },
+  "limitations": [
+    "Small class subsets; not causal proof that imbalance causes errors.",
+    "Architecture, loss, training coverage, and training duration not ablated here.",
+    "Pixel masks and image alarms have different thresholds; the map is not gated by the alarm.",
+    "No defect class names inferred from numeric class IDs."
+  ],
+  "failure_examples": {
+    "normal": {
+      "image_id": "199c7ca22.jpg",
+      "dice": 0.0,
+      "score": 0.9407218098640442
+    },
+    "1_to_5pct": {
+      "image_id": "f03d88c73.jpg",
+      "dice": 0.07289293849658314,
+      "score": 0.9229152202606201
+    },
+    "0.1_to_1pct": {
+      "image_id": "0842fa725.jpg",
+      "dice": 0.0,
+      "score": 0.3806087076663971
+    },
+    "at_least_5pct": {
+      "image_id": "202838a14.jpg",
+      "dice": 0.07911213580163197,
+      "score": 0.8618422746658325
+    }
+  }
+}

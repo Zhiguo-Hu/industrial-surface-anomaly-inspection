@@ -1,0 +1,188 @@
+{
+  "scope": "Same-runtime deterministic prefix and three predefined training seeds on fixed development data; no test images",
+  "unique_evaluation_images": 200,
+  "seeds": [
+    42,
+    43,
+    44
+  ],
+  "training_selection_seed": 42,
+  "same_seed_prefix_checks": {
+    "initial_state_hash_equal": true,
+    "first_80_step_state_hash_equal": true,
+    "first_round_history_exactly_equal": true
+  },
+  "prefix_check_steps": 80,
+  "data_identities_equal_across_all_runs": true,
+  "aggregate": {
+    "image_auroc": {
+      "mean": 0.8160666666666666,
+      "sample_std_ddof1": 0.03516451810182149,
+      "min": 0.7759,
+      "max": 0.8413
+    },
+    "recall": {
+      "mean": 0.33,
+      "sample_std_ddof1": 0.23515952032609694,
+      "min": 0.06,
+      "max": 0.49
+    },
+    "false_positive_rate": {
+      "mean": 0.06666666666666667,
+      "sample_std_ddof1": 0.020816659994661327,
+      "min": 0.05,
+      "max": 0.09
+    },
+    "pooled_pixel_dice_all_200_images": {
+      "mean": 0.5236572925310696,
+      "sample_std_ddof1": 0.018466845777354805,
+      "min": 0.5095773032684503,
+      "max": 0.5445659503906072
+    },
+    "pooled_pixel_iou_all_200_images": {
+      "mean": 0.35484118247144597,
+      "sample_std_ddof1": 0.017049571805584425,
+      "min": 0.34190119647663536,
+      "max": 0.3741605128289784
+    },
+    "normal_pixel_fpr": {
+      "mean": 0.014183146158854168,
+      "sample_std_ddof1": 0.0032488762600349223,
+      "min": 0.011597802734375,
+      "max": 0.0178300048828125
+    }
+  },
+  "per_seed": {
+    "42": {
+      "best_round": 24,
+      "image_auroc": 0.7759,
+      "confusion": {
+        "tn": 95,
+        "fp": 5,
+        "fn": 94,
+        "tp": 6
+      },
+      "pooled_pixel_dice_all_200_images": 0.5095773032684503,
+      "pooled_pixel_iou_all_200_images": 0.34190119647663536,
+      "initial_state_sha256": "d080d478e1f00dd1e391ec453b8fcd5038091962a6c991dfb58a179545468c24",
+      "first_80_steps_state_sha256": "7625b384cec3b639aaec40308383fd85802df8eea736b97c6a3d0bb6d807f092",
+      "best_state_sha256": "4fd3b9ce0812442bf7c0ae11c084b07bf9445104d5c9a892df7464657b914a33",
+      "completed_optimizer_steps": 2400,
+      "optimizer_steps_skipped_by_amp": 0,
+      "wall_seconds": 377.7810871999991,
+      "reproducibility": {
+        "seed": 42,
+        "deterministic_algorithms": true,
+        "cudnn_benchmark": false,
+        "cudnn_deterministic": true,
+        "cudnn_allow_tf32": false,
+        "matmul_allow_tf32": false,
+        "cublas_workspace_config": ":4096:8",
+        "torch": "2.15.0+cu132",
+        "cuda_build": "13.2",
+        "scope": "Same code, data, hardware/software runtime only; not a cross-version reproducibility guarantee"
+      },
+      "normal_mask_metrics": {
+        "images": 100,
+        "alarms": 5,
+        "images_with_any_predicted_pixels": 94,
+        "pooled_pixel_fpr": 0.011597802734375,
+        "predicted_pixel_area_quantiles_50_90_100": [
+          0.006644287109375,
+          0.029359130859375002,
+          0.12236083984375
+        ]
+      }
+    },
+    "43": {
+      "best_round": 23,
+      "image_auroc": 0.8413,
+      "confusion": {
+        "tn": 91,
+        "fp": 9,
+        "fn": 51,
+        "tp": 49
+      },
+      "pooled_pixel_dice_all_200_images": 0.5168286239341514,
+      "pooled_pixel_iou_all_200_images": 0.34846183810872416,
+      "initial_state_sha256": "3cfd00ae51f8d562975e665cea8295f09fe1605c4a428d731f7ba86ce3bbf440",
+      "first_80_steps_state_sha256": "2eeff016e5fec42e7c9eb4f6a6ea38e8fcff86a87018adbe52ab9e0a55a2b6f7",
+      "best_state_sha256": "7a4c75e24ded1649229cc624e897da71b17a3a3eb69990c5a54b73b9e24b3b4a",
+      "completed_optimizer_steps": 2400,
+      "optimizer_steps_skipped_by_amp": 0,
+      "wall_seconds": 376.0329891000001,
+      "reproducibility": {
+        "seed": 43,
+        "deterministic_algorithms": true,
+        "cudnn_benchmark": false,
+        "cudnn_deterministic": true,
+        "cudnn_allow_tf32": false,
+        "matmul_allow_tf32": false,
+        "cublas_workspace_config": ":4096:8",
+        "torch": "2.15.0+cu132",
+        "cuda_build": "13.2",
+        "scope": "Same code, data, hardware/software runtime only; not a cross-version reproducibility guarantee"
+      },
+      "normal_mask_metrics": {
+        "images": 100,
+        "alarms": 9,
+        "images_with_any_predicted_pixels": 95,
+        "pooled_pixel_fpr": 0.0178300048828125,
+        "predicted_pixel_area_quantiles_50_90_100": [
+          0.009211425781250001,
+          0.044499755859375024,
+          0.14404541015625
+        ]
+      }
+    },
+    "44": {
+      "best_round": 26,
+      "image_auroc": 0.8309999999999998,
+      "confusion": {
+        "tn": 94,
+        "fp": 6,
+        "fn": 56,
+        "tp": 44
+      },
+      "pooled_pixel_dice_all_200_images": 0.5445659503906072,
+      "pooled_pixel_iou_all_200_images": 0.3741605128289784,
+      "initial_state_sha256": "f89ec7cf5d3651ab356d35ccd3671d9d89932e3dabb75e50b9c7102de637f9c4",
+      "first_80_steps_state_sha256": "ad155340d705ea56650a1d5cb92ec33ec6df95d226f7a3e9e5cece08733cf8c5",
+      "best_state_sha256": "6d4a61d660b986300cf2db633c913d83e1add693c0da134d97187c2e0fd4beb8",
+      "completed_optimizer_steps": 2400,
+      "optimizer_steps_skipped_by_amp": 0,
+      "wall_seconds": 378.00523599999906,
+      "reproducibility": {
+        "seed": 44,
+        "deterministic_algorithms": true,
+        "cudnn_benchmark": false,
+        "cudnn_deterministic": true,
+        "cudnn_allow_tf32": false,
+        "matmul_allow_tf32": false,
+        "cublas_workspace_config": ":4096:8",
+        "torch": "2.15.0+cu132",
+        "cuda_build": "13.2",
+        "scope": "Same code, data, hardware/software runtime only; not a cross-version reproducibility guarantee"
+      },
+      "normal_mask_metrics": {
+        "images": 100,
+        "alarms": 6,
+        "images_with_any_predicted_pixels": 87,
+        "pooled_pixel_fpr": 0.013121630859375,
+        "predicted_pixel_area_quantiles_50_90_100": [
+          0.0060009765625,
+          0.03438964843750002,
+          0.1317529296875
+        ]
+      }
+    }
+  },
+  "followup_seed_policy": "42 predeclared, not best evaluation seed",
+  "limitations": [
+    "Exact equality established for 80 training steps, not two complete 2400-step repeats.",
+    "Determinism is local to the tested hardware/software, not cross-version or cross-device.",
+    "Three seeds characterize training variation, not sampling uncertainty of new real-world images.",
+    "The same 200 development images are reused; three runs are not 600 independent samples.",
+    "Dedicated training RNG and stricter arithmetic differ from the historical non-deterministic protocol."
+  ]
+}

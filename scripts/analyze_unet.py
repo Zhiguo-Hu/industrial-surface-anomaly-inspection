@@ -1,5 +1,7 @@
 """Validation-only class/area and false-positive diagnosis of the saved U-Net."""
-import argparse,csv,hashlib,json,sys
+import argparse,csv,hashlib,json,os,sys
+if '--deterministic' in sys.argv:
+    os.environ['CUBLAS_WORKSPACE_CONFIG']=':4096:8'
 from collections import defaultdict
 from pathlib import Path
 import numpy as np
@@ -9,6 +11,7 @@ from PIL import Image,ImageDraw
 ROOT=Path(__file__).resolve().parents[1];sys.path.insert(0,str(ROOT))
 from src.unet import SmallUNet
 from src.resnet_unet import ResNet18UNet
+from src.reproducibility import configure
 from src.segmentation_diagnostics import mask_statistics,area_group,summarize
 from src.steel import heat_rgb
 from scripts.train_steel_unet import predict
@@ -22,13 +25,17 @@ def main():
     parser.add_argument('--encoder',choices=['small','random-resnet18','pretrained-resnet18'],default='small')
     parser.add_argument('--expanded',action='store_true')
     parser.add_argument('--rounds',type=int,default=6)
+    parser.add_argument('--deterministic',action='store_true')
+    parser.add_argument('--seed',type=int,default=42)
     args=parser.parse_args()
     if args.encoder!='small' and not args.coverage_balanced:parser.error('Use --coverage-balanced for ResNet18 comparisons')
     experiment='steel_unet_balanced' if args.coverage_balanced else 'steel_unet'
     if args.encoder!='small':experiment+='_'+args.encoder.replace('-','_')
     if args.expanded:experiment+='_expanded'
     if args.rounds!=6:experiment+=f'_r{args.rounds}'
-    torch.set_num_threads(4);torch.manual_seed(42)
+    if args.deterministic:experiment+=f'_det_s{args.seed}'
+    elif args.seed!=42:experiment+=f'_s{args.seed}'
+    configure(args.seed,args.deterministic);torch.set_num_threads(4)
     device='cuda' if torch.cuda.is_available() else 'cpu'
     saved=torch.load(ROOT/f'runs/{experiment}/best.pt',map_location=device,weights_only=True)
     manifest_path=ROOT/'configs/severstal_manifest.json'

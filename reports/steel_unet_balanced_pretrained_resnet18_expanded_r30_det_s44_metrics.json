@@ -1,0 +1,261 @@
+{
+  "scope": "Supervised pilot; same evaluation images as anomaly pilot; NO test images",
+  "architecture": "ResNet18UNet encoder=pretrained-resnet18, all layers fine-tuned; BatchNorm encoder/GroupNorm decoder; binary union of four classes",
+  "parameters": 12456209,
+  "experiment": "steel_unet_balanced_pretrained_resnet18_expanded_r30_det_s44",
+  "coverage_minimum_per_class": 120,
+  "reproducibility": {
+    "seed": 44,
+    "deterministic_algorithms": true,
+    "cudnn_benchmark": false,
+    "cudnn_deterministic": true,
+    "cudnn_allow_tf32": false,
+    "matmul_allow_tf32": false,
+    "cublas_workspace_config": ":4096:8",
+    "torch": "2.15.0+cu132",
+    "cuda_build": "13.2",
+    "scope": "Same code, data, hardware/software runtime only; not a cross-version reproducibility guarantee"
+  },
+  "initial_state_sha256": "f89ec7cf5d3651ab356d35ccd3671d9d89932e3dabb75e50b9c7102de637f9c4",
+  "first_80_steps_state_sha256": "ad155340d705ea56650a1d5cb92ec33ec6df95d226f7a3e9e5cece08733cf8c5",
+  "best_state_sha256": "6d4a61d660b986300cf2db633c913d83e1add693c0da134d97187c2e0fd4beb8",
+  "training_rng_policy": "Dedicated Random(training seed) reset before optimizer",
+  "training_images_per_class": {
+    "1": 310,
+    "2": 120,
+    "3": 1471,
+    "4": 241
+  },
+  "positive_tiles_per_class": {
+    "1": 1120,
+    "2": 242,
+    "3": 7135,
+    "4": 1240
+  },
+  "actual_sampled_tiles_per_class": {
+    "1": 1100,
+    "2": 250,
+    "3": 7268,
+    "4": 1208
+  },
+  "original_training_images_retained": 406,
+  "train_images": 4000,
+  "training_positive_tiles": 9530,
+  "training_negative_tiles": 38470,
+  "sampling": "Each batch 4 positive + 4 negative tiles, replacement; paired horizontal/vertical flips",
+  "loss": "BCEWithLogits + per-sample soft Dice",
+  "optimizer": "AdamW lr=0.001 weight_decay=0.0001",
+  "amp": true,
+  "rounds": 30,
+  "total_updates": 2400,
+  "checkpoint_validation_images": 80,
+  "optimizer_steps_skipped_by_amp": 0,
+  "completed_optimizer_steps": 2400,
+  "budget_note": "total_updates is attempted optimization steps; AMP skipped steps are counted separately",
+  "best_round": 26,
+  "history": [
+    {
+      "round": 1,
+      "updates": 80,
+      "training_loss": 1.250452423095703,
+      "checkpoint_validation_pooled_dice_at_05": 0.23040467395149622
+    },
+    {
+      "round": 2,
+      "updates": 160,
+      "training_loss": 1.1151303038001061,
+      "checkpoint_validation_pooled_dice_at_05": 0.2683137844469343
+    },
+    {
+      "round": 3,
+      "updates": 240,
+      "training_loss": 1.0513972394168376,
+      "checkpoint_validation_pooled_dice_at_05": 0.270160941022263
+    },
+    {
+      "round": 4,
+      "updates": 320,
+      "training_loss": 1.015767353028059,
+      "checkpoint_validation_pooled_dice_at_05": 0.30998166086486023
+    },
+    {
+      "round": 5,
+      "updates": 400,
+      "training_loss": 0.9902157030999661,
+      "checkpoint_validation_pooled_dice_at_05": 0.3251819255769438
+    },
+    {
+      "round": 6,
+      "updates": 480,
+      "training_loss": 0.9670533381402493,
+      "checkpoint_validation_pooled_dice_at_05": 0.33303627529659147
+    },
+    {
+      "round": 7,
+      "updates": 560,
+      "training_loss": 0.9787101559340954,
+      "checkpoint_validation_pooled_dice_at_05": 0.33571848195221254
+    },
+    {
+      "round": 8,
+      "updates": 640,
+      "training_loss": 0.9435043469071388,
+      "checkpoint_validation_pooled_dice_at_05": 0.36579155983545525
+    },
+    {
+      "round": 9,
+      "updates": 720,
+      "training_loss": 0.9596657931804657,
+      "checkpoint_validation_pooled_dice_at_05": 0.4192678689113894
+    },
+    {
+      "round": 10,
+      "updates": 800,
+      "training_loss": 0.9447309367358685,
+      "checkpoint_validation_pooled_dice_at_05": 0.3535601027611332
+    },
+    {
+      "round": 11,
+      "updates": 880,
+      "training_loss": 0.9432181559503079,
+      "checkpoint_validation_pooled_dice_at_05": 0.3700359188949685
+    },
+    {
+      "round": 12,
+      "updates": 960,
+      "training_loss": 0.9355472847819328,
+      "checkpoint_validation_pooled_dice_at_05": 0.3350542955139535
+    },
+    {
+      "round": 13,
+      "updates": 1040,
+      "training_loss": 0.9319537714123726,
+      "checkpoint_validation_pooled_dice_at_05": 0.4124837813180464
+    },
+    {
+      "round": 14,
+      "updates": 1120,
+      "training_loss": 0.9304526269435882,
+      "checkpoint_validation_pooled_dice_at_05": 0.4561274395426424
+    },
+    {
+      "round": 15,
+      "updates": 1200,
+      "training_loss": 0.9065205551683903,
+      "checkpoint_validation_pooled_dice_at_05": 0.31960008121261385
+    },
+    {
+      "round": 16,
+      "updates": 1280,
+      "training_loss": 0.9004653379321098,
+      "checkpoint_validation_pooled_dice_at_05": 0.38370169265507065
+    },
+    {
+      "round": 17,
+      "updates": 1360,
+      "training_loss": 0.9414168745279312,
+      "checkpoint_validation_pooled_dice_at_05": 0.3546417639512881
+    },
+    {
+      "round": 18,
+      "updates": 1440,
+      "training_loss": 0.9189279317855835,
+      "checkpoint_validation_pooled_dice_at_05": 0.38934774811385214
+    },
+    {
+      "round": 19,
+      "updates": 1520,
+      "training_loss": 0.8885774917900562,
+      "checkpoint_validation_pooled_dice_at_05": 0.4782184155160984
+    },
+    {
+      "round": 20,
+      "updates": 1600,
+      "training_loss": 0.8858377739787102,
+      "checkpoint_validation_pooled_dice_at_05": 0.4339593814335538
+    },
+    {
+      "round": 21,
+      "updates": 1680,
+      "training_loss": 0.8995169632136821,
+      "checkpoint_validation_pooled_dice_at_05": 0.40965696615528713
+    },
+    {
+      "round": 22,
+      "updates": 1760,
+      "training_loss": 0.9049007296562195,
+      "checkpoint_validation_pooled_dice_at_05": 0.49037298272044555
+    },
+    {
+      "round": 23,
+      "updates": 1840,
+      "training_loss": 0.8766074992716313,
+      "checkpoint_validation_pooled_dice_at_05": 0.392503572761678
+    },
+    {
+      "round": 24,
+      "updates": 1920,
+      "training_loss": 0.8774707287549972,
+      "checkpoint_validation_pooled_dice_at_05": 0.42972255589955966
+    },
+    {
+      "round": 25,
+      "updates": 2000,
+      "training_loss": 0.9095642365515232,
+      "checkpoint_validation_pooled_dice_at_05": 0.38241438699046415
+    },
+    {
+      "round": 26,
+      "updates": 2080,
+      "training_loss": 0.8862295940518379,
+      "checkpoint_validation_pooled_dice_at_05": 0.5248930860891918
+    },
+    {
+      "round": 27,
+      "updates": 2160,
+      "training_loss": 0.8785654552280903,
+      "checkpoint_validation_pooled_dice_at_05": 0.4974191758868308
+    },
+    {
+      "round": 28,
+      "updates": 2240,
+      "training_loss": 0.890666289627552,
+      "checkpoint_validation_pooled_dice_at_05": 0.35773386097742654
+    },
+    {
+      "round": 29,
+      "updates": 2320,
+      "training_loss": 0.8726419359445572,
+      "checkpoint_validation_pooled_dice_at_05": 0.4731951533096973
+    },
+    {
+      "round": 30,
+      "updates": 2400,
+      "training_loss": 0.8671623848378658,
+      "checkpoint_validation_pooled_dice_at_05": 0.43232331535450746
+    }
+  ],
+  "pixel_threshold": 0.5,
+  "image_threshold": 0.9791237592697144,
+  "threshold_note": "Pixel threshold maximizes pooled Dice on checkpoint validation; image threshold normal calibration q95",
+  "evaluation_normal_images": 100,
+  "evaluation_defect_images": 100,
+  "image_auroc": 0.8309999999999998,
+  "confusion": {
+    "tn": 94,
+    "fp": 6,
+    "fn": 56,
+    "tp": 44
+  },
+  "recall": 0.44,
+  "false_positive_rate": 0.06,
+  "pooled_pixel_dice_all_200_images": 0.5445659503906072,
+  "pooled_pixel_iou_all_200_images": 0.3741605128289784,
+  "mean_per_defect_image_dice": 0.5375390785669265,
+  "mean_per_defect_image_pixel_auroc": 0.9676649869343922,
+  "metric_note": "Full 256x1600 reconstruction; pixel AUROC is per-defect-image mean, not pooled.",
+  "wall_seconds": 378.00523599999906,
+  "peak_torch_allocated_mib": 465.42236328125,
+  "limitations": "Small development pilot, validation already inspected; supervision differs from normal-only baseline. Not production validated.",
+  "reload_check": "passed"
+}
