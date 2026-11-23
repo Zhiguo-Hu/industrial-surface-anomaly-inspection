@@ -20,10 +20,14 @@ def main():
     parser=argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--coverage-balanced',action='store_true')
     parser.add_argument('--encoder',choices=['small','random-resnet18','pretrained-resnet18'],default='small')
+    parser.add_argument('--expanded',action='store_true')
+    parser.add_argument('--rounds',type=int,default=6)
     args=parser.parse_args()
     if args.encoder!='small' and not args.coverage_balanced:parser.error('Use --coverage-balanced for ResNet18 comparisons')
     experiment='steel_unet_balanced' if args.coverage_balanced else 'steel_unet'
     if args.encoder!='small':experiment+='_'+args.encoder.replace('-','_')
+    if args.expanded:experiment+='_expanded'
+    if args.rounds!=6:experiment+=f'_r{args.rounds}'
     torch.set_num_threads(4);torch.manual_seed(42)
     device='cuda' if torch.cuda.is_available() else 'cpu'
     saved=torch.load(ROOT/f'runs/{experiment}/best.pt',map_location=device,weights_only=True)

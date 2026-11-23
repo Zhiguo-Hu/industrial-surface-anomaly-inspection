@@ -1,8 +1,8 @@
 # 工业表面异常检测与定位 / Industrial Surface Anomaly Inspection
 
-基于 PyTorch 的工业表面视觉检测项目：先用 MVTec bottle 验证流程，再迁移到 Severstal 钢材表面缺陷。当前完成瓶子检测与定位、钢材数据检查和固定划分；钢材模型尚未训练或建库。
+基于 PyTorch 的工业表面视觉检测项目：已完成 MVTec bottle 流程验证、Severstal 钢材划分与滑窗、异常检测和监督分割对照。最新4,000图/2,400步实验的开发集Dice为0.5218、图像AUROC为0.7926，仍有明显漏报与正常掩码误报；测试集保留。下文按阶段记录，最新结论见[训练扩展报告](reports/training_scale_experiments.md)。
 
-A PyTorch project for industrial surface anomaly detection and localization. MVTec bottle validates the pipeline; Severstal steel is the target application. Bottle experiments and steel data preparation are complete. Steel modeling is pending.
+A PyTorch industrial surface inspection project with bottle validation, steel tiling, anomaly detection and supervised segmentation experiments. The latest 4,000-image/2,400-step run achieves development Dice 0.5218 and image AUROC 0.7926, with substantial remaining misses/false masks. Test data remains reserved. Sections below record successive stages; see the latest [training-scale report](reports/training_scale_experiments.md).
 
 ## 进展 / Progress
 
@@ -15,6 +15,7 @@ A PyTorch project for industrial surface anomaly detection and localization. MVT
 | 钢材滑窗与拼接 / Steel tiling and stitching | 已完成 / Complete |
 | 钢材异常检测首轮试验 / Steel anomaly pilot | 已跑通，效果不合格 / Runs; inadequate detection |
 | 轻量 U-Net 监督分割对照 / Supervised U-Net pilot | 已完成首轮，效果仍不足 / Initial run complete, inadequate |
+| 预训练编码器与训练扩展 / Pretraining and training expansion | 已完成开发实验，未达部署要求 / Development runs complete, not deployable |
 | 实际采集验证 / Field validation | 待实现 / Planned |
 
 ## 方法 / Methods
@@ -321,3 +322,39 @@ python scripts/evaluate_region_scoring.py --model pretrained --image data/severs
 输出在 `runs/*_regions/`，掩码不按整图报警门控。下一步优先改善训练覆盖和有效训练预算，而不是继续堆叠后处理。
 
 Outputs are in `runs/*_regions/`; masks are not gated by image alarms. Prioritize training coverage and effective training budget over further heuristic stacking.
+
+## 扩展训练 / Expanded training
+
+完整方法与限制见[中英文报告 / Bilingual report](reports/training_scale_experiments.md)。原池500张扩展到4000张（2000正常、2000缺陷，均来自train且包含原500张），对照480与2400次优化步骤。模型、损失、验证身份与规则不变，测试集未使用。
+
+The train pool grows from 500 to 4000 images (2000 normal/2000 defective, retaining the original pool). Compare 480 and 2400 steps with the same model, loss and validation rules; no test images are used.
+
+| Pretrained ResNet18-U-Net | Image AUROC | TP/100 | FP/100 | Pooled Dice | Pooled IoU |
+|---|---:|---:|---:|---:|---:|
+| 500 images / 480 steps | 0.6121 | 10 | 3 | 0.3443 | 0.2079 |
+| 4000 images / 480 steps | 0.5150 | 0 | 0 | 0.3657 | 0.2238 |
+| 4000 images / 2400 steps | 0.7926 | 23 | 6 | 0.5218 | 0.3530 |
+
+```powershell
+python scripts/train_steel_unet.py --coverage-balanced --encoder pretrained-resnet18 --expanded
+python scripts/train_steel_unet.py --coverage-balanced --encoder pretrained-resnet18 --expanded --rounds 30
+python scripts/analyze_unet.py --coverage-balanced --encoder pretrained-resnet18 --expanded --rounds 30
+python scripts/compare_training_scale.py
+```
+
+单图入口在同样参数后加 `--image` 和实际路径。扩展版权重与历史分别保存在各自 `runs/*_expanded*` 目录，不覆盖原版；每轮记录历史和最佳训练权重，不能将该简化训练快照当成完整优化器断点恢复。
+
+Append `--image` and an existing path for inference. Expanded weights/history have separate `runs/*_expanded*` directories. Per-round best-weight snapshots do not include full optimizer state for resuming training.
+
+长版本正常像素误报降至1.50%，但正常非空掩码仍94/100，整图召回仅23%；尚不可部署。32项测试通过。单种子且GPU训练未强制确定性，两次扩展实验的早期轨迹并非逐点一致；只能作为开发证据，不能宣称严格逐位复现或统计显著提升。
+
+The longer run reduces normal-pixel FPR to 1.50% but still has nonempty masks in 94/100 normal images and only 23% image recall. All 32 tests pass. Single-seed GPU runs were not forced deterministic and early histories differ, so results are development evidence, not bitwise reproduction or statistical significance.
+
+学习曲线 / Learning curves (optional matplotlib):
+
+```powershell
+python -m pip install -r requirements-plots.txt
+python scripts/plot_training_scale.py
+```
+
+![Training-scale development curves](reports/steel_training_scale_curves.png)

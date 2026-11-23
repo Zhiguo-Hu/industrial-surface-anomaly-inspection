@@ -15,7 +15,7 @@ from src.tiling import Stitcher
 from scripts.run_steel_pilot import read_image
 from scripts.audit_severstal import decode_rle
 from src.baseline import validation_threshold
-from src.training_selection import coverage_balanced_rows
+from src.training_selection import coverage_balanced_rows,expanded_training_rows
 from src.resnet_unet import ResNet18UNet
 
 
@@ -32,12 +32,18 @@ def main():
     parser=argparse.ArgumentParser(description=__doc__);parser.add_argument('--image',type=Path)
     parser.add_argument('--coverage-balanced',action='store_true',help='Class coverage intervention with the same model and update budget')
     parser.add_argument('--encoder',choices=['small','random-resnet18','pretrained-resnet18'],default='small')
+    parser.add_argument('--expanded',action='store_true',help='4000 train images including the coverage-balanced 500')
+    parser.add_argument('--rounds',type=int,default=6,help='80 optimization attempts per round')
     args=parser.parse_args()
     if args.encoder!='small' and not args.coverage_balanced:parser.error('ResNet18 comparisons require --coverage-balanced')
+    if args.rounds<1:parser.error('rounds must be positive')
+    if args.expanded and not args.coverage_balanced:parser.error('Expansion requires --coverage-balanced')
     torch.manual_seed(42);np.random.seed(42);random.seed(42);torch.set_num_threads(4)
     device='cuda' if torch.cuda.is_available() else 'cpu'
     experiment='steel_unet_balanced' if args.coverage_balanced else 'steel_unet'
     if args.encoder!='small':experiment+='_'+args.encoder.replace('-','_')
+    if args.expanded:experiment+='_expanded'
+    if args.rounds!=6:experiment+=f'_r{args.rounds}'
     output=ROOT/'runs'/experiment;output.mkdir(parents=True,exist_ok=True)
     model=(SmallUNet() if args.encoder=='small' else ResNet18UNet(
         ROOT/'weights/resnet18-f37072fd.pth' if args.encoder=='pretrained-resnet18' else None)).to(device)
@@ -69,33 +75,37 @@ def main():
     baseline_rows=list(dataset.rows)
     if args.coverage_balanced:
         dataset.rows=coverage_balanced_rows(manifest['samples'],baseline_rows)
+    coverage_rows=list(dataset.rows)
+    if args.expanded:
+        dataset.rows=expanded_training_rows(manifest['samples'],coverage_rows)
     selection={'train':[r['image_id'] for r in dataset.rows],'checkpoint_validation':[r['image_id'] for r in development],
                'calibration':pilot['calibration'],'evaluation':pilot['evaluation']}
     if args.coverage_balanced:
         previous=json.loads((ROOT/'configs/steel_unet_selection.json').read_text())
         for key in ('checkpoint_validation','calibration','evaluation'):
             assert selection[key]==previous[key],f'Changed validation set: {key}'
-        assert {r['image_id'] for r in dataset.rows if not r['label']}=={r['image_id'] for r in baseline_rows if not r['label']}
+        if not args.expanded:
+            assert {r['image_id'] for r in dataset.rows if not r['label']}=={r['image_id'] for r in baseline_rows if not r['label']}
     (ROOT/f'configs/{experiment}_selection.json').write_text(json.dumps(selection,indent=2),encoding='utf-8')
     annotations=dataset.annotations
     def mask_for(row):
         mask=np.zeros((256,1600),dtype=np.uint8)
         for text in annotations[row['image_id']]:mask|=decode_rle(text)
         return mask
-    print('Indexing supervised training tiles (500 parent images)',flush=True)
+    print(f'Indexing supervised training tiles ({len(dataset.rows)} parent images)',flush=True)
     positive=[];negative=[];tile_classes={};class_annotations=defaultdict(dict)
     with (ROOT/manifest['annotation_csv']).open(encoding='utf-8-sig',newline='') as file:
         for row in csv.DictReader(file):
             if row['EncodedPixels'].strip():class_annotations[row['ImageId']][int(row['ClassId'])]=row['EncodedPixels']
-    parent_index=-1;class_masks={}
-    for i in range(len(dataset)):
-        sample=dataset[i];(positive if sample['tile_label'] else negative).append(i)
-        current=i//len(dataset.layout)
-        if current!=parent_index:
-            class_masks={c:decode_rle(text) for c,text in class_annotations[sample['image_id']].items()}
-            parent_index=current
-        x,y,x2,y2=sample['box'].tolist()
-        tile_classes[i]=[c for c,m in class_masks.items() if m[y:y2,x:x2].any()]
+    # Index masks directly: do not normalize every image tile just to learn its label.
+    for parent,row in enumerate(dataset.rows):
+        read_image(row)  # Validate source hash, decodability and dimensions once.
+        class_masks={c:decode_rle(text) for c,text in class_annotations[row['image_id']].items()}
+        for tile,(x,y,x2,y2) in enumerate(dataset.layout):
+            i=parent*len(dataset.layout)+tile
+            tile_classes[i]=[c for c,m in class_masks.items() if m[y:y2,x:x2].any()]
+            (positive if tile_classes[i] else negative).append(i)
+        if (parent+1)%1000==0:print(f'Indexed {parent+1}/{len(dataset.rows)} parents',flush=True)
     print(f'Tiles: {len(positive)} positive / {len(negative)} negative',flush=True)
     if not positive or not negative:raise ValueError('Both tile classes required')
     optimizer=torch.optim.AdamW(model.parameters(),lr=1e-3,weight_decay=1e-4)
@@ -103,7 +113,8 @@ def main():
     start=time.perf_counter();history=[];best=-1;best_state=None;class_draws=Counter()
     if device=='cuda':torch.cuda.reset_peak_memory_stats()
     # Each round is 80 sampled updates, not one exhaustive pass over the dataset.
-    for round_number in range(1,7):
+    skipped_steps=0
+    for round_number in range(1,args.rounds+1):
         model.train();losses=[]
         for step in range(80):
             indices=rng.choices(positive,k=4)+rng.choices(negative,k=4)
@@ -119,7 +130,10 @@ def main():
             if not torch.isfinite(loss):raise ValueError('Nonfinite training loss')
             scaler.scale(loss).backward();scaler.unscale_(optimizer)
             torch.nn.utils.clip_grad_norm_(model.parameters(),1)
-            scaler.step(optimizer);scaler.update();losses.append(float(loss.item()))
+            previous_scale=scaler.get_scale()
+            scaler.step(optimizer);scaler.update()
+            skipped_steps+=int(scaler.get_scale()<previous_scale)
+            losses.append(float(loss.item()))
         model.eval();tp=fp=fn=0
         for row in development:
             heat=predict(model,read_image(row),device);mask=mask_for(row)>0;p=heat>.5
@@ -130,6 +144,8 @@ def main():
         print(json.dumps(history[-1]),flush=True)
         if dice>best:
             best=dice;best_state={k:v.detach().cpu().clone() for k,v in model.state_dict().items()};best_round=round_number
+        (output/'training_history.json').write_text(json.dumps(history,indent=2),encoding='utf-8')
+        torch.save({'model':best_state,'best_round':best_round,'current_round':round_number},output/'best_training.pt')
     model.load_state_dict(best_state);model.eval()
     # Pixel threshold selected on checkpoint-development set, never on evaluation images.
     thresholds=np.arange(.1,.91,.1);counts=np.zeros((len(thresholds),3),dtype=np.int64)
@@ -165,15 +181,17 @@ def main():
     a,b,c=map(int,aggregate)
     report={'scope':'Supervised pilot; same evaluation images as anomaly pilot; NO test images',
             'architecture':saved['architecture'],'parameters':sum(p.numel() for p in model.parameters()),
-            'experiment':experiment,'coverage_minimum_per_class':60 if args.coverage_balanced else None,
+            'experiment':experiment,'coverage_minimum_per_class':120 if args.expanded else (60 if args.coverage_balanced else None),
             'training_images_per_class':{str(c):sum(c in r['classes'] for r in dataset.rows) for c in (1,2,3,4)},
             'positive_tiles_per_class':{str(c):sum(c in cs for cs in tile_classes.values()) for c in (1,2,3,4)},
             'actual_sampled_tiles_per_class':{str(c):class_draws[c] for c in (1,2,3,4)},
             'original_training_images_retained':len({r['image_id'] for r in dataset.rows}&{r['image_id'] for r in baseline_rows}),
-            'train_images':500,'training_positive_tiles':len(positive),'training_negative_tiles':len(negative),
+            'train_images':len(dataset.rows),'training_positive_tiles':len(positive),'training_negative_tiles':len(negative),
             'sampling':'Each batch 4 positive + 4 negative tiles, replacement; paired horizontal/vertical flips',
             'loss':'BCEWithLogits + per-sample soft Dice','optimizer':'AdamW lr=0.001 weight_decay=0.0001',
-            'amp':device=='cuda','rounds':6,'total_updates':480,'checkpoint_validation_images':80,
+            'amp':device=='cuda','rounds':args.rounds,'total_updates':args.rounds*80,'checkpoint_validation_images':80,
+            'optimizer_steps_skipped_by_amp':skipped_steps,'completed_optimizer_steps':args.rounds*80-skipped_steps,
+            'budget_note':'total_updates is attempted optimization steps; AMP skipped steps are counted separately',
             'best_round':best_round,'history':history,'pixel_threshold':pixel_threshold,'image_threshold':image_threshold,
             'threshold_note':'Pixel threshold maximizes pooled Dice on checkpoint validation; image threshold normal calibration q95',
             'evaluation_normal_images':100,'evaluation_defect_images':100,'image_auroc':float(roc_auc_score(labels,scores)),

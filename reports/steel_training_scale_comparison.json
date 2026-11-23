@@ -1,0 +1,69 @@
+{
+  "scope": "Development-only scale/budget comparisons; no test images",
+  "checks": {
+    "validation_identities_and_training_rules_equal": true,
+    "expanded_parent_pool_contains_original_pool": true,
+    "expanded_runs_train_identities_equal": true,
+    "expanded_first_480_steps_history_agrees": false
+  },
+  "results": {
+    "steel_unet_balanced_pretrained_resnet18": {
+      "train_images": 500,
+      "total_updates": 480,
+      "best_round": 4,
+      "image_auroc": 0.6121000000000001,
+      "confusion": {
+        "tn": 97,
+        "fp": 3,
+        "fn": 90,
+        "tp": 10
+      },
+      "pooled_pixel_dice_all_200_images": 0.3442988238193526,
+      "pooled_pixel_iou_all_200_images": 0.20794744170779492,
+      "peak_torch_allocated_mib": 464.34619140625,
+      "wall_seconds": 64.82432969999991
+    },
+    "steel_unet_balanced_pretrained_resnet18_expanded": {
+      "train_images": 4000,
+      "total_updates": 480,
+      "best_round": 6,
+      "image_auroc": 0.515,
+      "confusion": {
+        "tn": 100,
+        "fp": 0,
+        "fn": 100,
+        "tp": 0
+      },
+      "pooled_pixel_dice_all_200_images": 0.36568396538123904,
+      "pooled_pixel_iou_all_200_images": 0.2237535199038432,
+      "peak_torch_allocated_mib": 464.34619140625,
+      "wall_seconds": 63.52332150000075
+    },
+    "steel_unet_balanced_pretrained_resnet18_expanded_r30": {
+      "train_images": 4000,
+      "total_updates": 2400,
+      "best_round": 30,
+      "image_auroc": 0.7926,
+      "confusion": {
+        "tn": 94,
+        "fp": 6,
+        "fn": 77,
+        "tp": 23
+      },
+      "pooled_pixel_dice_all_200_images": 0.5218386196436788,
+      "pooled_pixel_iou_all_200_images": 0.3530322376017468,
+      "peak_torch_allocated_mib": 464.34619140625,
+      "wall_seconds": 219.98893509999834
+    }
+  },
+  "skipped_amp_steps": {
+    "steel_unet_balanced_pretrained_resnet18": "not instrumented in historical run",
+    "steel_unet_balanced_pretrained_resnet18_expanded": 0,
+    "steel_unet_balanced_pretrained_resnet18_expanded_r30": 0
+  },
+  "limitations": [
+    "One seed, repeatedly inspected development evaluation set.",
+    "Expanded-pool experiment changes coverage including class quotas; no independent attribution to each coverage component.",
+    "Longer run has more checkpoint-selection opportunities; no final test claim."
+  ]
+}

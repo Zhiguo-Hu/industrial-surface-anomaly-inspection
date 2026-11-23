@@ -27,3 +27,18 @@ def coverage_balanced_rows(all_rows, baseline, minimum=60, positive_budget=250, 
         if row['image_id'] not in selected:selected[row['image_id']]=row
     if len(selected)!=positive_budget:raise ValueError('Insufficient positive images')
     return sorted(normals+list(selected.values()),key=lambda r:r['image_id'])
+
+
+def expanded_training_rows(all_rows, baseline, per_label=2000, minimum=120, seed=42):
+    if per_label<sum(r['label']==0 for r in baseline):raise ValueError('Expansion cannot shrink normal pool')
+    normals=[r for r in baseline if not r['label']]
+    existing={r['image_id'] for r in baseline}
+    extras=sorted([r for r in all_rows if r['split']=='train' and not r['label'] and r['image_id'] not in existing],
+                  key=lambda r:r['image_id'])
+    random.Random(seed).shuffle(extras)
+    needed=per_label-len(normals)
+    if len(extras)<needed:raise ValueError('Insufficient normal training images')
+    preferred=normals+extras[:needed]+[r for r in baseline if r['label']]
+    result=coverage_balanced_rows(all_rows,preferred,minimum=minimum,positive_budget=per_label,seed=seed)
+    if not existing.issubset({r['image_id'] for r in result}):raise ValueError('Expansion lost baseline identities')
+    return result
