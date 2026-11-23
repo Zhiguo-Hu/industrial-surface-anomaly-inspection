@@ -1,0 +1,85 @@
+{
+  "tile_size": 256,
+  "stride": 128,
+  "tiles_per_image": 12,
+  "x_starts": [
+    0,
+    128,
+    256,
+    384,
+    512,
+    640,
+    768,
+    896,
+    1024,
+    1152,
+    1280,
+    1344
+  ],
+  "tiles_per_split": {
+    "train": 105600,
+    "val": 22632,
+    "test": 22584
+  },
+  "normal_training_tiles": 49584,
+  "dataloader_batch_shape": [
+    8,
+    3,
+    256,
+    256
+  ],
+  "samples_checked": [
+    {
+      "image_id": "00031f466.jpg",
+      "classes": [],
+      "rgb_reconstruction_exact": true,
+      "mask_reconstruction_exact": true,
+      "coverage_min": 1,
+      "coverage_max": 3
+    },
+    {
+      "image_id": "000a4bcdd.jpg",
+      "classes": [
+        1
+      ],
+      "rgb_reconstruction_exact": true,
+      "mask_reconstruction_exact": true,
+      "coverage_min": 1,
+      "coverage_max": 3
+    },
+    {
+      "image_id": "008ef3d74.jpg",
+      "classes": [
+        1,
+        2
+      ],
+      "rgb_reconstruction_exact": true,
+      "mask_reconstruction_exact": true,
+      "coverage_min": 1,
+      "coverage_max": 3
+    },
+    {
+      "image_id": "0007a71bf.jpg",
+      "classes": [
+        3
+      ],
+      "rgb_reconstruction_exact": true,
+      "mask_reconstruction_exact": true,
+      "coverage_min": 1,
+      "coverage_max": 3
+    },
+    {
+      "image_id": "000f6bf48.jpg",
+      "classes": [
+        4
+      ],
+      "rgb_reconstruction_exact": true,
+      "mask_reconstruction_exact": true,
+      "coverage_min": 1,
+      "coverage_max": 3
+    }
+  ],
+  "source_split_inherited": true,
+  "storage": "On-demand; no tiles written to disk",
+  "note": "RGB/mask reconstruction verifies geometry only, not model predictions. No steel model fitted."
+}

@@ -12,7 +12,8 @@ A PyTorch project for industrial surface anomaly detection and localization. MVT
 | bottle 全局特征基线 / Global-feature baseline | 已完成 / Complete |
 | bottle 局部特征与热力图 / Local features and heatmaps | 已完成 / Complete |
 | 钢材 RLE 检查与固定划分 / Steel RLE audit and fixed split | 已完成 / Complete |
-| 钢材滑窗与异常检测 / Steel tiling and anomaly detection | 待实现 / Planned |
+| 钢材滑窗与拼接 / Steel tiling and stitching | 已完成 / Complete |
+| 钢材异常检测 / Steel anomaly detection | 待实现 / Planned |
 | 监督分割与实际采集验证 / Supervised segmentation and field validation | 待实现 / Planned |
 
 ## 方法 / Methods
@@ -125,4 +126,31 @@ Frozen manifests are in `configs/`; changed assignments are rejected. No product
 - `reports/`: 阶段报告与实验指标 / stage reports and metrics (historical detailed reports are in Chinese).
 - `assets/`: 人工合成测试图 / synthetic fixture.
 
-下一步 / Next: implement detail-preserving steel sliding windows and map stitching, then steel anomaly experiments and a supervised segmentation baseline.
+## 钢材滑窗与拼接 / Steel tiling and stitching
+
+```powershell
+python scripts/check_steel_tiling.py
+python -m unittest discover -s tests -v
+```
+
+每张 1600×256 原图按 256×256、步长 128 切为 12 块，最后一块起点为 x=1344，确保完整覆盖。直接裁切，不缩放原图。小块继承原图 split，不再随机划分；正常训练子集共有 49,584 个可读取小块。
+
+Each 1600×256 image yields twelve 256×256 crops at stride 128, with the final start anchored at x=1344. No image resizing is applied. Tiles inherit the source split; 49,584 normal-training tiles are available on demand.
+
+`src/severstal_tiles.py` 提供 PyTorch Dataset，返回归一化图片、掩码、原图身份、坐标和有效区域。掩码按原图坐标裁切。只缓存最近一张原图和掩码，不保存全部切块。当前顺序读取更高效；全局随机小块读取会重复解码原图，训练时应考虑按原图组织采样。
+
+The Dataset returns normalized RGB, mask, parent identity, coordinates, and valid region. It caches only the most recent source image and mask. Sequential access avoids repeated image decoding; future training should consider image-grouped sampling.
+
+`src/tiling.py` 的 Stitcher 对重叠区域取平均，拒绝缺失覆盖和非有限预测。小图使用边缘填充，掩码补零；拼接时丢弃填充区域。模型输出的低分辨率异常图须先上采样到小块尺寸后再拼接。
+
+Stitcher averages overlapping scores and rejects uncovered pixels or nonfinite values. Small RGB images use edge padding, masks use zero padding, and padding is discarded on stitching. Upsample model maps to tile resolution before adding them.
+
+已通过 16 项测试；另用 5 张正常/各类缺陷训练图检查 RGB 与掩码精确重建，验证 DataLoader 输出 `[8,3,256,256]`。详细记录见 `reports/steel_tiling_checks.json`，本机预览为 `runs/steel_tiling/tiling_preview.png`。预览不上传数据集图片。
+
+All 16 tests pass. Five real training examples covering normal and all defect classes reconstruct RGB and masks exactly; DataLoader shape is `[8,3,256,256]`. The report is `reports/steel_tiling_checks.json`; the local preview is `runs/steel_tiling/tiling_preview.png` and is not distributed.
+
+本阶段仅验证分块几何与数据读取，尚未运行钢材模型。切块与重叠拼接不能保证模型对接缝完全不敏感，后续应单独检查边缘缺陷和接缝响应。
+
+This stage validates geometry and loading, not steel detection performance. Overlap averaging does not guarantee seam-free model predictions; boundary defects and seam responses require later evaluation.
+
+下一步 / Next: steel anomaly experiments with bounded memory, followed by a supervised segmentation baseline.
