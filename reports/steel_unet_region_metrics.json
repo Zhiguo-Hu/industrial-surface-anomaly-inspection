@@ -1,0 +1,86 @@
+{
+  "scope": "Frozen models; development-only selection/calibration and original evaluation subset. No test images.",
+  "model": "steel_unet",
+  "rule": {
+    "model": "steel_unet",
+    "checkpoint_sha256": "6f3b80b5adb15fdae8e45ebd504db9eb8360f7143ed361814ed8315008f42cd3",
+    "pixel_threshold": 0.4,
+    "minimum_area": 256,
+    "connectivity": 8,
+    "score_name": "top_0.1pct_mean",
+    "image_threshold": 0.9483628869056702,
+    "rule_selection": "Cleanup maximizes pooled Dice on 80 checkpoint-validation images; score maximizes image AUROC on the same 80; thresholds are normal-calibration q95",
+    "selection_warning": "Reuses checkpoint-selection development data; exploratory, not independent validation"
+  },
+  "cleanup_dev_dice_grid": {
+    "0": 0.3171381442115983,
+    "16": 0.3172127368729866,
+    "64": 0.31773439420164057,
+    "256": 0.3200100682533922
+  },
+  "score_dev_auroc": {
+    "max_probability": 0.679375,
+    "top_0.1pct_mean": 0.699375,
+    "mask_area_fraction": 0.465625,
+    "largest_component_probability_mass": 0.46187500000000004
+  },
+  "evaluation": {
+    "max_probability": {
+      "auroc": 0.7203999999999999,
+      "threshold": 0.97455695271492,
+      "tn": 93,
+      "fp": 7,
+      "fn": 75,
+      "tp": 25
+    },
+    "top_0.1pct_mean": {
+      "auroc": 0.7252000000000001,
+      "threshold": 0.9483628869056702,
+      "tn": 94,
+      "fp": 6,
+      "fn": 78,
+      "tp": 22
+    },
+    "mask_area_fraction": {
+      "auroc": 0.497,
+      "threshold": 0.19932678222656242,
+      "tn": 93,
+      "fp": 7,
+      "fn": 100,
+      "tp": 0
+    },
+    "largest_component_probability_mass": {
+      "auroc": 0.5487,
+      "threshold": 0.04010311804633599,
+      "tn": 95,
+      "fp": 5,
+      "fn": 95,
+      "tp": 5
+    }
+  },
+  "selected_on_dev": "top_0.1pct_mean",
+  "masks": {
+    "raw": {
+      "pooled_dice": 0.2877042770497766,
+      "normal_nonempty_of_100": 95,
+      "normal_pixel_fpr": 0.0481485107421875
+    },
+    "cleaned": {
+      "pooled_dice": 0.2874564407453273,
+      "normal_nonempty_of_100": 92,
+      "normal_pixel_fpr": 0.04688701171875
+    }
+  },
+  "checks": {
+    "original_max_score_reproduced": true,
+    "weights_unchanged": true,
+    "rules_saved_before_evaluation": true,
+    "calibration_dev_eval_disjoint": true
+  },
+  "caveats": [
+    "No evaluation-based winner selection; selected_on_dev is frozen before evaluation.",
+    "Normal q95 is not a guarantee of 5% false alarms on new samples.",
+    "Connectivity/area filtering can remove real small defects.",
+    "Masks are not gated by alarms. Low alarm rate cannot establish clean masks."
+  ]
+}

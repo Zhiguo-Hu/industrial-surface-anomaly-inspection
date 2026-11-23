@@ -292,3 +292,32 @@ python scripts/train_steel_unet.py --coverage-balanced --encoder pretrained-resn
 28 项测试通过。预训练提高本轮分割重叠，但未提升整体报警；类别覆盖改善第 2 类像素召回，但不保证总体改善。单一种子、短预算结果不能说明复杂模型或预训练必然更好/无用。下一阶段优先验证整图评分与区域级误报，测试集保持保留。
 
 All 28 tests pass. Pretraining improves overlap but not overall alarms in this run. Better coverage helps class-2 pixel recall but not aggregate detection. Single-seed short-budget results do not establish universal superiority or futility. Next investigate image scoring and region-level false positives; keep test data reserved.
+
+## 区域评分对照 / Region-scoring experiments
+
+详见 [中英文报告 / Bilingual report](reports/region_scoring_experiments.md)。固定现有两模型，在原开发集选择区域过滤及评分规则，正常校准集确定阈值，评估子集不参与选择，测试集未使用。
+
+Frozen-model experiments select cleanup/scoring on development images, thresholds on normal calibration, and evaluate the unchanged subset. No test images are used.
+
+```powershell
+python scripts/evaluate_region_scoring.py --model small
+python scripts/evaluate_region_scoring.py --model pretrained
+```
+
+轻量模型开发集选定 top 0.1% 均值：评估 AUROC 0.7252，但检出降至 22/100（原为25/100），正常误报6/100（原7/100）。预训练模型仍选原最大概率，检出10/100、误报3/100。连通区域面积/概率总量未解决问题。
+
+The small model selects top-0.1% mean: evaluation AUROC 0.7252, but recall falls to 22/100 (original 25/100), false alarms 6/100 (original 7/100). Pretrained selects original max probability: TP=10/100, FP=3/100. Component-area/mass rules do not resolve detection.
+
+过滤小于256像素的连通区域后，正常非空掩码仍为92/100（轻量）和82/100（预训练），Dice基本不变。31项测试通过，检查点哈希保持不变。新规则单独保存在 `configs/*_region_rule.json`；原模型/默认入口不变。
+
+Filtering regions below 256 pixels leaves nonempty masks in 92/100 small-model and 82/100 pretrained normal images; Dice barely changes. All 31 tests pass and checkpoint hashes are unchanged. New rules are separate experimental artifacts; original model/default entry points are preserved.
+
+单图实验入口 / Single-image experimental entry:
+
+```powershell
+python scripts/evaluate_region_scoring.py --model pretrained --image data/severstal/034941f9d.jpg
+```
+
+输出在 `runs/*_regions/`，掩码不按整图报警门控。下一步优先改善训练覆盖和有效训练预算，而不是继续堆叠后处理。
+
+Outputs are in `runs/*_regions/`; masks are not gated by image alarms. Prioritize training coverage and effective training budget over further heuristic stacking.

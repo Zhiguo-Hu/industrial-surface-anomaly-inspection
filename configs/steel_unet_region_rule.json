@@ -1,0 +1,11 @@
+{
+  "model": "steel_unet",
+  "checkpoint_sha256": "6f3b80b5adb15fdae8e45ebd504db9eb8360f7143ed361814ed8315008f42cd3",
+  "pixel_threshold": 0.4,
+  "minimum_area": 256,
+  "connectivity": 8,
+  "score_name": "top_0.1pct_mean",
+  "image_threshold": 0.9483628869056702,
+  "rule_selection": "Cleanup maximizes pooled Dice on 80 checkpoint-validation images; score maximizes image AUROC on the same 80; thresholds are normal-calibration q95",
+  "selection_warning": "Reuses checkpoint-selection development data; exploratory, not independent validation"
+}
