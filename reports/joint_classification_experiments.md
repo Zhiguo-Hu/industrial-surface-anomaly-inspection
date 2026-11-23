@@ -2,6 +2,10 @@
 
 日期 / Date: 2026-11-23
 
+后续已完成seed=43、44复验，最新结论见[联合模型三种子报告 / Three-seed follow-up](joint_multiseed_replication.md)。本页保留原seed=42对照的结果和方法。
+
+Seeds 43/44 are now replicated; see the linked follow-up for current conclusions. This page preserves the original seed-42 experiment.
+
 ## 本轮结果 / Results
 
 显式分类监督改善了本轮整图报警，但定位改善很小。以下均为预先指定seed=42、相同200张开发评估图的结果，不是最终测试集成绩。

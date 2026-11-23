@@ -1,0 +1,346 @@
+{
+  "scope": "Supervised pilot; same evaluation images as anomaly pilot; NO test images",
+  "architecture": "ResNet18UNet encoder=pretrained-resnet18, all layers fine-tuned; BatchNorm encoder/GroupNorm decoder; binary union of four classes",
+  "parameters": 12587538,
+  "experiment": "steel_unet_balanced_pretrained_resnet18_expanded_r30_det_s43_cls0p5",
+  "coverage_minimum_per_class": 120,
+  "reproducibility": {
+    "seed": 43,
+    "deterministic_algorithms": true,
+    "cudnn_benchmark": false,
+    "cudnn_deterministic": true,
+    "cudnn_allow_tf32": false,
+    "matmul_allow_tf32": false,
+    "cublas_workspace_config": ":4096:8",
+    "torch": "2.15.0+cu132",
+    "cuda_build": "13.2",
+    "scope": "Same code, data, hardware/software runtime only; not a cross-version reproducibility guarantee"
+  },
+  "initial_state_sha256": "21d30449802a929e4398e57918865b8d045d741e62bea8c55dc813eba67b3db5",
+  "first_80_steps_state_sha256": "2deaaf22f713fda2431e127b3972478755f6c99775d13f3ee590255ad203ef11",
+  "best_state_sha256": "30cc1b9ee3b45630d7ad298d8d323ade1cd28f82bb905a1bbf1f4d894717ed03",
+  "training_rng_policy": "Dedicated Random(training seed) reset before optimizer",
+  "training_images_per_class": {
+    "1": 310,
+    "2": 120,
+    "3": 1471,
+    "4": 241
+  },
+  "positive_tiles_per_class": {
+    "1": 1120,
+    "2": 242,
+    "3": 7135,
+    "4": 1240
+  },
+  "actual_sampled_tiles_per_class": {
+    "1": 1108,
+    "2": 217,
+    "3": 7245,
+    "4": 1235
+  },
+  "original_training_images_retained": 406,
+  "train_images": 4000,
+  "training_positive_tiles": 9530,
+  "training_negative_tiles": 38470,
+  "sampling": "Each batch 4 positive + 4 negative tiles, replacement; paired horizontal/vertical flips",
+  "loss": "BCEWithLogits + per-sample soft Dice",
+  "optimizer": "AdamW lr=0.001 weight_decay=0.0001",
+  "classification_weight": 0.5,
+  "classification_target": "Tile mask nonempty; image score=max of 12 tile-head probabilities",
+  "amp": true,
+  "rounds": 30,
+  "total_updates": 2400,
+  "checkpoint_validation_images": 80,
+  "optimizer_steps_skipped_by_amp": 4,
+  "completed_optimizer_steps": 2396,
+  "budget_note": "total_updates is attempted optimization steps; AMP skipped steps are counted separately",
+  "best_round": 25,
+  "history": [
+    {
+      "round": 1,
+      "updates": 80,
+      "training_loss": 1.5939256444573402,
+      "checkpoint_validation_pooled_dice_at_05": 0.23303249704629642,
+      "segmentation_loss": 1.2110343739390372,
+      "classification_loss": 0.7657825451344251
+    },
+    {
+      "round": 2,
+      "updates": 160,
+      "training_loss": 1.4297634303569793,
+      "checkpoint_validation_pooled_dice_at_05": 0.2892839444308801,
+      "segmentation_loss": 1.083863017708063,
+      "classification_loss": 0.691800818964839
+    },
+    {
+      "round": 3,
+      "updates": 240,
+      "training_loss": 1.35340755879879,
+      "checkpoint_validation_pooled_dice_at_05": 0.2918658845854858,
+      "segmentation_loss": 1.0428921185433864,
+      "classification_loss": 0.621030880510807
+    },
+    {
+      "round": 4,
+      "updates": 320,
+      "training_loss": 1.3018471702933312,
+      "checkpoint_validation_pooled_dice_at_05": 0.2888443067728535,
+      "segmentation_loss": 1.014257237315178,
+      "classification_loss": 0.5751798598095774
+    },
+    {
+      "round": 5,
+      "updates": 400,
+      "training_loss": 1.2862154573202134,
+      "checkpoint_validation_pooled_dice_at_05": 0.32306513982552165,
+      "segmentation_loss": 1.0104381419718265,
+      "classification_loss": 0.5515546333044767
+    },
+    {
+      "round": 6,
+      "updates": 480,
+      "training_loss": 1.2227216564118861,
+      "checkpoint_validation_pooled_dice_at_05": 0.31786102166780117,
+      "segmentation_loss": 0.97803518101573,
+      "classification_loss": 0.4893729481846094
+    },
+    {
+      "round": 7,
+      "updates": 560,
+      "training_loss": 1.2227941192686558,
+      "checkpoint_validation_pooled_dice_at_05": 0.28175065891015244,
+      "segmentation_loss": 0.9790594719350338,
+      "classification_loss": 0.4874692952260375
+    },
+    {
+      "round": 8,
+      "updates": 640,
+      "training_loss": 1.2364846132695675,
+      "checkpoint_validation_pooled_dice_at_05": 0.35118098606501064,
+      "segmentation_loss": 0.9870369806885719,
+      "classification_loss": 0.4988952619954944
+    },
+    {
+      "round": 9,
+      "updates": 720,
+      "training_loss": 1.1705874390900135,
+      "checkpoint_validation_pooled_dice_at_05": 0.3015976081115485,
+      "segmentation_loss": 0.936295049637556,
+      "classification_loss": 0.4685847755521536
+    },
+    {
+      "round": 10,
+      "updates": 800,
+      "training_loss": 1.2069005519151688,
+      "checkpoint_validation_pooled_dice_at_05": 0.32574116742317966,
+      "segmentation_loss": 0.9611962996423244,
+      "classification_loss": 0.4914085041731596
+    },
+    {
+      "round": 11,
+      "updates": 880,
+      "training_loss": 1.2032546266913413,
+      "checkpoint_validation_pooled_dice_at_05": 0.3499301965320194,
+      "segmentation_loss": 0.9694403804838657,
+      "classification_loss": 0.46762850172817705
+    },
+    {
+      "round": 12,
+      "updates": 960,
+      "training_loss": 1.2092597410082817,
+      "checkpoint_validation_pooled_dice_at_05": 0.3102077811087446,
+      "segmentation_loss": 0.9791307613253594,
+      "classification_loss": 0.46025796444155276
+    },
+    {
+      "round": 13,
+      "updates": 1040,
+      "training_loss": 1.1952763222157956,
+      "checkpoint_validation_pooled_dice_at_05": 0.3809119844312226,
+      "segmentation_loss": 0.9620127886533737,
+      "classification_loss": 0.4665270699188113
+    },
+    {
+      "round": 14,
+      "updates": 1120,
+      "training_loss": 1.1635826714336872,
+      "checkpoint_validation_pooled_dice_at_05": 0.38743667832023404,
+      "segmentation_loss": 0.9624311745166778,
+      "classification_loss": 0.4023030028678477
+    },
+    {
+      "round": 15,
+      "updates": 1200,
+      "training_loss": 1.2345615588128567,
+      "checkpoint_validation_pooled_dice_at_05": 0.29291328148684304,
+      "segmentation_loss": 0.9844760462641716,
+      "classification_loss": 0.500171010568738
+    },
+    {
+      "round": 16,
+      "updates": 1280,
+      "training_loss": 1.1796831749379635,
+      "checkpoint_validation_pooled_dice_at_05": 0.3774648586163654,
+      "segmentation_loss": 0.9519256234169007,
+      "classification_loss": 0.45551510909572246
+    },
+    {
+      "round": 17,
+      "updates": 1360,
+      "training_loss": 1.173976358026266,
+      "checkpoint_validation_pooled_dice_at_05": 0.3679316826995997,
+      "segmentation_loss": 0.9438092604279518,
+      "classification_loss": 0.46033418718725444
+    },
+    {
+      "round": 18,
+      "updates": 1440,
+      "training_loss": 1.1635478906333447,
+      "checkpoint_validation_pooled_dice_at_05": 0.2865167181704275,
+      "segmentation_loss": 0.9254303351044655,
+      "classification_loss": 0.47623511087149384
+    },
+    {
+      "round": 19,
+      "updates": 1520,
+      "training_loss": 1.1547821149230004,
+      "checkpoint_validation_pooled_dice_at_05": 0.33009276217441663,
+      "segmentation_loss": 0.9466801688075066,
+      "classification_loss": 0.41620389092713594
+    },
+    {
+      "round": 20,
+      "updates": 1600,
+      "training_loss": 1.1215405203402042,
+      "checkpoint_validation_pooled_dice_at_05": 0.37749207614115066,
+      "segmentation_loss": 0.9116009198129177,
+      "classification_loss": 0.41987919686362146
+    },
+    {
+      "round": 21,
+      "updates": 1680,
+      "training_loss": 1.1364540703594685,
+      "checkpoint_validation_pooled_dice_at_05": 0.40808437138038245,
+      "segmentation_loss": 0.9309079430997371,
+      "classification_loss": 0.411092240922153
+    },
+    {
+      "round": 22,
+      "updates": 1760,
+      "training_loss": 1.1256573811173438,
+      "checkpoint_validation_pooled_dice_at_05": 0.43272964193876057,
+      "segmentation_loss": 0.9233386494219303,
+      "classification_loss": 0.4046374558005482
+    },
+    {
+      "round": 23,
+      "updates": 1840,
+      "training_loss": 1.1276883602142334,
+      "checkpoint_validation_pooled_dice_at_05": 0.3935812530291083,
+      "segmentation_loss": 0.9284635685384274,
+      "classification_loss": 0.3984495967626572
+    },
+    {
+      "round": 24,
+      "updates": 1920,
+      "training_loss": 1.07762069106102,
+      "checkpoint_validation_pooled_dice_at_05": 0.43968120846038616,
+      "segmentation_loss": 0.901755953580141,
+      "classification_loss": 0.3517294724471867
+    },
+    {
+      "round": 25,
+      "updates": 2000,
+      "training_loss": 1.1341487444937228,
+      "checkpoint_validation_pooled_dice_at_05": 0.4407904949549227,
+      "segmentation_loss": 0.9299446322023869,
+      "classification_loss": 0.40840821657329796
+    },
+    {
+      "round": 26,
+      "updates": 2080,
+      "training_loss": 1.1425434149801732,
+      "checkpoint_validation_pooled_dice_at_05": 0.39414798766842024,
+      "segmentation_loss": 0.917883000522852,
+      "classification_loss": 0.44932083794847133
+    },
+    {
+      "round": 27,
+      "updates": 2160,
+      "training_loss": 1.1085827738046645,
+      "checkpoint_validation_pooled_dice_at_05": 0.419978068656096,
+      "segmentation_loss": 0.9109562180936337,
+      "classification_loss": 0.39525311370380223
+    },
+    {
+      "round": 28,
+      "updates": 2240,
+      "training_loss": 1.1346758879721164,
+      "checkpoint_validation_pooled_dice_at_05": 0.4230760697689428,
+      "segmentation_loss": 0.9137515842914581,
+      "classification_loss": 0.44184860489331185
+    },
+    {
+      "round": 29,
+      "updates": 2320,
+      "training_loss": 1.1211021319031715,
+      "checkpoint_validation_pooled_dice_at_05": 0.4113405692910946,
+      "segmentation_loss": 0.9223845049738884,
+      "classification_loss": 0.39743525786325334
+    },
+    {
+      "round": 30,
+      "updates": 2400,
+      "training_loss": 1.0973008029162883,
+      "checkpoint_validation_pooled_dice_at_05": 0.3448390441434601,
+      "segmentation_loss": 0.9081369765102864,
+      "classification_loss": 0.37832765057682993
+    }
+  ],
+  "pixel_threshold": 0.30000000000000004,
+  "image_threshold": 0.9883434891700744,
+  "threshold_note": "Pixel threshold maximizes pooled Dice on checkpoint validation; image threshold normal calibration q95",
+  "evaluation_normal_images": 100,
+  "evaluation_defect_images": 100,
+  "image_auroc": 0.8382999999999999,
+  "confusion": {
+    "tn": 97,
+    "fp": 3,
+    "fn": 78,
+    "tp": 22
+  },
+  "recall": 0.22,
+  "false_positive_rate": 0.03,
+  "pooled_pixel_dice_all_200_images": 0.5286612319549989,
+  "pooled_pixel_iou_all_200_images": 0.35930626137000543,
+  "mean_per_defect_image_dice": 0.5602362619198158,
+  "mean_per_defect_image_pixel_auroc": 0.9617136059573906,
+  "metric_note": "Full 256x1600 reconstruction; pixel AUROC is per-defect-image mean, not pooled.",
+  "wall_seconds": 371.89112079999904,
+  "peak_torch_allocated_mib": 467.14306640625,
+  "limitations": "Small development pilot, validation already inspected; supervision differs from normal-only baseline. Not production validated.",
+  "normal_masks": {
+    "nonempty_of_100": 89,
+    "normal_pixel_fpr": 0.0174492431640625
+  },
+  "classification_metrics": {
+    "head_trained": true,
+    "threshold": 0.982966136932373,
+    "image_auroc": 0.8868,
+    "confusion": {
+      "tn": 97,
+      "fp": 3,
+      "fn": 59,
+      "tp": 41
+    },
+    "recall": 0.41,
+    "false_positive_rate": 0.03,
+    "gated_masks_exploratory": {
+      "pooled_dice": 0.3632476341002772,
+      "normal_nonempty_of_100": 3,
+      "normal_pixel_fpr": 0.001086767578125
+    },
+    "gating_warning": "Optional analysis only: suppressing masks can hide defects; raw masks remain default output."
+  },
+  "reload_check": "passed"
+}

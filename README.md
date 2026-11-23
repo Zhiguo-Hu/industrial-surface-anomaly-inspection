@@ -1,8 +1,8 @@
 # 工业表面异常检测与定位 / Industrial Surface Anomaly Inspection
 
-基于 PyTorch 的工业表面视觉检测项目：已完成瓶子验证、钢材滑窗、异常检测、监督分割、训练扩展与显式分类监督。最新seed=42联合模型开发实验：分类AUROC 0.8801、检出53/100、正常误报3/100；原始分割Dice 0.5124，仍漏检47张缺陷图，尚不可部署。测试集保留，详见[分类监督报告](reports/joint_classification_experiments.md)及[此前3种子复验](reports/deterministic_replication.md)。
+基于 PyTorch 的工业表面视觉检测项目：已完成瓶子验证、钢材滑窗、异常检测、监督分割、训练扩展与显式分类监督。最新联合模型三种子开发复验：分类AUROC均值0.8753±0.0145、检出41–58/100、正常误报3–4/100；原始分割Dice均值0.5201±0.0081，仍有29张缺陷图三个种子全部漏检，尚不可部署。测试集保留，详见[联合模型复验报告](reports/joint_multiseed_replication.md)。
 
-A PyTorch surface-inspection project with bottle validation, steel tiling, anomaly detection, segmentation, expanded training and explicit classification supervision. Latest seed-42 joint development run: classification AUROC 0.8801, TP=53/100, FP=3/100, raw segmentation Dice 0.5124. It still misses 47 defective images and is not deployable; test data stays reserved. See the [joint report](reports/joint_classification_experiments.md) and [earlier three-seed replication](reports/deterministic_replication.md).
+A PyTorch surface-inspection project with bottle validation, steel tiling, anomaly detection, segmentation, expanded training and explicit classification supervision. Latest three-seed joint development mean±sample SD: classification AUROC 0.8753±0.0145, raw Dice 0.5201±0.0081; TP=41–58/100, FP=3–4/100. All seeds miss the same 29 defective images. Not deployable; test data stays reserved. See the [joint replication report](reports/joint_multiseed_replication.md).
 
 ## 进展 / Progress
 
@@ -18,6 +18,7 @@ A PyTorch surface-inspection project with bottle validation, steel tiling, anoma
 | 预训练编码器与训练扩展 / Pretraining and training expansion | 已完成开发实验，未达部署要求 / Development runs complete, not deployable |
 | 本机确定性与3种子复验 / Local determinism and three seeds | 80步训练状态及单图跨进程一致性通过 / 80-step state and single-input replay verified |
 | 显式分类监督对照 / Explicit classification supervision | seed=42整图报警改善，定位与小缺陷仍不足 / Better seed-42 alarms; localization and small defects remain weak |
+| 联合模型三种子复验 / Three-seed joint replication | 分类排序均改善，定位均值未改善 / Better ranking in all paired seeds; no mean localization gain |
 | 实际采集验证 / Field validation | 待实现 / Planned |
 
 ## 方法 / Methods
@@ -425,3 +426,35 @@ python scripts/plot_joint_training.py
 All 38 tests pass. The zero-weight control exactly reproduces historical seed-42 30-round loss/development-Dice records and best segmentation state hash; head and mask-score reload checks pass. This is single-seed development evidence: class 2 detects only 1/6, small-area group 6/26. Next replicate on seeds 43/44, then examine rare-class/small-defect tile sampling; keep test data reserved.
 
 ![Joint training curves](reports/steel_joint_training_curves.png)
+
+## 联合模型三种子复验 / Joint three-seed replication
+
+详见[中英文报告 / Bilingual report](reports/joint_multiseed_replication.md)和[完整数值 / Numerical audit](reports/steel_joint_multiseed.json)。保持分类损失权重0.5与原训练/验证规则，新增训练43、44，保留已有42；不挑最好种子。三次共用200张开发评估图，不是600个独立样本，最终测试集未使用。
+
+Keep classification weight 0.5 and the original protocol; newly train seeds 43/44 and retain 42. No best-seed selection. Runs reuse 200 development images, not 600 independent samples; no final test images are used.
+
+| Seed | Head AUROC | TP/100 | FP/100 | Raw Dice |
+|---|---:|---:|---:|---:|
+| 42 | 0.8801 | 53 | 3 | 0.5124 |
+| 43 | 0.8868 | 41 | 3 | 0.5287 |
+| 44 | 0.8590 | 58 | 4 | 0.5193 |
+
+分类AUROC均高于各自基线，正常误报均减少，但seed=43检出由49降到41。分类AUROC均值0.8753±0.0145（原0.8161±0.0352）；分割Dice均值0.5201±0.0081（原0.5237±0.0185）。不能用排序改善宣称召回和定位均改善。
+
+All paired AUROCs improve and false alarms decrease, but seed-43 detections fall from 49 to 41. Mean±sample SD classification AUROC is 0.8753±0.0145 (baseline 0.8161±0.0352); raw Dice is 0.5201±0.0081 (baseline 0.5237±0.0185). Better ranking does not establish uniformly better recall or localization.
+
+43/44复用历史分割基线，仅42有同结构分类权重0对照；全部种子的分割初始状态、数据清单、实际类别抽样及确定性设置核对通过。联合实际更新分别2397/2396/2397次，均为2400次尝试。38项测试、CSV数值核对、各模型单图重加载检查通过。
+
+Seeds 43/44 reuse historical segmentation baselines; only 42 has a same-architecture zero-weight control. Initialization, identities, actual class draws and deterministic settings pass audits. Joint runs complete 2397/2396/2397 updates from 2400 attempts each. All 38 tests, CSV checks and one-image checkpoint reload checks pass.
+
+```powershell
+# 已有本地训练结果时 / With existing local training artifacts
+python scripts/summarize_joint_multiseed.py
+python scripts/plot_joint_multiseed.py
+```
+
+仍有29张缺陷图所有联合种子都漏检，其中15张位于0.1%–1%小面积组。默认不做分类门控；seed=43门控会删除53.51%的原始真阳性像素。下一步固定seed=42与联合模型，优先检验稀有类别/小缺陷分块抽样，不直接改选最好种子或扩大模型。
+
+All joint seeds miss 29 common defective images, including 15 in the 0.1%–1% area group. Default masks stay ungated: seed-43 gating removes 53.51% of raw true-positive pixels. Next keep seed 42/joint protocol and test rare-class/small-defect tile sampling instead of selecting the best seed or enlarging the model.
+
+![Joint-model paired seeds](reports/steel_joint_multiseed.png)
