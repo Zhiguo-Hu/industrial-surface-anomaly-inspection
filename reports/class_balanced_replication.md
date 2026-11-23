@@ -2,6 +2,8 @@
 
 日期 / Date: 2026-11-23
 
+后续正常特征库已建成并独立验证，见[正常库报告 / Completed normal memory](normal_feature_bank.md)。
+
 类别2的收益在三个种子中均出现，但整体精度没有稳定改善，误报增多。不能根据seed=42的一次好结果宣称类别平衡已优于原方案。以下均使用同一200张开发评估图，最终test未使用。
 
 Class-2 gains occur in all three seeds, but overall quality does not improve consistently and false alarms increase. The favorable seed-42 run does not establish superiority. Results reuse the same 200 development images; final test remains unused.

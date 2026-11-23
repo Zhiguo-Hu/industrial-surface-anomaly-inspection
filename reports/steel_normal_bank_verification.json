@@ -1,0 +1,15 @@
+{
+  "status": "ready",
+  "bank_shape": [
+    4096,
+    384
+  ],
+  "normal_train_images": 4132,
+  "vector_provenance_replay": {
+    "selected_vectors_replayed": 8,
+    "source_images": 8,
+    "status": "passed at tolerance 1e-5"
+  },
+  "independent_reload_score_check": "passed",
+  "bank_file_sha256": "ea9a767d20a7a108a87027e5f8857dd7e96dc2eb23c3fc55ef6e2c6dafad3597"
+}

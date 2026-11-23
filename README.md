@@ -1,8 +1,8 @@
 # 工业表面异常检测与定位 / Industrial Surface Anomaly Inspection
 
-基于 PyTorch 的工业表面视觉检测项目，已完成联合模型和抽样复验。最新类别平衡三种子结果：类别2像素召回均值提高，但整体AUROC均值0.8544（原0.8753）、正常误报8.33%（原3.33%），不能根据seed=42单次结果宣称更好。完整记录见[复验报告](reports/class_balanced_replication.md)。按用户要求，后续使用事先固定的seed=42钢材编码器构建正常特征库；最终测试集保留。
+基于 PyTorch 的工业表面视觉检测项目。已按顺序完成类别平衡两种子复验及正常特征库：4132张正常训练图提取、压缩为4096×384向量，提取器与库一并保存，独立加载/来源回放/图片检测验证通过。正常库开发AUROC 0.8403、检出57/100、误报10/100，尚不可部署。详见[正常库报告](reports/normal_feature_bank.md)和[复验报告](reports/class_balanced_replication.md)；最终test保留。
 
-A PyTorch surface-inspection project with joint training and sampling replication. Class-balanced three-seed mean class-2 pixel recall improves, but overall AUROC falls to 0.8544 (formerly 0.8753) and normal FPR rises to 8.33% (formerly 3.33%). One good seed does not establish superiority; see the [replication report](reports/class_balanced_replication.md). Next build the requested normal memory from the predeclared seed-42 steel encoder. Final test data remains reserved.
+A PyTorch surface-inspection project. Completed the requested class-balanced seed replication followed by normal memory construction: extract all 4132 normal train images, compress to 4096×384 vectors, and save extractor plus memory together. Independent loading, source-vector replay and image prediction pass. Bank development AUROC 0.8403, TP=57/100, FP=10/100; not deployable. See the [bank report](reports/normal_feature_bank.md) and [replication report](reports/class_balanced_replication.md); final test data stays reserved.
 
 ## 进展 / Progress
 
@@ -21,6 +21,7 @@ A PyTorch surface-inspection project with joint training and sampling replicatio
 | 联合模型三种子复验 / Three-seed joint replication | 分类排序均改善，定位均值未改善 / Better ranking in all paired seeds; no mean localization gain |
 | 稀有类别与小缺陷抽样 / Rare-class and small-tile sampling | 类别平衡改善本轮小面积检出，强小分块偏好失败 / Better small-area detection with class balance; strong small bias fails |
 | 类别平衡复验 / Class-balanced replication | 类别2收益复现，整体误报与定位退步 / Class-2 gains replicate; overall alarms/localization regress |
+| 完整正常特征库 / Normal steel feature memory | 已建成，独立加载/来源/检索通过 / Built; independent reload, provenance and retrieval verified |
 | 实际采集验证 / Field validation | 待实现 / Planned |
 
 ## 方法 / Methods
@@ -509,3 +510,29 @@ python scripts/summarize_balanced_replication.py
 固定数据、初值、预算及负分块/翻转的核对通过；最终test未使用。正常特征库按预先指定的seed=42继续，不按复验结果另选最好种子。
 
 Data, initial state, budget and negative/flip audits pass; no final test images are used. The normal bank keeps predeclared seed 42 rather than selecting a best replication seed.
+
+## 正常特征库已完成 / Normal memory ready
+
+完整方法、文件位置与限制见[中英文报告 / Bilingual report](reports/normal_feature_bank.md)。使用事先指定的类别平衡seed=42编码器提取4132张正常train图，1586688个候选经两级筛选保留4096×384向量；最终向量代表1359张正常原图。编码器曾接受缺陷掩码监督，因此是“正常向量库＋领域监督编码器”，不是完全无监督学习。
+
+Use the predeclared class-balanced seed-42 encoder and all 4132 normal train images: 1586688 candidates become 4096×384 vectors by two-stage selection, representing 1359 normal parents. The encoder previously used defect-mask supervision, so this combines normal-only vectors with a supervised domain extractor.
+
+库文件为本地 `runs/steel_normal_bank/bank.pt`（约16.9 MiB），自带提取器权重。47项测试通过，正常来源/校验和/8个向量原图回放/独立进程分数重载通过，PowerShell入口已从项目以外目录验证。数据、缓存、库权重及照片保留本机，GitHub保存代码、清单、数值与说明。
+
+The local `runs/steel_normal_bank/bank.pt` (about 16.9 MiB) includes extractor weights. All 47 tests pass, along with source/checksum audits, eight source-vector replays, independent-process score reload and launcher tests outside project root. Data, caches, bank weights and photos stay local; code, selections, metrics and docs are versioned.
+
+```powershell
+# 项目根目录，已有库直接验证/检测 / At project root, verify or predict with the completed bank
+.\scripts\run_normal_bank.ps1 -Mode verify
+.\scripts\run_normal_bank.ps1 -Mode predict -Image 'data/severstal/034941f9d.jpg'
+# 重新构建或续建 / Rebuild or resume matching intact shards
+.\scripts\run_normal_bank.ps1 -Mode build
+```
+
+从其他目录运行时，将入口脚本和图片替换为实际完整路径。原Python入口为 `scripts/build_steel_normal_bank.py --verify` 或 `--image`。检测会写出 `single_overlay.png`、`single_map.npy`、`single_prediction.json` 到库目录，不需要原U-Net检查点路径。
+
+From another working directory, use actual absolute script/image paths. Python also supports `scripts/build_steel_normal_bank.py --verify` or `--image`. Predictions write overlay, distance-map and JSON files to the bank directory without needing the original U-Net checkpoint path.
+
+正常库在同一200张开发图上AUROC 0.8403、检出57/100、正常误报10/100；平均逐缺陷图像素AUROC 0.8657。它已可用但未达到生产精度；热力图是距离，不是缺陷概率或已校准的二值分割。最终test未使用，本轮按用户要求在库完成后停止。
+
+Bank development AUROC is 0.8403, TP=57/100 and FP=10/100; mean per-defective-image pixel AUROC is 0.8657. Usable artifact, inadequate production accuracy. Maps are distances, not probabilities or calibrated masks. No final test images; stop this run after completing the requested bank.

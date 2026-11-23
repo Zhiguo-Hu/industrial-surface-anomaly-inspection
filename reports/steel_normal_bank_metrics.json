@@ -1,0 +1,72 @@
+{
+  "status": "complete",
+  "scope": "Domain-trained feature extractor; normal-train-only memory; reused development evaluation, test untouched",
+  "config": {
+    "source_experiment": "steel_unet_balanced_pretrained_resnet18_expanded_r30_det_s42_cls0p5_tile_class_balanced",
+    "source_model_sha256": "d65dc2bb52275350cc2f51be489c8c6e12ebaf027890a91a2735b75465b971de",
+    "feature_model_sha256": "189006254c718f74dd4d7a61c8fcdc3b2095858180b9a7adbadbcc646ef02c3c",
+    "manifest_sha256": "aa6b563d0cbc48c5be78f74b00bfd8c9072e2d2a5e26bda82dbaed205c2e5d5c",
+    "train_normal_images": 4132,
+    "seed": 42,
+    "runtime": {
+      "seed": 42,
+      "deterministic_algorithms": true,
+      "cudnn_benchmark": false,
+      "cudnn_deterministic": true,
+      "cudnn_allow_tf32": false,
+      "matmul_allow_tf32": false,
+      "cublas_workspace_config": ":4096:8",
+      "torch": "2.15.0+cu132",
+      "cuda_build": "13.2",
+      "scope": "Same code, data, hardware/software runtime only; not a cross-version reproducibility guarantee"
+    },
+    "per_tile_candidates": 32,
+    "parents_per_shard": 256,
+    "per_shard_coreset": 1024,
+    "final_coreset": 4096,
+    "tile_size": 256,
+    "stride": 128,
+    "feature_code_sha256": "a0ec315a5083215534ce89f78ba311e751fcfa87e1a31ed77f2dc084dff48d41",
+    "local_feature_code_sha256": "0c8f6319843f3b1e954237d5c1ddd507cb3df32735ba7514c003395f6b52bbcb",
+    "tile_code_sha256": "f66403c8b7d3760b56506002dd691064f02ab030b2347c282ee83c98bbd73d8f"
+  },
+  "candidate_features_seen": 1586688,
+  "shard_candidates_after_first_selection": 17408,
+  "resumed_shards": 0,
+  "bank_shape": [
+    4096,
+    384
+  ],
+  "represented_normal_parent_images": 1359,
+  "bank_bytes": 17695977,
+  "bank_file_sha256": "ea9a767d20a7a108a87027e5f8857dd7e96dc2eb23c3fc55ef6e2c6dafad3597",
+  "bank_sha256": "ac57aa2a57b984faf7389e45fb6f176d809289fa58dd95441622aafe2a908ad2",
+  "threshold": 3.6191077113151544,
+  "calibration_fpr": 0.05,
+  "image_auroc": 0.8402999999999999,
+  "confusion": {
+    "tn": 90,
+    "fp": 10,
+    "fn": 43,
+    "tp": 57
+  },
+  "recall": 0.57,
+  "false_positive_rate": 0.1,
+  "mean_per_defect_image_pixel_auroc": 0.8656691095515149,
+  "build_seconds": 93.03066630000103,
+  "total_seconds": 118.4918850000031,
+  "peak_torch_allocated_mib": 198.81689453125,
+  "normal_only_vector_sources": "Manifest and original annotation CSV checked; no defective/validation/test image contributes memory vectors",
+  "vector_provenance_replay": {
+    "selected_vectors_replayed": 8,
+    "source_images": 8,
+    "status": "passed at tolerance 1e-5"
+  },
+  "reload_score_check": "passed",
+  "limitations": [
+    "Supervised domain encoder, not an entirely normal-only learning method.",
+    "Two-stage approximate coreset and changed encoder/data budget differ from the old pilot; not a single-factor ablation.",
+    "Development results reused; successful bank construction is not production accuracy validation.",
+    "Scores are distances, not defect probabilities; no calibrated binary pixel segmentation."
+  ]
+}
