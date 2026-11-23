@@ -1,0 +1,132 @@
+{
+  "scope": "Same frozen bank and disjoint validation subsets; exploratory diagnosis, no test images",
+  "image_count": 400,
+  "original_threshold": 2.800575065612793,
+  "groups": {
+    "normal": {
+      "peak_outer_border16": 0.32,
+      "peak_internal_seam8": 0.05,
+      "peak_in_annotation": 0.0,
+      "peak_quantiles_05_50_95": [
+        2.0431487202644347,
+        2.362403631210327,
+        3.025332736968994
+      ],
+      "median_map_quantiles_05_50_95": [
+        1.3487723171710968,
+        1.6371794939041138,
+        1.8538999080657959
+      ],
+      "spearman_peak_vs_map_median": 0.3009540954095409,
+      "spearman_peak_vs_gray_std": 0.438043804380438
+    },
+    "defective": {
+      "peak_outer_border16": 0.26,
+      "peak_internal_seam8": 0.05,
+      "peak_in_annotation": 0.74,
+      "peak_quantiles_05_50_95": [
+        2.094460117816925,
+        2.3645416498184204,
+        2.7426114797592165
+      ],
+      "median_map_quantiles_05_50_95": [
+        1.3894381999969483,
+        1.6363295316696167,
+        1.8349949836730957
+      ],
+      "spearman_peak_vs_map_median": 0.2921092109210921,
+      "spearman_peak_vs_gray_std": 0.26141014101410137
+    }
+  },
+  "defect_peak_in_annotation_count": 74,
+  "defect_median_exceeds_background_median_count": 100,
+  "mean_within_defect_image_pixel_auroc": 0.930567575988107,
+  "alternative_scores_exploratory_not_selected": {
+    "peak": {
+      "calibration_threshold": 2.800575065612793,
+      "auroc": 0.5205,
+      "tn": 89,
+      "fp": 11,
+      "fn": 97,
+      "tp": 3
+    },
+    "interior_peak": {
+      "calibration_threshold": 2.799963295459747,
+      "auroc": 0.5241,
+      "tn": 89,
+      "fp": 11,
+      "fn": 97,
+      "tp": 3
+    },
+    "q999": {
+      "calibration_threshold": 2.697262096405029,
+      "auroc": 0.5321,
+      "tn": 89,
+      "fp": 11,
+      "fn": 97,
+      "tp": 3
+    },
+    "contrast": {
+      "calibration_threshold": 1.1835157752037042,
+      "auroc": 0.5068,
+      "tn": 91,
+      "fp": 9,
+      "fn": 98,
+      "tp": 2
+    },
+    "ratio": {
+      "calibration_threshold": 1.8089876652181962,
+      "auroc": 0.5003,
+      "tn": 97,
+      "fp": 3,
+      "fn": 96,
+      "tp": 4
+    }
+  },
+  "outer_border16_area_fraction": 0.14249999999999996,
+  "seam_band_note": "Within 8 px of listed internal tile start/end boundaries; area is large, so presence alone is not evidence of an artifact.",
+  "caveats": [
+    "Alternatives evaluated on already inspected validation; not independent test results.",
+    "Border exclusion also discards possible real border defects; not a deployment fix.",
+    "No ablation of backbone, candidate sampling, or bank capacity; their causal effect is unproven.",
+    "Exact diagnosis does not imply input annotation semantics are wrong."
+  ],
+  "cases": {
+    "FP": {
+      "image_id": "63c0e226d.jpg",
+      "label": 0,
+      "peak": 3.2240052223205566,
+      "peak_xy": [
+        675,
+        70
+      ]
+    },
+    "TN": {
+      "image_id": "51cb60dfd.jpg",
+      "label": 0,
+      "peak": 1.9626972675323486,
+      "peak_xy": [
+        730,
+        46
+      ]
+    },
+    "FN": {
+      "image_id": "0842fa725.jpg",
+      "label": 1,
+      "peak": 2.0199146270751953,
+      "peak_xy": [
+        925,
+        14
+      ]
+    },
+    "TP": {
+      "image_id": "84df99a15.jpg",
+      "label": 1,
+      "peak": 3.1473751068115234,
+      "peak_xy": [
+        944,
+        15
+      ]
+    }
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "scope": "Exploratory validation-only capacity ablation; original deployed pilot unchanged",
+  "changed_variable": "2048 to 8192 coreset vectors; candidate pool, selection order, data, model, map and scoring unchanged",
+  "exact_original_bank_prefix_check": "passed",
+  "bank_shape": [
+    8192,
+    384
+  ],
+  "threshold": 2.736154317855835,
+  "image_auroc": 0.5117,
+  "confusion": {
+    "tn": 89,
+    "fp": 11,
+    "fn": 97,
+    "tp": 3
+  },
+  "recall": 0.03,
+  "false_positive_rate": 0.11,
+  "test_images_accessed": false,
+  "original_bank_modified": false
+}

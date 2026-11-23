@@ -195,6 +195,17 @@ python scripts/run_steel_pilot.py --image data/severstal/034941f9d.jpg
 
 This is a defective validation example missed by the pilot, intentionally retained as a failure case. Outputs are `single_overlay.png`, `single_map.npy`, and `single_prediction.json`; adjust the path if the data layout differs.
 
+### 失败诊断已完成 / Failure diagnosis completed
+
+详见 [钢材失败分析 / Steel failure analysis](reports/steel_failure_analysis.md)。在固定校准和验证集上，排除边缘、改用分位数/相对分数、将特征库扩大四倍，均未解决图像级识别失败。缺陷图中 74/100 的最高分位于标注内，说明“图内定位”与“跨图异常判断”存在明显差异。测试集未使用，原模型未修改。下一步优先做监督分割对照。
+
+Border exclusion, quantile/relative scoring, and a fourfold larger bank did not resolve image-level detection. Peaks lie inside annotations in 74/100 defective images, showing the distinction between within-image localization and cross-image detection. Test images remain untouched and the original bank is unchanged. Prioritize a supervised segmentation baseline next.
+
+```powershell
+python scripts/diagnose_steel.py
+python scripts/diagnose_steel_capacity.py
+```
+
 下一步分析正常/缺陷分数重叠、边缘与接缝响应、候选抽样和纹理差异，再选择受控改动或监督分割对照。上述原因目前是待验证假设，不能作为已确认结论。钢材测试集保留用于最终配置评价。
 
 Next: investigate score overlap, boundary/seam responses, candidate sampling, and texture variation, then run controlled changes or supervised segmentation. These are hypotheses, not confirmed causes. The steel test split remains reserved for final evaluation.
