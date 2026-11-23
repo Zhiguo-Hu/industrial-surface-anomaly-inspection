@@ -2,6 +2,10 @@
 
 日期 / Date: 2026-11-23
 
+后续已完成seed=42分块抽样对照，见[小缺陷与稀有类别抽样 / Sampling follow-up](tile_sampling_experiments.md)。本页保留原联合方案的三种子结果。
+
+The seed-42 sampling follow-up is complete; see the linked report. This page preserves the original joint scheme's three-seed results.
+
 ## 结果与结论 / Results and interpretation
 
 三个种子的分类AUROC均高于对应分割基线，正常误报也均减少；但当前报警阈值下的召回并非都提高，分割Dice均值略降。此结果支持保留显式分类分支继续研究，不能称检测和定位均已稳定解决。

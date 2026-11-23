@@ -1,8 +1,8 @@
 # 工业表面异常检测与定位 / Industrial Surface Anomaly Inspection
 
-基于 PyTorch 的工业表面视觉检测项目：已完成瓶子验证、钢材滑窗、异常检测、监督分割、训练扩展与显式分类监督。最新联合模型三种子开发复验：分类AUROC均值0.8753±0.0145、检出41–58/100、正常误报3–4/100；原始分割Dice均值0.5201±0.0081，仍有29张缺陷图三个种子全部漏检，尚不可部署。测试集保留，详见[联合模型复验报告](reports/joint_multiseed_replication.md)。
+基于 PyTorch 的工业表面视觉检测项目：已完成瓶子验证、钢材滑窗、异常检测、监督分割、联合模型及抽样对照。最新seed=42类别平衡候选：分类AUROC 0.8975、检出63/100、正常误报5/100、原始Dice 0.5188；小面积组检出19/26（原6/26）。仍漏检37张且正常像素误报增加，尚不可部署、待多种子复验。额外强小分块偏采样导致分类头退化，完整记录见[抽样报告](reports/tile_sampling_experiments.md)；最终测试集保留。
 
-A PyTorch surface-inspection project with bottle validation, steel tiling, anomaly detection, segmentation, expanded training and explicit classification supervision. Latest three-seed joint development mean±sample SD: classification AUROC 0.8753±0.0145, raw Dice 0.5201±0.0081; TP=41–58/100, FP=3–4/100. All seeds miss the same 29 defective images. Not deployable; test data stays reserved. See the [joint replication report](reports/joint_multiseed_replication.md).
+A PyTorch surface-inspection project with bottle validation, steel tiling, anomaly detection, segmentation, joint training and sampling controls. Latest seed-42 class-balanced candidate: AUROC 0.8975, TP=63/100, FP=5/100, raw Dice 0.5188; small-area detections 19/26 (formerly 6/26). It still misses 37 images and raises normal-pixel FPR; not deployable, multiseed replication pending. Additional strong small-tile preference collapses the head. See the complete [sampling report](reports/tile_sampling_experiments.md); final test data remains reserved.
 
 ## 进展 / Progress
 
@@ -19,6 +19,7 @@ A PyTorch surface-inspection project with bottle validation, steel tiling, anoma
 | 本机确定性与3种子复验 / Local determinism and three seeds | 80步训练状态及单图跨进程一致性通过 / 80-step state and single-input replay verified |
 | 显式分类监督对照 / Explicit classification supervision | seed=42整图报警改善，定位与小缺陷仍不足 / Better seed-42 alarms; localization and small defects remain weak |
 | 联合模型三种子复验 / Three-seed joint replication | 分类排序均改善，定位均值未改善 / Better ranking in all paired seeds; no mean localization gain |
+| 稀有类别与小缺陷抽样 / Rare-class and small-tile sampling | 类别平衡改善本轮小面积检出，强小分块偏好失败 / Better small-area detection with class balance; strong small bias fails |
 | 实际采集验证 / Field validation | 待实现 / Planned |
 
 ## 方法 / Methods
@@ -458,3 +459,38 @@ python scripts/plot_joint_multiseed.py
 All joint seeds miss 29 common defective images, including 15 in the 0.1%–1% area group. Default masks stay ungated: seed-43 gating removes 53.51% of raw true-positive pixels. Next keep seed 42/joint protocol and test rare-class/small-defect tile sampling instead of selecting the best seed or enlarging the model.
 
 ![Joint-model paired seeds](reports/steel_joint_multiseed.png)
+
+## 稀有类别与小分块抽样 / Rare-class and small-tile sampling
+
+详见[中英文报告 / Bilingual report](reports/tile_sampling_experiments.md)、[对照数值 / Comparison](reports/steel_tile_sampling_comparison.json)及[分类头诊断 / Head diagnosis](reports/steel_sampling_head_diagnosis.json)。固定seed=42联合模型、权重0.5、原4000张训练图及开发规则，对比均匀正分块、每类一个正分块，以及带训练供给保护的小分块偏好。三组负分块和翻转序列一致，2400次更新尝试。
+
+Fix the seed-42 joint model, weight 0.5, original 4000-image pool and development rules. Compare uniform positives, one positive per numeric class, and small-tile preference with train-supply safeguards. Negative tiles/flips match across arms; each full run has 2400 attempted updates.
+
+| Policy | Head AUROC | TP/100 | FP/100 | Raw Dice | Small-area TP/26 |
+|---|---:|---:|---:|---:|---:|
+| Uniform | 0.8801 | 53 | 3 | 0.5124 | 6 |
+| Class-balanced | 0.8975 | 63 | 5 | 0.5188 | 19 |
+| Class + small | 0.5000 | 0 | 0 | 0.4353 | 0 |
+
+类别平衡让类别2检出从1/6到4/6、该类像素召回约35%到73%，但正常像素误报从1.55%到2.02%，≥5%大面积组检出22/32到19/32。强小分块偏好让所有200张图分数相同；固定检查的240块分类隐层全为0，不能把其0误报当作成功。默认掩码不门控。
+
+Class balancing raises class-2 detections from 1/6 to 4/6 and pixel recall from about 35% to 73%, but normal-pixel FPR rises from 1.55% to 2.02% and large-area detections fall from 22/32 to 19/32. Strong small preference produces constant scores on all 200 images and zero hidden activations on 240 inspected tiles. Its zero false alarms are not success. Default masks stay ungated.
+
+43项测试通过；原均匀流程80步状态/记录复现，完整抽样回放、检查点重加载与CSV指标核对通过。训练供给检查发现类别2只有2个小块、来自2图，所以小分块偏好要求至少20块/10原图，不足时回退。所有选择仅用train；本轮单种子开发比较不代表最终泛化。
+
+All 43 tests pass; original 80-step training replay, full sampling replay, reload and CSV checks pass. Class 2 has only two small tiles from two parents, so small preference requires 20 tiles/ten parents or falls back. Pools use train only; this single-seed development experiment is not final generalization testing.
+
+已有本地训练结果后 / With local artifacts available:
+
+```powershell
+python scripts/check_sampling_prefix.py
+python scripts/compare_tile_sampling.py
+python scripts/diagnose_sampling_heads.py
+python scripts/plot_tile_sampling.py
+```
+
+下一步先在预定seed=43、44复验类别平衡候选；保留完整失败结果，不直接采用当前强小分块偏好。完整训练与单图参数见报告。
+
+Next replicate the class-balanced candidate on predefined seeds 43/44. Preserve failure artifacts and reject the current strong small-tile preference. See the report for training/inference flags.
+
+![Tile sampling controls](reports/steel_tile_sampling.png)

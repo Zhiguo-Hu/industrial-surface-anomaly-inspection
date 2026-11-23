@@ -1,0 +1,351 @@
+{
+  "scope": "Seed42 fixed joint model; sequential class balance then small-tile preference interventions; no test images",
+  "prefix_checks": {
+    "initial_state_sha256": true,
+    "first_80_steps_state_sha256": true,
+    "first_round_history_identical": true,
+    "negative_flip_reference_verified": true
+  },
+  "controls_verified": true,
+  "unique_evaluation_images": 200,
+  "small_tile_definition": "1..655 union-mask pixels in a 256x256 training tile; differs from image GT area groups",
+  "historical_baseline_scope": "Uniform baseline reused; only its first 80 steps were replayed after integration, not a new full 2400-step run.",
+  "results": {
+    "uniform": {
+      "sampling_replay_verified": true,
+      "sampling_exposure": {
+        "actual_sampled_tiles_per_class": {
+          "1": 1162,
+          "2": 215,
+          "3": 7161,
+          "4": 1255
+        },
+        "small_draws": 644,
+        "positive_draws": 9600,
+        "unique_tiles": 6042,
+        "unique_parents": 1892,
+        "negative_and_flip_sequence_sha256": "c95a373cde04061474b124f4c6bd759f0424cd6a6b6a3e7705dd5160fab8cb6a"
+      },
+      "sampler_inventory": {
+        "policy": "uniform"
+      },
+      "best_round": 20,
+      "completed_updates": 2397,
+      "amp_skips": 3,
+      "image_head": {
+        "image_auroc": 0.8800999999999999,
+        "confusion": {
+          "tn": 97,
+          "fp": 3,
+          "fn": 47,
+          "tp": 53
+        },
+        "recall": 0.53,
+        "false_positive_rate": 0.03,
+        "threshold": 0.9196770548820495
+      },
+      "head_score_distribution": {
+        "min": 0.04779001325368881,
+        "max": 0.9988479614257812,
+        "std": 0.2552054749234924
+      },
+      "final_round_classification_loss": 0.4224515759386122,
+      "raw_masks": {
+        "dice": 0.5124493441184191,
+        "iou": 0.3444920292914136,
+        "pixel_threshold": 0.4,
+        "nonempty_of_100": 96,
+        "normal_pixel_fpr": 0.0154785400390625
+      },
+      "by_image_gt_area": {
+        "0.1_to_1pct": {
+          "images": 26,
+          "head_detected": 6,
+          "raw_pixel_recall": 0.6595063095968744
+        },
+        "1_to_5pct": {
+          "images": 42,
+          "head_detected": 25,
+          "raw_pixel_recall": 0.6299240464976996
+        },
+        "at_least_5pct": {
+          "images": 32,
+          "head_detected": 22,
+          "raw_pixel_recall": 0.4774766145670702
+        }
+      },
+      "per_class_overlapping_groups": {
+        "1": {
+          "images": 9,
+          "head_detected": 2,
+          "class_pixel_recall": 0.3363708641673292
+        },
+        "2": {
+          "images": 6,
+          "head_detected": 1,
+          "class_pixel_recall": 0.3497942386831276
+        },
+        "3": {
+          "images": 75,
+          "head_detected": 48,
+          "class_pixel_recall": 0.5824018238894162
+        },
+        "4": {
+          "images": 14,
+          "head_detected": 4,
+          "class_pixel_recall": 0.24640305196742085
+        }
+      },
+      "reload_one_image": "passed, scores at tolerance 1e-5"
+    },
+    "class-balanced": {
+      "sampling_replay_verified": true,
+      "sampling_exposure": {
+        "actual_sampled_tiles_per_class": {
+          "1": 2739,
+          "2": 2463,
+          "3": 2802,
+          "4": 2446
+        },
+        "small_draws": 624,
+        "positive_draws": 9600,
+        "unique_tiles": 4275,
+        "unique_parents": 1625,
+        "negative_and_flip_sequence_sha256": "c95a373cde04061474b124f4c6bd759f0424cd6a6b6a3e7705dd5160fab8cb6a"
+      },
+      "sampler_inventory": {
+        "policy": "class-balanced",
+        "positive_target_classes_per_batch": [
+          1,
+          2,
+          3,
+          4
+        ],
+        "small_definition": "0 < union-mask pixels <= floor(256*256*0.01); tile area, not parent-image area",
+        "small_max_pixels": 655,
+        "prefer_small_probability": 0,
+        "empty_small_pool_fallback": "uniform within the same class",
+        "per_class": {
+          "1": {
+            "positive_tiles": 1120,
+            "small_tiles": 150
+          },
+          "2": {
+            "positive_tiles": 242,
+            "small_tiles": 2
+          },
+          "3": {
+            "positive_tiles": 7135,
+            "small_tiles": 414
+          },
+          "4": {
+            "positive_tiles": 1240,
+            "small_tiles": 65
+          }
+        }
+      },
+      "best_round": 29,
+      "completed_updates": 2396,
+      "amp_skips": 4,
+      "image_head": {
+        "image_auroc": 0.8975,
+        "confusion": {
+          "tn": 95,
+          "fp": 5,
+          "fn": 37,
+          "tp": 63
+        },
+        "recall": 0.63,
+        "false_positive_rate": 0.05,
+        "threshold": 0.9620436787605285
+      },
+      "head_score_distribution": {
+        "min": 0.01503502856940031,
+        "max": 0.999983549118042,
+        "std": 0.28852859090352195
+      },
+      "final_round_classification_loss": 0.3922992164734751,
+      "raw_masks": {
+        "dice": 0.5188219554291643,
+        "iou": 0.35027656353054476,
+        "pixel_threshold": 0.5,
+        "nonempty_of_100": 74,
+        "normal_pixel_fpr": 0.020151025390625
+      },
+      "by_image_gt_area": {
+        "0.1_to_1pct": {
+          "images": 26,
+          "head_detected": 19,
+          "raw_pixel_recall": 0.7739023696540575
+        },
+        "1_to_5pct": {
+          "images": 42,
+          "head_detected": 25,
+          "raw_pixel_recall": 0.5218150799916514
+        },
+        "at_least_5pct": {
+          "images": 32,
+          "head_detected": 19,
+          "raw_pixel_recall": 0.548253587554333
+        }
+      },
+      "per_class_overlapping_groups": {
+        "1": {
+          "images": 9,
+          "head_detected": 7,
+          "class_pixel_recall": 0.6946160275620248
+        },
+        "2": {
+          "images": 6,
+          "head_detected": 4,
+          "class_pixel_recall": 0.7317672610882487
+        },
+        "3": {
+          "images": 75,
+          "head_detected": 51,
+          "class_pixel_recall": 0.5434709122892338
+        },
+        "4": {
+          "images": 14,
+          "head_detected": 4,
+          "class_pixel_recall": 0.5532089925125725
+        }
+      },
+      "reload_one_image": "passed, scores at tolerance 1e-5"
+    },
+    "class-small": {
+      "sampling_replay_verified": true,
+      "sampling_exposure": {
+        "actual_sampled_tiles_per_class": {
+          "1": 2747,
+          "2": 2429,
+          "3": 2645,
+          "4": 2424
+        },
+        "small_draws": 3974,
+        "positive_draws": 9600,
+        "unique_tiles": 3211,
+        "unique_parents": 1469,
+        "negative_and_flip_sequence_sha256": "c95a373cde04061474b124f4c6bd759f0424cd6a6b6a3e7705dd5160fab8cb6a"
+      },
+      "sampler_inventory": {
+        "policy": "class-small",
+        "positive_target_classes_per_batch": [
+          1,
+          2,
+          3,
+          4
+        ],
+        "small_definition": "0 < union-mask pixels <= floor(256*256*0.01); tile area, not parent-image area",
+        "small_max_pixels": 655,
+        "prefer_small_probability": 0.5,
+        "small_pool_guard": {
+          "minimum_small_tiles": 20,
+          "minimum_small_parents": 10,
+          "tiles_per_parent": 12
+        },
+        "insufficient_small_pool_fallback": "uniform within the same class",
+        "per_class": {
+          "1": {
+            "positive_tiles": 1120,
+            "small_tiles": 150,
+            "small_parents": 98,
+            "small_bias_eligible": true
+          },
+          "2": {
+            "positive_tiles": 242,
+            "small_tiles": 2,
+            "small_parents": 2,
+            "small_bias_eligible": false
+          },
+          "3": {
+            "positive_tiles": 7135,
+            "small_tiles": 414,
+            "small_parents": 331,
+            "small_bias_eligible": true
+          },
+          "4": {
+            "positive_tiles": 1240,
+            "small_tiles": 65,
+            "small_parents": 59,
+            "small_bias_eligible": true
+          }
+        }
+      },
+      "best_round": 30,
+      "completed_updates": 2397,
+      "amp_skips": 3,
+      "image_head": {
+        "image_auroc": 0.5,
+        "confusion": {
+          "tn": 100,
+          "fp": 0,
+          "fn": 100,
+          "tp": 0
+        },
+        "recall": 0.0,
+        "false_positive_rate": 0.0,
+        "threshold": 0.49989375472068787
+      },
+      "head_score_distribution": {
+        "min": 0.49989375472068787,
+        "max": 0.49989375472068787,
+        "std": 0.0
+      },
+      "final_round_classification_loss": 0.6931472420692444,
+      "raw_masks": {
+        "dice": 0.4353403723487201,
+        "iou": 0.2782332749277951,
+        "pixel_threshold": 0.4,
+        "nonempty_of_100": 94,
+        "normal_pixel_fpr": 0.0318005859375
+      },
+      "by_image_gt_area": {
+        "0.1_to_1pct": {
+          "images": 26,
+          "head_detected": 0,
+          "raw_pixel_recall": 0.6295675343921681
+        },
+        "1_to_5pct": {
+          "images": 42,
+          "head_detected": 0,
+          "raw_pixel_recall": 0.4154143867004238
+        },
+        "at_least_5pct": {
+          "images": 32,
+          "head_detected": 0,
+          "raw_pixel_recall": 0.4570532726196474
+        }
+      },
+      "per_class_overlapping_groups": {
+        "1": {
+          "images": 9,
+          "head_detected": 0,
+          "class_pixel_recall": 0.3975495892198235
+        },
+        "2": {
+          "images": 6,
+          "head_detected": 0,
+          "class_pixel_recall": 0.6456332876085963
+        },
+        "3": {
+          "images": 75,
+          "head_detected": 0,
+          "class_pixel_recall": 0.44489610051763745
+        },
+        "4": {
+          "images": 14,
+          "head_detected": 0,
+          "class_pixel_recall": 0.4896124054572156
+        }
+      },
+      "reload_one_image": "passed, scores at tolerance 1e-5"
+    }
+  },
+  "limitations": [
+    "Single predeclared seed, reused development evaluation, not independent final testing.",
+    "Two sequential interventions, not a full factorial study or separate small-only arm.",
+    "AMP skipped steps may differ; budgets match at 2400 attempts.",
+    "All default masks are ungated; no threshold or checkpoint selection using evaluation outcomes."
+  ]
+}

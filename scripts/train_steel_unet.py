@@ -20,6 +20,7 @@ from src.baseline import validation_threshold
 from src.training_selection import coverage_balanced_rows,expanded_training_rows
 from src.resnet_unet import ResNet18UNet,JointResNet18UNet
 from src.reproducibility import configure,state_hash
+from src.tile_sampling import ClassAwareSampler,POLICIES,SMALL_MAX_PIXELS,update_negative_flip_hash,reference_negative_flip_hash
 
 
 @torch.inference_mode()
@@ -48,6 +49,7 @@ def main():
     parser.add_argument('--deterministic',action='store_true')
     parser.add_argument('--seed',type=int,default=42,help='Training seed; data selection stays fixed at 42')
     parser.add_argument('--classification-weight',type=float,default=None,help='Enable matched joint architecture; 0 is segmentation-only control, 0.5 is joint loss')
+    parser.add_argument('--tile-sampling',choices=POLICIES,default='uniform')
     args=parser.parse_args()
     if args.encoder!='small' and not args.coverage_balanced:parser.error('ResNet18 comparisons require --coverage-balanced')
     if args.rounds<1:parser.error('rounds must be positive')
@@ -55,6 +57,8 @@ def main():
     if args.classification_weight is not None and (args.classification_weight<0 or not np.isfinite(args.classification_weight)):
         parser.error('classification-weight must be finite and nonnegative')
     if args.classification_weight is not None and args.encoder!='pretrained-resnet18':parser.error('Joint comparisons require pretrained-resnet18')
+    if args.tile_sampling!='uniform' and (not args.expanded or not args.deterministic or not args.classification_weight):
+        parser.error('Class-aware sampling requires expanded deterministic joint training')
     reproducibility=configure(args.seed,args.deterministic);torch.set_num_threads(4)
     device='cuda' if torch.cuda.is_available() else 'cpu'
     experiment='steel_unet_balanced' if args.coverage_balanced else 'steel_unet'
@@ -64,6 +68,7 @@ def main():
     if args.deterministic:experiment+=f'_det_s{args.seed}'
     elif args.seed!=42:experiment+=f'_s{args.seed}'
     if args.classification_weight is not None:experiment+=f'_cls{args.classification_weight:g}'.replace('.','p')
+    if args.tile_sampling!='uniform':experiment+='_tile_'+args.tile_sampling.replace('-','_')
     output=ROOT/'runs'/experiment;output.mkdir(parents=True,exist_ok=True)
     encoder_model=JointResNet18UNet if args.classification_weight is not None else ResNet18UNet
     model=(SmallUNet() if args.encoder=='small' else encoder_model(
@@ -120,7 +125,7 @@ def main():
         for text in annotations[row['image_id']]:mask|=decode_rle(text)
         return mask
     print(f'Indexing supervised training tiles ({len(dataset.rows)} parent images)',flush=True)
-    positive=[];negative=[];tile_classes={};class_annotations=defaultdict(dict)
+    positive=[];negative=[];tile_classes={};foreground_pixels={};class_annotations=defaultdict(dict)
     with (ROOT/manifest['annotation_csv']).open(encoding='utf-8-sig',newline='') as file:
         for row in csv.DictReader(file):
             if row['EncodedPixels'].strip():class_annotations[row['ImageId']][int(row['ClassId'])]=row['EncodedPixels']
@@ -128,13 +133,23 @@ def main():
     for parent,row in enumerate(dataset.rows):
         read_image(row)  # Validate source hash, decodability and dimensions once.
         class_masks={c:decode_rle(text) for c,text in class_annotations[row['image_id']].items()}
+        union=np.zeros((256,1600),dtype=bool)
+        for m in class_masks.values():union|=m>0
         for tile,(x,y,x2,y2) in enumerate(dataset.layout):
             i=parent*len(dataset.layout)+tile
             tile_classes[i]=[c for c,m in class_masks.items() if m[y:y2,x:x2].any()]
+            foreground_pixels[i]=int(union[y:y2,x:x2].sum())
             (positive if tile_classes[i] else negative).append(i)
         if (parent+1)%1000==0:print(f'Indexed {parent+1}/{len(dataset.rows)} parents',flush=True)
     print(f'Tiles: {len(positive)} positive / {len(negative)} negative',flush=True)
     if not positive or not negative:raise ValueError('Both tile classes required')
+    tile_index={'tiles_per_parent':len(dataset.layout),'total_tiles':len(dataset),
+                'positive':[{'index':i,'classes':tile_classes[i],'pixels':foreground_pixels[i]} for i in positive]}
+    (output/'tile_sampling_index.json').write_text(json.dumps(tile_index),encoding='utf-8')
+    sampler=ClassAwareSampler(tile_classes,foreground_pixels,args.tile_sampling,args.seed) if args.tile_sampling!='uniform' else None
+    sampling_inventory=sampler.inventory() if sampler else {'policy':'uniform'}
+    print(json.dumps({'sampling_inventory':sampling_inventory}),flush=True)
+    negative_flip_digest=hashlib.sha256();drawn_positive=set();small_draws=0
     if args.deterministic:
         # Isolate training randomness from fixed data-selection shuffles.
         rng=random.Random(args.seed)
@@ -148,12 +163,17 @@ def main():
     for round_number in range(1,args.rounds+1):
         model.train();losses=[];seg_losses=[];cls_losses=[]
         for step in range(80):
-            indices=rng.choices(positive,k=4)+rng.choices(negative,k=4)
+            uniform_positive=rng.choices(positive,k=4);negative_indices=rng.choices(negative,k=4)
+            positive_indices=sampler.draw() if sampler else uniform_positive
+            indices=positive_indices+negative_indices
+            drawn_positive.update(positive_indices);small_draws+=sum(foreground_pixels[i]<=SMALL_MAX_PIXELS for i in positive_indices)
             class_draws.update(c for i in indices for c in tile_classes[i])
             samples=[dataset[i] for i in indices]
             x=torch.stack([s['image'] for s in samples]);y=torch.stack([s['mask'] for s in samples])
-            if rng.random()<.5:x=x.flip(-1);y=y.flip(-1)
-            if rng.random()<.5:x=x.flip(-2);y=y.flip(-2)
+            horizontal=rng.random()<.5;vertical=rng.random()<.5
+            update_negative_flip_hash(negative_flip_digest,negative_indices,horizontal,vertical)
+            if horizontal:x=x.flip(-1);y=y.flip(-1)
+            if vertical:x=x.flip(-2);y=y.flip(-2)
             x,y=x.to(device),y.to(device)
             optimizer.zero_grad(set_to_none=True)
             with torch.autocast(device_type=device,dtype=torch.float16,enabled=device=='cuda'):
@@ -207,6 +227,7 @@ def main():
     saved={'model':best_state,'image_threshold':image_threshold,'pixel_threshold':pixel_threshold,
            'reproducibility':reproducibility,'model_state_sha256':state_hash(best_state),
            'classification_weight':args.classification_weight,'classification_threshold':classification_threshold,
+           'tile_sampling':args.tile_sampling,
            'best_round':best_round,'manifest_sha256':hashlib.sha256(manifest_path.read_bytes()).hexdigest(),
            'architecture':('SmallUNet base16 GroupNorm, scratch' if args.encoder=='small' else
                            f'ResNet18UNet encoder={args.encoder}, all layers fine-tuned; BatchNorm encoder/GroupNorm decoder')+'; binary union of four classes'}
@@ -248,6 +269,10 @@ def main():
             'original_training_images_retained':len({r['image_id'] for r in dataset.rows}&{r['image_id'] for r in baseline_rows}),
             'train_images':len(dataset.rows),'training_positive_tiles':len(positive),'training_negative_tiles':len(negative),
             'sampling':'Each batch 4 positive + 4 negative tiles, replacement; paired horizontal/vertical flips',
+            'tile_sampling':sampling_inventory,'actual_small_positive_tile_draws':small_draws,
+            'unique_positive_tiles_drawn':len(drawn_positive),
+            'unique_positive_parents_drawn':len({i//len(dataset.layout) for i in drawn_positive}),
+            'negative_and_flip_sequence_sha256':negative_flip_digest.hexdigest(),
             'loss':'BCEWithLogits + per-sample soft Dice','optimizer':'AdamW lr=0.001 weight_decay=0.0001',
             'classification_weight':args.classification_weight,'classification_target':'Tile mask nonempty; image score=max of 12 tile-head probabilities' if cls_scores else None,
             'amp':device=='cuda','rounds':args.rounds,'total_updates':args.rounds*80,'checkpoint_validation_images':80,
@@ -265,6 +290,10 @@ def main():
             'wall_seconds':time.perf_counter()-start,'peak_torch_allocated_mib':torch.cuda.max_memory_allocated()/2**20 if device=='cuda' else None,
             'limitations':'Small development pilot, validation already inspected; supervision differs from normal-only baseline. Not production validated.'}
     report['normal_masks']={'nonempty_of_100':normal_nonempty,'normal_pixel_fpr':normal_pixel_fp/(100*256*1600)}
+    if args.deterministic:
+        expected=reference_negative_flip_hash(positive,negative,args.seed,args.rounds*80)
+        assert negative_flip_digest.hexdigest()==expected
+        report['negative_and_flip_sequence_matches_uniform_reference']=True
     if cls_scores:
         ct,cfp,cfn,ctp=confusion_matrix(labels,np.array(cls_scores)>classification_threshold,labels=[0,1]).ravel()
         ga,gb,gc=map(int,gated_counts)

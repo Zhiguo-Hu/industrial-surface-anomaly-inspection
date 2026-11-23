@@ -1,0 +1,6 @@
+{
+  "initial_state_sha256": true,
+  "first_80_steps_state_sha256": true,
+  "first_round_history_identical": true,
+  "negative_flip_reference_verified": true
+}

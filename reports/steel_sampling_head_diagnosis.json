@@ -1,0 +1,61 @@
+{
+  "scope": "Saved best checkpoints; fixed 10 normal + 10 defective evaluation images, no retraining/no test",
+  "image_ids": [
+    "515f9551b.jpg",
+    "2f67f4bdf.jpg",
+    "5809fc14b.jpg",
+    "87b82c9cb.jpg",
+    "51103c2eb.jpg",
+    "44e685703.jpg",
+    "abdbfd065.jpg",
+    "72322fc23.jpg",
+    "26a99fc0b.jpg",
+    "8135559f7.jpg",
+    "034941f9d.jpg",
+    "a689f4047.jpg",
+    "4d6da5e7d.jpg",
+    "208825e67.jpg",
+    "e003d691f.jpg",
+    "0842fa725.jpg",
+    "98c634937.jpg",
+    "dcc4ae98f.jpg",
+    "82168bba3.jpg",
+    "f2ff5cfd7.jpg"
+  ],
+  "results": {
+    "uniform": {
+      "tile_rows": 240,
+      "all_zero_hidden_rows": 0,
+      "nonzero_activations": 906,
+      "hidden_values": 30720,
+      "maximum_pre_relu": 82.29342651367188,
+      "ever_active_units_of_128": 8,
+      "final_linear_weight_nonzero": 128,
+      "final_bias": -0.060248687863349915,
+      "sigmoid_final_bias": 0.48494237661361694
+    },
+    "class-balanced": {
+      "tile_rows": 240,
+      "all_zero_hidden_rows": 0,
+      "nonzero_activations": 1020,
+      "hidden_values": 30720,
+      "maximum_pre_relu": 117.53675079345703,
+      "ever_active_units_of_128": 8,
+      "final_linear_weight_nonzero": 128,
+      "final_bias": -0.05851205438375473,
+      "sigmoid_final_bias": 0.48537611961364746
+    },
+    "class-small": {
+      "tile_rows": 240,
+      "all_zero_hidden_rows": 240,
+      "nonzero_activations": 0,
+      "hidden_values": 30720,
+      "maximum_pre_relu": -0.35380810499191284,
+      "ever_active_units_of_128": 0,
+      "final_linear_weight_nonzero": 128,
+      "final_bias": -0.0004250217170920223,
+      "sigmoid_final_bias": 0.49989375472068787
+    }
+  },
+  "limits": "Activation observations apply to these 20 images/240 tiles, not every training sample or proof of when/why units became inactive."
+}

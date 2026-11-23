@@ -28,6 +28,7 @@ def main():
     parser.add_argument('--deterministic',action='store_true')
     parser.add_argument('--seed',type=int,default=42)
     parser.add_argument('--classification-weight',type=float,default=None)
+    parser.add_argument('--tile-sampling',choices=['uniform','class-balanced','class-small'],default='uniform')
     args=parser.parse_args()
     if args.encoder!='small' and not args.coverage_balanced:parser.error('Use --coverage-balanced for ResNet18 comparisons')
     experiment='steel_unet_balanced' if args.coverage_balanced else 'steel_unet'
@@ -37,6 +38,7 @@ def main():
     if args.deterministic:experiment+=f'_det_s{args.seed}'
     elif args.seed!=42:experiment+=f'_s{args.seed}'
     if args.classification_weight is not None:experiment+=f'_cls{args.classification_weight:g}'.replace('.','p')
+    if args.tile_sampling!='uniform':experiment+='_tile_'+args.tile_sampling.replace('-','_')
     configure(args.seed,args.deterministic);torch.set_num_threads(4)
     device='cuda' if torch.cuda.is_available() else 'cpu'
     saved=torch.load(ROOT/f'runs/{experiment}/best.pt',map_location=device,weights_only=True)

@@ -1,0 +1,121 @@
+{
+  "scope": "Supervised pilot; same evaluation images as anomaly pilot; NO test images",
+  "architecture": "ResNet18UNet encoder=pretrained-resnet18, all layers fine-tuned; BatchNorm encoder/GroupNorm decoder; binary union of four classes",
+  "parameters": 12587538,
+  "experiment": "steel_unet_balanced_pretrained_resnet18_expanded_r1_det_s42_cls0p5",
+  "coverage_minimum_per_class": 120,
+  "reproducibility": {
+    "seed": 42,
+    "deterministic_algorithms": true,
+    "cudnn_benchmark": false,
+    "cudnn_deterministic": true,
+    "cudnn_allow_tf32": false,
+    "matmul_allow_tf32": false,
+    "cublas_workspace_config": ":4096:8",
+    "torch": "2.15.0+cu132",
+    "cuda_build": "13.2",
+    "scope": "Same code, data, hardware/software runtime only; not a cross-version reproducibility guarantee"
+  },
+  "initial_state_sha256": "fa29133e52fceb02e2922365a0f24ed24b1929aee0e2d3a2cbe41cd416529114",
+  "first_80_steps_state_sha256": "82a0c14b3a3647e90c54fa9408b244ecce17cecea8effee1038228c5e835400f",
+  "best_state_sha256": "82a0c14b3a3647e90c54fa9408b244ecce17cecea8effee1038228c5e835400f",
+  "training_rng_policy": "Dedicated Random(training seed) reset before optimizer",
+  "training_images_per_class": {
+    "1": 310,
+    "2": 120,
+    "3": 1471,
+    "4": 241
+  },
+  "positive_tiles_per_class": {
+    "1": 1120,
+    "2": 242,
+    "3": 7135,
+    "4": 1240
+  },
+  "actual_sampled_tiles_per_class": {
+    "1": 45,
+    "2": 7,
+    "3": 224,
+    "4": 53
+  },
+  "original_training_images_retained": 406,
+  "train_images": 4000,
+  "training_positive_tiles": 9530,
+  "training_negative_tiles": 38470,
+  "sampling": "Each batch 4 positive + 4 negative tiles, replacement; paired horizontal/vertical flips",
+  "tile_sampling": {
+    "policy": "uniform"
+  },
+  "actual_small_positive_tile_draws": 34,
+  "unique_positive_tiles_drawn": 316,
+  "negative_and_flip_sequence_sha256": "862554897f03bdb2e7a8ba7c9fc38447ca22271c07123179173f8d644c3a3ef0",
+  "loss": "BCEWithLogits + per-sample soft Dice",
+  "optimizer": "AdamW lr=0.001 weight_decay=0.0001",
+  "classification_weight": 0.5,
+  "classification_target": "Tile mask nonempty; image score=max of 12 tile-head probabilities",
+  "amp": true,
+  "rounds": 1,
+  "total_updates": 80,
+  "checkpoint_validation_images": 80,
+  "optimizer_steps_skipped_by_amp": 1,
+  "completed_optimizer_steps": 79,
+  "budget_note": "total_updates is attempted optimization steps; AMP skipped steps are counted separately",
+  "best_round": 1,
+  "history": [
+    {
+      "round": 1,
+      "updates": 80,
+      "training_loss": 1.6015926018357276,
+      "checkpoint_validation_pooled_dice_at_05": 0.19106938336891818,
+      "segmentation_loss": 1.2226364731788635,
+      "classification_loss": 0.7579122595489025
+    }
+  ],
+  "pixel_threshold": 0.6,
+  "image_threshold": 0.9167173326015472,
+  "threshold_note": "Pixel threshold maximizes pooled Dice on checkpoint validation; image threshold normal calibration q95",
+  "evaluation_normal_images": 100,
+  "evaluation_defect_images": 100,
+  "image_auroc": 0.586,
+  "confusion": {
+    "tn": 95,
+    "fp": 5,
+    "fn": 85,
+    "tp": 15
+  },
+  "recall": 0.15,
+  "false_positive_rate": 0.05,
+  "pooled_pixel_dice_all_200_images": 0.22730783593403403,
+  "pooled_pixel_iou_all_200_images": 0.12822747262145362,
+  "mean_per_defect_image_dice": 0.28380884395721817,
+  "mean_per_defect_image_pixel_auroc": 0.8482760174243593,
+  "metric_note": "Full 256x1600 reconstruction; pixel AUROC is per-defect-image mean, not pooled.",
+  "wall_seconds": 43.94396140000026,
+  "peak_torch_allocated_mib": 467.14306640625,
+  "limitations": "Small development pilot, validation already inspected; supervision differs from normal-only baseline. Not production validated.",
+  "normal_masks": {
+    "nonempty_of_100": 81,
+    "normal_pixel_fpr": 0.0316421630859375
+  },
+  "negative_and_flip_sequence_matches_uniform_reference": true,
+  "classification_metrics": {
+    "head_trained": true,
+    "threshold": 1.0,
+    "image_auroc": 0.49460000000000004,
+    "confusion": {
+      "tn": 100,
+      "fp": 0,
+      "fn": 100,
+      "tp": 0
+    },
+    "recall": 0.0,
+    "false_positive_rate": 0.0,
+    "gated_masks_exploratory": {
+      "pooled_dice": 0.0,
+      "normal_nonempty_of_100": 0,
+      "normal_pixel_fpr": 0.0
+    },
+    "gating_warning": "Optional analysis only: suppressing masks can hide defects; raw masks remain default output."
+  },
+  "reload_check": "passed"
+}

@@ -1,0 +1,21 @@
+{
+  "scope": "Train-only positive-tile sampling intervention; seed42 joint model, classification weight 0.5",
+  "arms": ["uniform historical reference", "class-balanced", "class-small"],
+  "training_parent_images": 4000,
+  "attempted_updates_per_full_run": 2400,
+  "positive_tiles_per_batch": 4,
+  "negative_tiles_per_batch": 4,
+  "class_target_slots": [1, 2, 3, 4],
+  "small_tile_union_foreground_pixels": [1, 655],
+  "small_preference_probability_per_eligible_class": 0.5,
+  "minimum_small_tiles_per_class": 20,
+  "minimum_small_parent_images_per_class": 10,
+  "fallback": "Uniform positive sampling within the same class",
+  "guard_rationale": "Train inventory found only 2 small class-2 tiles from 2 parents; guard fixed before class-small training, without inspecting its development results",
+  "negative_and_flip_policy": "Replay legacy uniform RNG draws, use a separate RNG for replacement positives; verify negative and flip sequence hashes",
+  "checkpoint_selection": "Original 80-image development pooled Dice at pixel threshold 0.5",
+  "alarm_threshold": "Original 200 normal calibration images, independent head score q95",
+  "evaluation": "Original 100 normal and 100 defective validation images; no new test evaluation",
+  "default_masks": "Ungated",
+  "limitations": "Sequential controls, not a factorial small-only experiment; seed42 fixed before results"
+}
