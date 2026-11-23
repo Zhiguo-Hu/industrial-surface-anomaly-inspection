@@ -1,8 +1,8 @@
 # 工业表面异常检测与定位 / Industrial Surface Anomaly Inspection
 
-基于 PyTorch 的工业表面视觉检测项目：已完成瓶子验证、钢材滑窗、异常检测、监督分割、联合模型及抽样对照。最新seed=42类别平衡候选：分类AUROC 0.8975、检出63/100、正常误报5/100、原始Dice 0.5188；小面积组检出19/26（原6/26）。仍漏检37张且正常像素误报增加，尚不可部署、待多种子复验。额外强小分块偏采样导致分类头退化，完整记录见[抽样报告](reports/tile_sampling_experiments.md)；最终测试集保留。
+基于 PyTorch 的工业表面视觉检测项目，已完成联合模型和抽样复验。最新类别平衡三种子结果：类别2像素召回均值提高，但整体AUROC均值0.8544（原0.8753）、正常误报8.33%（原3.33%），不能根据seed=42单次结果宣称更好。完整记录见[复验报告](reports/class_balanced_replication.md)。按用户要求，后续使用事先固定的seed=42钢材编码器构建正常特征库；最终测试集保留。
 
-A PyTorch surface-inspection project with bottle validation, steel tiling, anomaly detection, segmentation, joint training and sampling controls. Latest seed-42 class-balanced candidate: AUROC 0.8975, TP=63/100, FP=5/100, raw Dice 0.5188; small-area detections 19/26 (formerly 6/26). It still misses 37 images and raises normal-pixel FPR; not deployable, multiseed replication pending. Additional strong small-tile preference collapses the head. See the complete [sampling report](reports/tile_sampling_experiments.md); final test data remains reserved.
+A PyTorch surface-inspection project with joint training and sampling replication. Class-balanced three-seed mean class-2 pixel recall improves, but overall AUROC falls to 0.8544 (formerly 0.8753) and normal FPR rises to 8.33% (formerly 3.33%). One good seed does not establish superiority; see the [replication report](reports/class_balanced_replication.md). Next build the requested normal memory from the predeclared seed-42 steel encoder. Final test data remains reserved.
 
 ## 进展 / Progress
 
@@ -20,6 +20,7 @@ A PyTorch surface-inspection project with bottle validation, steel tiling, anoma
 | 显式分类监督对照 / Explicit classification supervision | seed=42整图报警改善，定位与小缺陷仍不足 / Better seed-42 alarms; localization and small defects remain weak |
 | 联合模型三种子复验 / Three-seed joint replication | 分类排序均改善，定位均值未改善 / Better ranking in all paired seeds; no mean localization gain |
 | 稀有类别与小缺陷抽样 / Rare-class and small-tile sampling | 类别平衡改善本轮小面积检出，强小分块偏好失败 / Better small-area detection with class balance; strong small bias fails |
+| 类别平衡复验 / Class-balanced replication | 类别2收益复现，整体误报与定位退步 / Class-2 gains replicate; overall alarms/localization regress |
 | 实际采集验证 / Field validation | 待实现 / Planned |
 
 ## 方法 / Methods
@@ -494,3 +495,17 @@ python scripts/plot_tile_sampling.py
 Next replicate the class-balanced candidate on predefined seeds 43/44. Preserve failure artifacts and reject the current strong small-tile preference. See the report for training/inference flags.
 
 ![Tile sampling controls](reports/steel_tile_sampling.png)
+
+## 类别平衡复验 / Class-balanced replication
+
+新增seed=43、44后，不能复现seed=42的整体改善。三种子配对全表及控制见[中英文复验报告](reports/class_balanced_replication.md)和[完整数值](reports/steel_balanced_multiseed.json)。类别平衡平均AUROC 0.8544±0.0401、Dice 0.4736±0.0417；均匀联合参照分别0.8753±0.0145、0.5201±0.0081。三次共用200张开发图，不是600个独立样本。
+
+New seeds 43/44 do not reproduce the seed-42 overall gain. Class-balanced mean±sample SD AUROC is 0.8544±0.0401 and Dice 0.4736±0.0417; uniform references are 0.8753±0.0145 and 0.5201±0.0081. See the linked paired report/JSON. Runs reuse 200 development images, not 600 independent samples.
+
+```powershell
+python scripts/summarize_balanced_replication.py
+```
+
+固定数据、初值、预算及负分块/翻转的核对通过；最终test未使用。正常特征库按预先指定的seed=42继续，不按复验结果另选最好种子。
+
+Data, initial state, budget and negative/flip audits pass; no final test images are used. The normal bank keeps predeclared seed 42 rather than selecting a best replication seed.

@@ -1,0 +1,283 @@
+{
+  "scope": "Paired joint-model positive sampling replication, reused development images; no test images",
+  "seeds": [
+    42,
+    43,
+    44
+  ],
+  "unique_evaluation_images": 200,
+  "controls_verified": true,
+  "bank_encoder_policy": "Fixed class-balanced seed42 encoder selected before these replication results; no best-seed selection",
+  "per_seed": {
+    "42": {
+      "uniform": {
+        "head_auroc": 0.8800999999999999,
+        "head_confusion": {
+          "tn": 97,
+          "fp": 3,
+          "fn": 47,
+          "tp": 53
+        },
+        "head_recall": 0.53,
+        "head_fpr": 0.03,
+        "raw_dice": 0.5124493441184191,
+        "normal_pixel_fpr": 0.0154785400390625,
+        "best_round": 20,
+        "completed_updates": 2397,
+        "amp_skips": 3,
+        "small_area_head_tp": 6,
+        "class2_head_tp": 1,
+        "class2_pixel_recall": 0.3497942386831276
+      },
+      "class-balanced": {
+        "head_auroc": 0.8975,
+        "head_confusion": {
+          "tn": 95,
+          "fp": 5,
+          "fn": 37,
+          "tp": 63
+        },
+        "head_recall": 0.63,
+        "head_fpr": 0.05,
+        "raw_dice": 0.5188219554291643,
+        "normal_pixel_fpr": 0.020151025390625,
+        "best_round": 29,
+        "completed_updates": 2396,
+        "amp_skips": 4,
+        "small_area_head_tp": 19,
+        "class2_head_tp": 4,
+        "class2_pixel_recall": 0.7317672610882487
+      },
+      "reload_check": "passed",
+      "exposure": {
+        "actual_sampled_tiles_per_class": {
+          "1": 2739,
+          "2": 2463,
+          "3": 2802,
+          "4": 2446
+        },
+        "small_draws": 624,
+        "positive_draws": 9600,
+        "unique_tiles": 4275,
+        "unique_parents": 1625,
+        "negative_and_flip_sequence_sha256": "c95a373cde04061474b124f4c6bd759f0424cd6a6b6a3e7705dd5160fab8cb6a"
+      }
+    },
+    "43": {
+      "uniform": {
+        "head_auroc": 0.8868,
+        "head_confusion": {
+          "tn": 97,
+          "fp": 3,
+          "fn": 59,
+          "tp": 41
+        },
+        "head_recall": 0.41,
+        "head_fpr": 0.03,
+        "raw_dice": 0.5286612319549989,
+        "normal_pixel_fpr": 0.0174492431640625,
+        "best_round": 25,
+        "completed_updates": 2396,
+        "amp_skips": 4,
+        "small_area_head_tp": 3,
+        "class2_head_tp": 1,
+        "class2_pixel_recall": 0.5225765889346137
+      },
+      "class-balanced": {
+        "head_auroc": 0.8183,
+        "head_confusion": {
+          "tn": 89,
+          "fp": 11,
+          "fn": 59,
+          "tp": 41
+        },
+        "head_recall": 0.41,
+        "head_fpr": 0.11,
+        "raw_dice": 0.43665228719087684,
+        "normal_pixel_fpr": 0.0182823486328125,
+        "best_round": 27,
+        "completed_updates": 2396,
+        "amp_skips": 4,
+        "small_area_head_tp": 4,
+        "class2_head_tp": 4,
+        "class2_pixel_recall": 0.6400891632373114
+      },
+      "reload_check": "passed",
+      "exposure": {
+        "actual_sampled_tiles_per_class": {
+          "1": 2729,
+          "2": 2479,
+          "3": 2772,
+          "4": 2457
+        },
+        "small_draws": 640,
+        "positive_draws": 9600,
+        "unique_tiles": 4238,
+        "unique_parents": 1630,
+        "negative_and_flip_sequence_sha256": "3e81cba8cc6c6703b869e7e65ccfa3f922033c785991b12944c7813d72bd9886"
+      }
+    },
+    "44": {
+      "uniform": {
+        "head_auroc": 0.859,
+        "head_confusion": {
+          "tn": 96,
+          "fp": 4,
+          "fn": 42,
+          "tp": 58
+        },
+        "head_recall": 0.58,
+        "head_fpr": 0.04,
+        "raw_dice": 0.5192687841286961,
+        "normal_pixel_fpr": 0.014242919921875,
+        "best_round": 19,
+        "completed_updates": 2397,
+        "amp_skips": 3,
+        "small_area_head_tp": 7,
+        "class2_head_tp": 2,
+        "class2_pixel_recall": 0.18741426611796982
+      },
+      "class-balanced": {
+        "head_auroc": 0.8472999999999999,
+        "head_confusion": {
+          "tn": 91,
+          "fp": 9,
+          "fn": 53,
+          "tp": 47
+        },
+        "head_recall": 0.47,
+        "head_fpr": 0.09,
+        "raw_dice": 0.4652198887596845,
+        "normal_pixel_fpr": 0.0195560302734375,
+        "best_round": 27,
+        "completed_updates": 2396,
+        "amp_skips": 4,
+        "small_area_head_tp": 8,
+        "class2_head_tp": 3,
+        "class2_pixel_recall": 0.6114540466392319
+      },
+      "reload_check": "passed",
+      "exposure": {
+        "actual_sampled_tiles_per_class": {
+          "1": 2754,
+          "2": 2478,
+          "3": 2793,
+          "4": 2441
+        },
+        "small_draws": 598,
+        "positive_draws": 9600,
+        "unique_tiles": 4286,
+        "unique_parents": 1634,
+        "negative_and_flip_sequence_sha256": "03ce4babab1876f90e2ac879921159344b6ae72430a6dc1ddd9ec59bbfc92e7a"
+      }
+    }
+  },
+  "aggregate": {
+    "uniform": {
+      "head_auroc": {
+        "mean": 0.8752999999999999,
+        "sample_std_ddof1": 0.014508273501695508,
+        "min": 0.859,
+        "max": 0.8868
+      },
+      "head_recall": {
+        "mean": 0.5066666666666667,
+        "sample_std_ddof1": 0.08736894948054104,
+        "min": 0.41,
+        "max": 0.58
+      },
+      "head_fpr": {
+        "mean": 0.03333333333333333,
+        "sample_std_ddof1": 0.005773502691896259,
+        "min": 0.03,
+        "max": 0.04
+      },
+      "raw_dice": {
+        "mean": 0.5201264534007047,
+        "sample_std_ddof1": 0.008139903208366283,
+        "min": 0.5124493441184191,
+        "max": 0.5286612319549989
+      },
+      "normal_pixel_fpr": {
+        "mean": 0.015723567708333334,
+        "sample_std_ddof1": 0.00161714442842288,
+        "min": 0.014242919921875,
+        "max": 0.0174492431640625
+      },
+      "small_area_head_tp": {
+        "mean": 5.333333333333333,
+        "sample_std_ddof1": 2.0816659994661326,
+        "min": 3,
+        "max": 7
+      },
+      "class2_head_tp": {
+        "mean": 1.3333333333333333,
+        "sample_std_ddof1": 0.5773502691896257,
+        "min": 1,
+        "max": 2
+      },
+      "class2_pixel_recall": {
+        "mean": 0.3532616979119037,
+        "sample_std_ddof1": 0.16760806398884712,
+        "min": 0.18741426611796982,
+        "max": 0.5225765889346137
+      }
+    },
+    "class-balanced": {
+      "head_auroc": {
+        "mean": 0.8543666666666666,
+        "sample_std_ddof1": 0.04007010523237157,
+        "min": 0.8183,
+        "max": 0.8975
+      },
+      "head_recall": {
+        "mean": 0.5033333333333333,
+        "sample_std_ddof1": 0.11372481406154657,
+        "min": 0.41,
+        "max": 0.63
+      },
+      "head_fpr": {
+        "mean": 0.08333333333333333,
+        "sample_std_ddof1": 0.030550504633038933,
+        "min": 0.05,
+        "max": 0.11
+      },
+      "raw_dice": {
+        "mean": 0.47356471045990856,
+        "sample_std_ddof1": 0.04171559218690243,
+        "min": 0.43665228719087684,
+        "max": 0.5188219554291643
+      },
+      "normal_pixel_fpr": {
+        "mean": 0.01932980143229167,
+        "sample_std_ddof1": 0.000954658484863461,
+        "min": 0.0182823486328125,
+        "max": 0.020151025390625
+      },
+      "small_area_head_tp": {
+        "mean": 10.333333333333334,
+        "sample_std_ddof1": 7.767453465154029,
+        "min": 4,
+        "max": 19
+      },
+      "class2_head_tp": {
+        "mean": 3.6666666666666665,
+        "sample_std_ddof1": 0.5773502691896258,
+        "min": 3,
+        "max": 4
+      },
+      "class2_pixel_recall": {
+        "mean": 0.6611034903215973,
+        "sample_std_ddof1": 0.06284917541120008,
+        "min": 0.6114540466392319,
+        "max": 0.7317672610882487
+      }
+    }
+  },
+  "limits": [
+    "Seed42 motivated replication; seeds reuse 200 images, not 600 independent observations.",
+    "SD is training-seed variation, not population uncertainty or significance.",
+    "Class2 has only 6 evaluation images; small-area group has 26.",
+    "Budgets match 2400 attempts, with separately recorded AMP skips."
+  ]
+}

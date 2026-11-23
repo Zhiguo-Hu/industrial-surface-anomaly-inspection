@@ -21,22 +21,22 @@ NAMES={'uniform':BASE,'class-balanced':BASE+'_tile_class_balanced','class-small'
 def read(path):return json.loads((ROOT/path).read_text(encoding='utf-8'))
 
 
-def sampling_replay(index,policy):
+def sampling_replay(index,policy,seed=42,steps=2400):
     classes={r['index']:r['classes'] for r in index['positive']}
     pixels={r['index']:r['pixels'] for r in index['positive']}
     positive=sorted(classes);negative=[i for i in range(index['total_tiles']) if i not in classes]
     all_classes={i:classes.get(i,[]) for i in range(index['total_tiles'])}
     all_pixels={i:pixels.get(i,0) for i in range(index['total_tiles'])}
-    sampler=ClassAwareSampler(all_classes,all_pixels,policy,42) if policy!='uniform' else None
-    rng=random.Random(42);digest=hashlib.sha256();counts=Counter();drawn=set();small=0
-    for _ in range(2400):
+    sampler=ClassAwareSampler(all_classes,all_pixels,policy,seed) if policy!='uniform' else None
+    rng=random.Random(seed);digest=hashlib.sha256();counts=Counter();drawn=set();small=0
+    for _ in range(steps):
         uniform=rng.choices(positive,k=4);neg=rng.choices(negative,k=4)
         pos=sampler.draw() if sampler else uniform
         update_negative_flip_hash(digest,neg,rng.random()<.5,rng.random()<.5)
         counts.update(c for i in pos for c in classes[i]);drawn.update(pos)
         small+=sum(pixels[i]<=SMALL_MAX_PIXELS for i in pos)
     return {'actual_sampled_tiles_per_class':{str(c):counts[c] for c in (1,2,3,4)},
-            'small_draws':small,'positive_draws':9600,'unique_tiles':len(drawn),
+            'small_draws':small,'positive_draws':steps*4,'unique_tiles':len(drawn),
             'unique_parents':len({i//index['tiles_per_parent'] for i in drawn}),
             'negative_and_flip_sequence_sha256':digest.hexdigest()}
 
