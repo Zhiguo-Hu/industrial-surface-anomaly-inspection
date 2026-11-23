@@ -1,0 +1,6 @@
+{
+  "batch_size": 8,
+  "step_seconds_warmed": 0.3254059999987173,
+  "peak_allocated_mib": 2002.4765625,
+  "finite_loss": true
+}

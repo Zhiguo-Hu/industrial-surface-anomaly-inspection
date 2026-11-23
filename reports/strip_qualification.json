@@ -1,0 +1,100 @@
+{
+  "status": "target_not_met",
+  "target": {
+    "recall_min": 0.95,
+    "fpr_max": 0.05
+  },
+  "model_sha256": "ccb00f814256b6892be69288162bb1fde4a21e96c4640ee90db517d7cf6d4c7e",
+  "source_epoch": 4,
+  "source_steps": 2200,
+  "selection_candidates": [
+    {
+      "flip4": false,
+      "normal_calibration_quantile": 0.95,
+      "threshold": 0.8064978718757629,
+      "development": {
+        "auroc": 0.9729333333333334,
+        "threshold": 0.8064978718757629,
+        "tn": 187,
+        "fp": 13,
+        "fn": 29,
+        "tp": 271,
+        "recall": 0.9033333333333333,
+        "fpr": 0.065
+      }
+    },
+    {
+      "flip4": false,
+      "normal_calibration_quantile": 0.975,
+      "threshold": 1.7680869102478027,
+      "development": {
+        "auroc": 0.9729333333333334,
+        "threshold": 1.7680869102478027,
+        "tn": 191,
+        "fp": 9,
+        "fn": 45,
+        "tp": 255,
+        "recall": 0.85,
+        "fpr": 0.045
+      }
+    },
+    {
+      "flip4": true,
+      "normal_calibration_quantile": 0.95,
+      "threshold": 0.8505340218544006,
+      "development": {
+        "auroc": 0.9737833333333333,
+        "threshold": 0.8505340218544006,
+        "tn": 190,
+        "fp": 10,
+        "fn": 30,
+        "tp": 270,
+        "recall": 0.9,
+        "fpr": 0.05
+      }
+    },
+    {
+      "flip4": true,
+      "normal_calibration_quantile": 0.975,
+      "threshold": 1.8011460304260254,
+      "development": {
+        "auroc": 0.9737833333333333,
+        "threshold": 1.8011460304260254,
+        "tn": 193,
+        "fp": 7,
+        "fn": 57,
+        "tp": 243,
+        "recall": 0.81,
+        "fpr": 0.035
+      }
+    }
+  ],
+  "selected_policy": {
+    "flip4": true,
+    "normal_calibration_quantile": 0.95,
+    "threshold": 0.8505340218544006,
+    "development": {
+      "auroc": 0.9737833333333333,
+      "threshold": 0.8505340218544006,
+      "tn": 190,
+      "fp": 10,
+      "fn": 30,
+      "tp": 270,
+      "recall": 0.9,
+      "fpr": 0.05
+    }
+  },
+  "qualification": {
+    "auroc": 0.97858698100458,
+    "threshold": 0.8505340218544006,
+    "tn": 268,
+    "fp": 17,
+    "fn": 73,
+    "tp": 628,
+    "recall": 0.8958630527817404,
+    "fpr": 0.05964912280701754
+  },
+  "inference_precision": "float32",
+  "test_used": false,
+  "scope": "Reused validation partitions, not independent final test; no operating-policy selection using qualification labels"
+}

@@ -1,0 +1,21 @@
+{
+  "status": "paused_by_user",
+  "date": "2026-11-23",
+  "reason": "Laptop battery low; safe to shut down",
+  "run_name": "strip_inspector_refined",
+  "checkpoint": "runs/strip_inspector_refined/last.pt",
+  "checkpoint_load_verified": true,
+  "training_schema": 2,
+  "completed_epochs": 1,
+  "resume_epoch": 2,
+  "resume_next_batch": 50,
+  "saved_update_attempts": 600,
+  "planned_epochs": 8,
+  "target": {
+    "recall_min": 0.95,
+    "normal_fpr_max": 0.05
+  },
+  "test_used": false,
+  "resume_command": ".\\scripts\\resume_strip_refinement.ps1",
+  "notes": "Resume from last saved checkpoint; work after that checkpoint is replayed. CPU/GPU RNG, optimizer, scaler and EMA are present. Training stopped; no scheduled restart."
+}
