@@ -241,6 +241,20 @@ Supervision and training-set sizes differ, so this is not an architecture-only c
 
 Training plus calibration/evaluation took ~74 seconds excluding initial tile indexing, with ~789 MiB peak PyTorch allocation. Next, analyze class/defect-area failures and training coverage before expanding training or using a pretrained encoder.
 
+### U-Net 分组诊断 / U-Net grouped diagnosis
+
+```powershell
+python scripts/analyze_unet.py
+```
+
+详见 [类别与面积分析 / Class and area analysis](reports/steel_unet_failure_analysis.md)。第 2 类训练子集仅 9 张，验证 0/6 检出，类别像素召回约 2.49%。≥5% 大面积缺陷像素召回也只有 27.80%，不能仅归因于小缺陷。正常图虽然仅 7/100 报警，但 95/100 在像素阈值下有非空掩码；“图像误报率”与“分割误报”必须分别报告。
+
+Class 2 has only 9 training images, 0/6 validation alarms and 2.49% class-pixel recall. Large defects (≥5% union area) have only 27.80% pixel recall. Although 7/100 normal images alarm, 95/100 have nonempty masks at the pixel threshold. Image alarms and segmentation false positives are distinct metrics.
+
+本阶段未更新模型、阈值或测试集。24 项测试通过。下一步优先做类别覆盖/抽样的单变量对照，不同时改动架构、损失或训练预算。
+
+Model and thresholds are unchanged, test data remains untouched, and all 24 tests pass. Next prioritize a single-variable class-coverage/sampling experiment without changing architecture, loss or training budget.
+
 下一步分析正常/缺陷分数重叠、边缘与接缝响应、候选抽样和纹理差异，再选择受控改动或监督分割对照。上述原因目前是待验证假设，不能作为已确认结论。钢材测试集保留用于最终配置评价。
 
 Next: investigate score overlap, boundary/seam responses, candidate sampling, and texture variation, then run controlled changes or supervised segmentation. These are hypotheses, not confirmed causes. The steel test split remains reserved for final evaluation.
