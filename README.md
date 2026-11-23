@@ -14,7 +14,8 @@ A PyTorch project for industrial surface anomaly detection and localization. MVT
 | 钢材 RLE 检查与固定划分 / Steel RLE audit and fixed split | 已完成 / Complete |
 | 钢材滑窗与拼接 / Steel tiling and stitching | 已完成 / Complete |
 | 钢材异常检测首轮试验 / Steel anomaly pilot | 已跑通，效果不合格 / Runs; inadequate detection |
-| 监督分割与实际采集验证 / Supervised segmentation and field validation | 待实现 / Planned |
+| 轻量 U-Net 监督分割对照 / Supervised U-Net pilot | 已完成首轮，效果仍不足 / Initial run complete, inadequate |
+| 实际采集验证 / Field validation | 待实现 / Planned |
 
 ## 方法 / Methods
 
@@ -205,6 +206,40 @@ Border exclusion, quantile/relative scoring, and a fourfold larger bank did not 
 python scripts/diagnose_steel.py
 python scripts/diagnose_steel_capacity.py
 ```
+
+## 轻量 U-Net 监督训练 / Supervised lightweight U-Net
+
+```powershell
+python scripts/train_steel_unet.py
+python scripts/train_steel_unet.py --image data/severstal/034941f9d.jpg
+python -m unittest discover -s tests -v
+```
+
+SmallUNet 从零训练，488001 参数，GroupNorm，BCE+soft Dice，AdamW，CUDA 混合精度。保持原图划分、256×256 切块与重叠平均。4 类掩码合并为二值缺陷。固定选择 250 张正常+250 张缺陷训练图，索引为 1210 个含缺陷块和 4790 个无缺陷块。每批各采样 4 个，有放回；图片与掩码同步翻转。
+
+SmallUNet is trained from scratch: 488001 parameters, GroupNorm, BCE plus soft Dice, AdamW, CUDA mixed precision. Original-image splits, 256×256 tiles, and overlap averaging are preserved. Four classes are merged into one binary defect mask. A fixed 250-normal/250-defective parent-image pool yields 1210 positive and 4790 negative tiles. Each batch samples four of each with replacement and paired flips.
+
+本轮训练 6 轮、每轮 80 次更新，共 480 次；“轮”不是遍历全部训练图的 epoch。80 张独立开发验证图用于按固定 0.5 阈值的 pooled Dice 选检查点，并用于选择像素阈值。第 5 轮最佳，像素阈值 0.4；图像阈值由原 200 张正常校准图确定。最后在与异常基线相同的 100 正常+100 缺陷验证图上评估，不读取测试图片。
+
+Six rounds of 80 updates give 480 updates, not six full dataset epochs. Eighty separate development-validation images select the checkpoint by pooled Dice at threshold 0.5, then select the pixel threshold. Round 5 is best, pixel threshold 0.4. The same 200 normal calibration images determine the image threshold. Evaluation uses the original 100 normal and 100 defective validation images; no test images are read.
+
+| 相同评估子集 / Same evaluation subset | 正常特征库 / Memory bank | U-Net |
+|---|---:|---:|
+| Image AUROC | 0.5205 | 0.7204 |
+| 缺陷检出 / Detected | 3/100 | 25/100 |
+| 正常误报 / False alarms | 11/100 | 7/100 |
+
+U-Net 全部 200 张图的 pooled pixel Dice=0.2877、IoU=0.1680，缺陷图逐图 Dice 均值=0.4304。不能把不同定义的 Dice 混用。逐缺陷图像素 AUROC 均值=0.9143，低于之前 0.9306；监督方法没有在所有指标上同时提升。仍存在粗糙正常纹理误报、小缺陷漏检和大面积缺陷分割不足，不能用于产线。
+
+U-Net pooled pixel Dice over all 200 images is 0.2877 and IoU is 0.1680; mean defective-image Dice is 0.4304. These are different aggregations. Mean per-defective-image pixel AUROC is 0.9143, below the earlier 0.9306, so not all metrics improve. Rough normal textures, small defects, and large defect regions remain failure modes; this is not production-ready.
+
+两种方法使用不同监督信息与训练样本规模，不能将差异全部归因于架构。21 项测试通过，保存重载与单图推理通过。权重位于 `runs/steel_unet/best.pt`（本机保存，不上传 GitHub）；输出还包括验证预测、预览、metrics.json。训练曲线数值保存在 `reports/steel_unet_metrics.json` 的 history，固定选择在 `configs/steel_unet_selection.json`。
+
+Supervision and training-set sizes differ, so this is not an architecture-only comparison. All 21 tests pass; checkpoint reload and single-image inference are verified. Weights remain local at `runs/steel_unet/best.pt`, alongside validation predictions, previews, and metrics. Numeric learning history is in `reports/steel_unet_metrics.json`; selected identities are in `configs/steel_unet_selection.json`.
+
+实测训练与后续校准评估约 74 秒（不含前面的切块索引）、峰值 PyTorch 分配显存约 789 MiB。后续优先做类别/缺陷面积分组评估，检查训练样本覆盖与损失取舍，再决定扩大训练规模或使用预训练编码器。不是直接盲目增加训练轮数。
+
+Training plus calibration/evaluation took ~74 seconds excluding initial tile indexing, with ~789 MiB peak PyTorch allocation. Next, analyze class/defect-area failures and training coverage before expanding training or using a pretrained encoder.
 
 下一步分析正常/缺陷分数重叠、边缘与接缝响应、候选抽样和纹理差异，再选择受控改动或监督分割对照。上述原因目前是待验证假设，不能作为已确认结论。钢材测试集保留用于最终配置评价。
 
