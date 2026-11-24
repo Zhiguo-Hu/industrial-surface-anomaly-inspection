@@ -32,6 +32,7 @@ class SteelRuntime:
         if state_hash(saved['model'])!=saved['model_sha256']:raise ValueError('Model checksum mismatch')
         fingerprint=frozen_test_fingerprint(saved['model_sha256'],saved['inspection_policy'])
         if acceptance.get('frozen_fingerprint')!=fingerprint:raise ValueError('Inference policy differs from the frozen test candidate')
+        if saved.get('pixel_threshold',.5)!=saved['inspection_policy'].get('pixel_threshold',.5):raise ValueError('Mask threshold differs from frozen inference policy')
         metrics=acceptance['metrics']
         if metrics['recall']<.95 or metrics['fpr']>.05:raise ValueError('Artifact does not meet configured recall/FPR targets')
         configure(42,True);torch.set_num_threads(4)

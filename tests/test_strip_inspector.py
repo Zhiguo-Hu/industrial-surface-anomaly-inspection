@@ -68,6 +68,8 @@ class StripInspectorTests(unittest.TestCase):
             with self.assertRaises(ValueError):verify_test_identity(a,b)
         b=frozen_test_fingerprint('model-a',{'flip4':False,'threshold':1.,'fusion':{'coefficient':[1.]}})
         with self.assertRaises(ValueError):verify_test_identity(a,b)
+        b=frozen_test_fingerprint('model-a',{'flip4':False,'threshold':1.,'pixel_threshold':.3})
+        with self.assertRaises(ValueError):verify_test_identity(a,b)
 
     def test_mask_statistics_and_exported_linear_decision(self):
         mask=torch.zeros(2,1,8,16);mask[0,0,0,0]=5

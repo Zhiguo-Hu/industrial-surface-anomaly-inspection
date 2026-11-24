@@ -30,7 +30,9 @@
     "pyramid_windows": false,
     "nonlinear_svm": false,
     "calibration": "400 normal images; q95/q97.5 selected with development labels",
-    "qualification": "986 reused validation images; target gate before one frozen original test1882"
+    "qualification": "986 reused validation images; target gate before one frozen original test1882",
+    "simplicity_rule": "Prefer raw frozen head when development recall is within0.01 of best fusion candidate and AUROC within0.005. OOF applies only to learned fusion, not to the development-selected CNN.",
+    "threshold_safety_rule": "Prefer q97.5 calibration if its development recall remains>=0.97 and FPR<=0.05; otherwise maximize eligible development recall. Qualification/test labels never choose the threshold."
   },
   "visual_error_review": {
     "common_misses_previous_three_candidates": 45,
@@ -40,5 +42,6 @@
       "Some normal-labeled surfaces contain bright points or coarse texture similar to marked defects. This observation does not establish label error and labels are unchanged."
     ],
     "review_image": "runs/efficientnet_error_review/baseline_errors.png"
-  }
+  },
+  "deployment_preference": "User selected local single/batch image inference on this PC"
 }

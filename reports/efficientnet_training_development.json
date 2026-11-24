@@ -1,0 +1,62 @@
+{
+  "status": "early_qualification_ready",
+  "completed_epochs": 4,
+  "planned_max_epochs": 12,
+  "development_history": [
+    {
+      "epoch": 1,
+      "steps": 550,
+      "training_loss": 0.9592554586624134,
+      "auroc": 0.9800166666666666,
+      "threshold": -0.17292353510856628,
+      "tn": 191,
+      "fp": 9,
+      "fn": 25,
+      "tp": 275,
+      "recall": 0.9166666666666666,
+      "fpr": 0.045
+    },
+    {
+      "epoch": 2,
+      "steps": 1100,
+      "training_loss": 0.33367885750464416,
+      "auroc": 0.9886666666666666,
+      "threshold": -0.5852550864219666,
+      "tn": 191,
+      "fp": 9,
+      "fn": 8,
+      "tp": 292,
+      "recall": 0.9733333333333334,
+      "fpr": 0.045
+    },
+    {
+      "epoch": 3,
+      "steps": 1650,
+      "training_loss": 0.2458559828747159,
+      "auroc": 0.99325,
+      "threshold": -0.43576574325561523,
+      "tn": 191,
+      "fp": 9,
+      "fn": 5,
+      "tp": 295,
+      "recall": 0.9833333333333333,
+      "fpr": 0.045
+    },
+    {
+      "epoch": 4,
+      "steps": 2200,
+      "training_loss": 0.1940625698462695,
+      "auroc": 0.9924499999999999,
+      "threshold": -0.948767364025116,
+      "tn": 191,
+      "fp": 9,
+      "fn": 4,
+      "tp": 296,
+      "recall": 0.9866666666666667,
+      "fpr": 0.045
+    }
+  ],
+  "scope": "Development500 only; not final acceptance",
+  "model_sha256": "df3e8bff400607a5b3b42489e36a590cf056c94ba8bd9ab32ee9b8b53aacb659",
+  "test_used": false
+}

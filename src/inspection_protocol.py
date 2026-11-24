@@ -37,7 +37,7 @@ def development_metrics(labels,scores):
 
 def frozen_test_fingerprint(model_sha256,policy):
     return hashlib.sha256(json.dumps({'model':model_sha256,'flip4':policy['flip4'],'threshold':policy['threshold'],
-                                    'fusion':policy.get('fusion')},sort_keys=True).encode()).hexdigest()
+                                    'fusion':policy.get('fusion'),'pixel_threshold':policy.get('pixel_threshold',.5)},sort_keys=True).encode()).hexdigest()
 
 
 def verify_test_identity(previous,requested):

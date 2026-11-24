@@ -8,6 +8,8 @@ from PIL import Image
 import torch
 from src.steel_runtime import SteelRuntime,decode_steel_image,MAX_IMAGE_BYTES
 from scripts.serve_steel_inspection import Handler
+from scripts.batch_steel_inspection import inspect_files
+from src.localization_metrics import localization_metrics
 
 
 def png(size=(1600,256),mode='RGB'):
@@ -15,6 +17,47 @@ def png(size=(1600,256),mode='RGB'):
 
 
 class RuntimeContractTests(unittest.TestCase):
+    def test_localization_counts_include_normal_false_positive_pixels(self):
+        metrics=localization_metrics([[4,5,8],[0,0,2]],.3,pixels_per_image=10)
+        self.assertAlmostEqual(metrics['global_dice'],8/15);self.assertAlmostEqual(metrics['global_iou'],4/11)
+        self.assertAlmostEqual(metrics['pixel_recall'],.8);self.assertAlmostEqual(metrics['pixel_precision'],.4)
+        self.assertAlmostEqual(metrics['mean_positive_image_dice'],8/13);self.assertAlmostEqual(metrics['normal_pixel_fpr'],.2)
+
+    def test_final_loader_rle_and_hash_contract_without_accessing_real_test(self):
+        import hashlib
+        from unittest.mock import patch
+        from scripts import final_test_strip_inspector as module
+        with tempfile.TemporaryDirectory() as folder:
+            root=Path(folder);path=root/'synthetic.png';path.write_bytes(png())
+            row={'image':'synthetic.png','image_id':'synthetic.png','label':1,'sha256':hashlib.sha256(path.read_bytes()).hexdigest()}
+            with patch.object(module,'ROOT',root):
+                dataset=module.FinalImages([row],{'synthetic.png':['409600 1']})
+                image,label,index,mask=dataset[0]
+                self.assertEqual(image.shape,(3,256,1600));self.assertEqual((label,index),(1,0))
+                self.assertEqual(mask.sum().item(),1);self.assertEqual(mask[0,255,1599].item(),1)
+                with self.assertRaises(AssertionError):module.FinalImages([row],{})[0]
+
+    def test_batch_preserves_results_and_rejects_invalid_images_individually(self):
+        import csv
+        with tempfile.TemporaryDirectory() as folder:
+            root=Path(folder);normal=root/'正常,样本.png';normal.write_bytes(png())
+            damaged=root/'invalid.png';damaged.write_bytes(png((32,32)))
+            positive=root/'positive.png';buffer=io.BytesIO();Image.new('RGB',(1600,256),'white').save(buffer,format='PNG');positive.write_bytes(buffer.getvalue())
+            oversized=root/'large.png'
+            with oversized.open('wb') as stream:stream.truncate(MAX_IMAGE_BYTES+1)
+            class FakeRuntime:
+                info={'status':'test_stub'}
+                result_dir=root/'outputs'
+                calls=0
+                def predict(self,content):
+                    self.calls+=1;array=decode_steel_image(content)
+                    return {'request_id':str(self.calls),'defect_detected':bool(array.mean()>127),'score':float(array.mean()),'threshold':127.,'elapsed_ms':1.}
+            runtime=FakeRuntime();summary=inspect_files(runtime,[normal,damaged,positive,oversized],root/'summary')
+            self.assertEqual(summary['processed'],4);self.assertEqual(summary['successful'],2);self.assertEqual(summary['rejected'],2)
+            self.assertEqual(summary['defect_detected'],1);self.assertEqual(runtime.calls,3)
+            with (root/'summary/summary.csv').open(encoding='utf-8-sig',newline='') as stream:rows=list(csv.DictReader(stream))
+            self.assertEqual(Path(rows[0]['file']).name,'正常,样本.png');self.assertEqual(rows[1]['status'],'rejected');self.assertEqual(rows[2]['status'],'ok')
+
     def test_native_rgb_decode_and_rejection_of_wrong_acquisition(self):
         array=decode_steel_image(png());self.assertEqual(array.shape,(256,1600,3));self.assertEqual(array.dtype,np.uint8)
         self.assertEqual(decode_steel_image(png(mode='L')).shape,(256,1600,3))

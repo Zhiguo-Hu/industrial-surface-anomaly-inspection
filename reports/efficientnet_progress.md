@@ -4,6 +4,10 @@
 
 Training in progress; **not an accepted deployment model**. Previous ensemble recall92.87% / normal FPR7.02% fails the unchanged95%/5% target.
 
+当前已完成4轮、触发预声明的提前资格验证；开发召回98.67%/FPR4.5%，不代表最终验收。用户选择本机单张/批量图片部署，已补充网页多选、CSV导出与文件夹批量CLI。70项检查通过，真实模型服务与独立最终test仍待验收流程执行。
+
+Four epochs trigger the predefined early-qualification gate: development recall98.67%/FPR4.5%, not final acceptance. User selected local single/batch images. Multi-file web upload, CSV export and folder CLI are implemented;70 checks pass. Accepted-model service/end-to-end and final-test checks remain pending.
+
 ## 本轮改动 / Changes
 
 使用[PyTorch官方EfficientNetV2-S](https://docs.pytorch.org/vision/main/models/generated/torchvision.models.efficientnet_v2_s.html)的ImageNet1K V1权重，更换特征编码器并增加轻量U-Net解码器。沿用ImageNet归一化，保留原1600×256图像，不执行官方分类用的384中心裁剪。没有使用外部Severstal训练模型。来源与完整SHA256见`efficientnet_pretrained_provenance.json`；论文见[EfficientNetV2](https://arxiv.org/abs/2104.00298)。

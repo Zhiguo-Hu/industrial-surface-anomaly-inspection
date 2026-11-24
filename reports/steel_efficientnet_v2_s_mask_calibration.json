@@ -1,0 +1,142 @@
+{
+  "model_sha256": "df3e8bff400607a5b3b42489e36a590cf056c94ba8bd9ab32ee9b8b53aacb659",
+  "source_epoch": 4,
+  "selection": "Max development500 global Dice, lower threshold breaks ties",
+  "development_candidates": [
+    {
+      "threshold": 0.1,
+      "ungated": true,
+      "images": 500,
+      "global_dice": 0.7134627366122712,
+      "global_iou": 0.5545604911074015,
+      "pixel_recall": 0.8060816673065557,
+      "pixel_precision": 0.639934182272548,
+      "mean_positive_image_dice": 0.6897338688529706,
+      "normal_pixel_fpr": 0.003261962890625
+    },
+    {
+      "threshold": 0.2,
+      "ungated": true,
+      "images": 500,
+      "global_dice": 0.7298090669267001,
+      "global_iou": 0.5745664277108995,
+      "pixel_recall": 0.7694305264661344,
+      "pixel_precision": 0.6940683470262247,
+      "mean_positive_image_dice": 0.6988353555823632,
+      "normal_pixel_fpr": 0.0029196044921875
+    },
+    {
+      "threshold": 0.3,
+      "ungated": true,
+      "images": 500,
+      "global_dice": 0.7342133941403124,
+      "global_iou": 0.5800451598566685,
+      "pixel_recall": 0.74499904353208,
+      "pixel_precision": 0.7237355843591939,
+      "mean_positive_image_dice": 0.7029133231449106,
+      "normal_pixel_fpr": 0.00272783203125
+    },
+    {
+      "threshold": 0.4,
+      "ungated": true,
+      "images": 500,
+      "global_dice": 0.7345739541506034,
+      "global_iou": 0.5804953648299002,
+      "pixel_recall": 0.725455888837744,
+      "pixel_precision": 0.7439241421081683,
+      "mean_positive_image_dice": 0.7050218060487848,
+      "normal_pixel_fpr": 0.00258592529296875
+    },
+    {
+      "threshold": 0.5,
+      "ungated": true,
+      "images": 500,
+      "global_dice": 0.7327049379975126,
+      "global_iou": 0.5781644385481511,
+      "pixel_recall": 0.7072528907299962,
+      "pixel_precision": 0.7600572666047177,
+      "mean_positive_image_dice": 0.7058328805791435,
+      "normal_pixel_fpr": 0.002463671875
+    },
+    {
+      "threshold": 0.6,
+      "ungated": true,
+      "images": 500,
+      "global_dice": 0.7287689951491487,
+      "global_iou": 0.5732781786852756,
+      "pixel_recall": 0.6881098247919667,
+      "pixel_precision": 0.7745348655237323,
+      "mean_positive_image_dice": 0.7059443825359281,
+      "normal_pixel_fpr": 0.0023480712890625
+    },
+    {
+      "threshold": 0.7,
+      "ungated": true,
+      "images": 500,
+      "global_dice": 0.7221620570976105,
+      "global_iou": 0.5651436953400706,
+      "pixel_recall": 0.6657163589793612,
+      "pixel_precision": 0.7890665448498574,
+      "mean_positive_image_dice": 0.7050978243394591,
+      "normal_pixel_fpr": 0.0022291015625
+    },
+    {
+      "threshold": 0.8,
+      "ungated": true,
+      "images": 500,
+      "global_dice": 0.7093210149884772,
+      "global_iou": 0.5495719874776954,
+      "pixel_recall": 0.6332367155907453,
+      "pixel_precision": 0.8061853395520278,
+      "mean_positive_image_dice": 0.7021628844285293,
+      "normal_pixel_fpr": 0.00208070068359375
+    },
+    {
+      "threshold": 0.9,
+      "ungated": true,
+      "images": 500,
+      "global_dice": 0.6719756098311331,
+      "global_iou": 0.505996437117911,
+      "pixel_recall": 0.5613879224598862,
+      "pixel_precision": 0.8368207515966353,
+      "mean_positive_image_dice": 0.6899561076170516,
+      "normal_pixel_fpr": 0.0018103759765625
+    }
+  ],
+  "pixel_threshold": 0.4,
+  "development": {
+    "threshold": 0.4,
+    "ungated": true,
+    "images": 500,
+    "global_dice": 0.7345739541506034,
+    "global_iou": 0.5804953648299002,
+    "pixel_recall": 0.725455888837744,
+    "pixel_precision": 0.7439241421081683,
+    "mean_positive_image_dice": 0.7050218060487848,
+    "normal_pixel_fpr": 0.00258592529296875
+  },
+  "qualification": {
+    "threshold": 0.4,
+    "ungated": true,
+    "images": 986,
+    "global_dice": 0.7427375623241771,
+    "global_iou": 0.5907577766319041,
+    "pixel_recall": 0.7320552617863629,
+    "pixel_precision": 0.7537362360861349,
+    "mean_positive_image_dice": 0.707402037539469,
+    "normal_pixel_fpr": 0.0013845000685307018
+  },
+  "qualification_at_0p5": {
+    "threshold": 0.5,
+    "ungated": true,
+    "images": 986,
+    "global_dice": 0.740052796894644,
+    "global_iou": 0.587368101671766,
+    "pixel_recall": 0.714713424666903,
+    "pixel_precision": 0.7672549714214393,
+    "mean_positive_image_dice": 0.7076465249236826,
+    "normal_pixel_fpr": 0.0013148043448464911
+  },
+  "test_used": false,
+  "scope": "Output mask threshold only; weights and image-alarm feature statistics/scores unchanged. Qualification is reused validation."
+}

@@ -28,9 +28,13 @@ def main():
     parser.add_argument('--include-pyramid',action='store_true')
     parser.add_argument('--include-nonlinear',action='store_true')
     parser.add_argument('--include-raw-head',action='store_true')
+    parser.add_argument('--prefer-raw-within',type=float,default=0.)
+    parser.add_argument('--calibration-safety-margin',action='store_true')
     parser.add_argument('--reuse-features',action='store_true');args=parser.parse_args()
     if Path(args.run_name).name!=args.run_name:parser.error('Invalid run-name')
     if Path(args.checkpoint).name!=args.checkpoint:parser.error('Invalid checkpoint name')
+    if not 0<=args.prefer_raw_within<=.03:parser.error('Raw-head preference must be0..0.03')
+    if args.prefer_raw_within and not args.include_raw_head:parser.error('Raw preference requires --include-raw-head')
     OUTPUT=ROOT/'runs'/args.run_name
     configure(42,True);torch.set_num_threads(4)
     meta=json.loads((CACHE/'metadata.json').read_text());rows=meta['rows'];selection=partition(rows)
@@ -116,6 +120,11 @@ def main():
                             'selection_metric':metric,'metric_scope':'Direct development score of frozen CNN; no learned decision fusion, not OOF backbone validation',
                             'fusion':spec,'scores':scores})
     chosen=max(options,key=lambda r:(r['selection_metric']['recall'],r['selection_metric']['auroc']))
+    if args.prefer_raw_within:
+        simple=[r for r in options if r['method']=='raw_frozen_head' and
+                r['selection_metric']['recall']>=chosen['selection_metric']['recall']-args.prefer_raw_within and
+                r['selection_metric']['auroc']>=chosen['selection_metric']['auroc']-.005]
+        if simple:chosen=max(simple,key=lambda r:(r['selection_metric']['recall'],r['selection_metric']['auroc']))
     # Quantile choice remains development-only after the OOF model choice.
     thresholds=[]
     for q in (.95,.975):
@@ -124,7 +133,11 @@ def main():
         thresholds.append({'q':q,'threshold':threshold,'development':metric})
     eligible=[t for t in thresholds if t['development']['fpr']<=.05] or thresholds
     selected=max(eligible,key=lambda t:(t['development']['recall'],-t['development']['fpr']))
+    if args.calibration_safety_margin:
+        safe=[t for t in eligible if t['q']>=.975 and t['development']['recall']>=.97 and t['development']['fpr']<=.05]
+        if safe:selected=max(safe,key=lambda t:(t['development']['recall'],-t['development']['fpr']))
     policy={'flip4':chosen['flip4'],'normal_calibration_quantile':selected['q'],'threshold':selected['threshold'],'fusion':chosen['fusion']}
+    policy['pixel_threshold']=saved.get('pixel_threshold',.5)
     qmetrics=operating_metrics(labels[ndev+ncal:],chosen['scores'][ndev+ncal:],policy['threshold'])
     diagnostic=development_metrics(labels[ndev+ncal:],chosen['scores'][ndev+ncal:])
     qstart=ndev+ncal;qpred=chosen['scores'][qstart:]>policy['threshold'];qlabel=labels[qstart:]
@@ -133,7 +146,7 @@ def main():
     for c in (1,2,3,4):
         group=np.array([c in r['classes'] for r in qrows]);total=int(group.sum());found=int(qpred[group].sum())
         class_metrics[str(c)]={'defective_images':total,'detected':found,'recall':found/max(1,total)}
-    if previous is not None:localization=previous['qualification_localization']
+    if previous is not None:localization=previous.get('qualification_localization_at_0p5',previous['qualification_localization'])
     else:
         positives=[r for r in qpixel if r['gt']];normals=[r for r in qpixel if not r['gt']]
         tp=sum(r['tp'] for r in qpixel);gt=sum(r['gt'] for r in qpixel);pred=sum(r['predicted'] for r in qpixel)
@@ -150,9 +163,12 @@ def main():
             'model_sha256':saved['model_sha256'],'source_epoch':saved['epoch'],'source_steps':saved['steps'],
             'source_run':args.run_name,'source_checkpoint':args.checkpoint,'selected_oof_development':chosen.get('oof_development'),
             'selected_development_metric':chosen['selection_metric'],'selected_method':chosen['method'],
+            'raw_preference_within':args.prefer_raw_within,'calibration_safety_margin':args.calibration_safety_margin,
             'selection_candidates':[{k:v for k,v in o.items() if k not in ['scores','fusion']} for o in options],
             'selected_policy':policy,'threshold_candidates':thresholds,'qualification':qmetrics,'test_used':False,
-            'qualification_per_class':class_metrics,'qualification_by_defect_area':area_metrics,'qualification_localization':localization,
+            'qualification_per_class':class_metrics,'qualification_by_defect_area':area_metrics,
+            'qualification_localization_at_0p5':localization,
+            'qualification_localization':saved.get('mask_calibration',{}).get('qualification',localization),
             'diagnostic_only_qualification_roc_at_5pct_fpr':{'not_applied_to_policy':True,**diagnostic},
             'inference_precision':'float32 backbone / float64 decision fusion','scope':'Meta model trained on 500 development images, 5-fold OOF selects method/C/view/crop features; calibration400normal; qualification986 is validation, final test untouched'}
     (OUTPUT/'qualification.json').write_text(json.dumps(report,indent=2),encoding='utf-8')
