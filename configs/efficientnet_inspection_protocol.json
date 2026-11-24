@@ -7,7 +7,7 @@
   "scope": "Native1600x256 Severstal steel images; local RTX5060 deployment candidate, not production-camera acceptance",
   "partition_reference": "configs/strip_inspection_protocol.json",
   "manifest_sha256": "aa6b563d0cbc48c5be78f74b00bfd8c9072e2d2a5e26bda82dbaed205c2e5d5c",
-  "test_used": false,
+  "test_used": true,
   "backbone": "TorchVision EfficientNetV2-S ImageNet1K V1",
   "pretrained_provenance": "reports/efficientnet_pretrained_provenance.json",
   "training": {
@@ -44,5 +44,19 @@
     ],
     "review_image": "runs/efficientnet_error_review/baseline_errors.png"
   },
-  "deployment_preference": "User selected local single/batch image inference on this PC"
+  "deployment_preference": "User selected local single/batch image inference on this PC",
+  "frozen_test_fingerprint": "eb5af201843abc092914f995afa800a5829df479dc429f9164e9656d989d4db0",
+  "final_status": "dataset_acceptance_passed",
+  "trained_epochs": 4,
+  "training_end_reason": "Predeclared early qualification gate, then frozen final acceptance; no further training",
+  "functional_deployment": {
+    "type": "local single/batch image inspection",
+    "http_verified": true,
+    "batch_cli_verified": true,
+    "standalone_package_verified": true,
+    "browser_initial_page_verified": true,
+    "service_url": "http://127.0.0.1:8765",
+    "model_sha256": "df3e8bff400607a5b3b42489e36a590cf056c94ba8bd9ab32ee9b8b53aacb659",
+    "browser_single_batch_verified": true
+  }
 }

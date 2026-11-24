@@ -1,0 +1,10 @@
+{
+  "verified_date_local": "2026-11-24",
+  "service_url": "http://127.0.0.1:8765",
+  "last_verified_status": "ready",
+  "model_sha256": "df3e8bff400607a5b3b42489e36a590cf056c94ba8bd9ab32ee9b8b53aacb659",
+  "dataset_acceptance": "dataset_acceptance_passed",
+  "single_and_batch_browser_verified": true,
+  "training_running": false,
+  "scope": "Snapshot of a local loopback service; rerun the packaged PowerShell launcher after shutdown/reboot"
+}

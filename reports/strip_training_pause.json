@@ -21,5 +21,7 @@
   "resumed_date": "2026-11-24",
   "completed_date": "2026-11-24",
   "amp_skips": 2,
-  "next_epoch_in_saved_checkpoint": 9
+  "next_epoch_in_saved_checkpoint": 9,
+  "historical_run": true,
+  "superseded_by": "reports/efficientnet_acceptance.md"
 }

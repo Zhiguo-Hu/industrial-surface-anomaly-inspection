@@ -1,8 +1,8 @@
 # 全幅检测训练记录 / Full-strip inspection progress
 
-**最新状态2026-11-24：8轮训练与推理验证已完成，当前未达部署目标。此前暂停内容保留为历史记录。完整结果见[本轮训练验证报告](strip_refinement_results.md)。**
+**旧ResNet阶段状态2026-11-24：8轮训练完成但未达标。后续EfficientNet已完成最终验收与本机部署，见[当前验收报告](efficientnet_acceptance.md)。以下保留旧阶段训练/暂停记录。**
 
-**Current2026-11-24: eight epochs and inference checks completed; deployment target unmet. Pause details below are historical. See the [completed-run report](strip_refinement_results.md).**
+**Historical ResNet stage: eight epochs completed, target unmet. The later EfficientNet model passes final acceptance and local deployment; see the current report. Notes below preserve the historical stage.**
 
 2026-11-23：用户因电脑电量不足要求暂停。训练已停止，没有自动重启任务。目标为图像级缺陷召回≥95%、正常误报≤5%；**尚未达标**。
 

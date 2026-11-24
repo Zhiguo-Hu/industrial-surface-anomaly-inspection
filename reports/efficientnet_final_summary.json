@@ -1,0 +1,124 @@
+{
+  "status": "dataset_acceptance_passed",
+  "target": {
+    "recall_min": 0.95,
+    "fpr_max": 0.05
+  },
+  "model_sha256": "df3e8bff400607a5b3b42489e36a590cf056c94ba8bd9ab32ee9b8b53aacb659",
+  "trained_epochs": 4,
+  "planned_max_epochs": 12,
+  "early_stop": "Predeclared two consecutive development epochs at recall>=.97/AUROC>=.99",
+  "qualification": {
+    "auroc": 0.9949345546462447,
+    "threshold": -0.3139572739601135,
+    "tn": 274,
+    "fp": 11,
+    "fn": 10,
+    "tp": 691,
+    "recall": 0.985734664764622,
+    "fpr": 0.03859649122807018
+  },
+  "final_test": {
+    "auroc": 0.9970533068130947,
+    "threshold": -0.3139572739601135,
+    "tn": 854,
+    "fp": 31,
+    "fn": 12,
+    "tp": 985,
+    "recall": 0.9879638916750251,
+    "fpr": 0.03502824858757062
+  },
+  "final_localization": {
+    "threshold": 0.4,
+    "ungated": true,
+    "images": 1882,
+    "global_dice": 0.7335841136580576,
+    "global_iou": 0.5792600373776298,
+    "pixel_recall": 0.7399239996351674,
+    "pixel_precision": 0.7273519487029019,
+    "mean_positive_image_dice": 0.7062549492111828,
+    "normal_pixel_fpr": 0.0015211229917019775
+  },
+  "final_per_class": {
+    "1": {
+      "defective_images": 133,
+      "detected": 129,
+      "recall": 0.9699248120300752
+    },
+    "2": {
+      "defective_images": 36,
+      "detected": 36,
+      "recall": 1.0
+    },
+    "3": {
+      "defective_images": 771,
+      "detected": 764,
+      "recall": 0.9909208819714657
+    },
+    "4": {
+      "defective_images": 119,
+      "detected": 118,
+      "recall": 0.9915966386554622
+    }
+  },
+  "recall_wilson_95": [
+    0.979080330838491,
+    0.9931016180852676
+  ],
+  "fpr_wilson_95": [
+    0.024785326065088854,
+    0.049290267694963606
+  ],
+  "benchmark": {
+    "model_sha256": "df3e8bff400607a5b3b42489e36a590cf056c94ba8bd9ab32ee9b8b53aacb659",
+    "gpu": "NVIDIA GeForce RTX 5060 Laptop GPU",
+    "precision": "float32",
+    "batch_size": 1,
+    "image_size_wh": [
+      1600,
+      256
+    ],
+    "warmup": 5,
+    "iterations": 20,
+    "latency_ms_median": 105.7463000001917,
+    "latency_ms_p95": 117.72669000033602,
+    "peak_allocated_mib": 210.19580078125,
+    "policy": {
+      "flip4": true,
+      "normal_calibration_quantile": null,
+      "threshold": -0.3139572739601135,
+      "pixel_threshold": 0.4,
+      "normal_fpr_calibration": {
+        "method": "normal_only_np_order_statistic",
+        "normal_calibration_images": 400,
+        "rank_one_based": 388,
+        "threshold": -0.3139572739601135,
+        "target_normal_fpr": 0.05,
+        "violation_probability_design": 0.05,
+        "binomial_tail_bound": 0.0355059041776179,
+        "normal_fpr_upper_at_design_confidence": 0.04815392102222603,
+        "calibration_observed_fp": 12,
+        "scope": "Design bound assumes an independent normal calibration set and a fixed score under matching iid acquisition; iterative validation and production distribution shift require independent acceptance, not a universal guarantee"
+      },
+      "fusion": {
+        "method": "linear",
+        "feature_names": [
+          "image_logit",
+          "mask_max_logit",
+          "top41_mean_logit",
+          "top410_mean_logit",
+          "top4096_mean_logit",
+          "mask_area_above_0p1",
+          "mask_area_above_0p3",
+          "mask_area_above_0p5",
+          "mask_area_above_0p7"
+        ],
+        "parameters_sha256": "19eb8468cf2132f4f1af47fbf6559f779f30aa1298f72442c3e61f5f38d7d3c3",
+        "parameters_saved_with_local_candidate": true
+      }
+    },
+    "scope": "In-memory RGB -> preprocessing/transfer -> frozen scoring -> CPU score and raw mask; excludes JPEG decode, disk writes and camera. One development image; no test access."
+  },
+  "test_used": true,
+  "scope": "Original test1882 evaluated once for one frozen model/policy; comparable steel images only; no production-camera acceptance claim"
+}

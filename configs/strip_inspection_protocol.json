@@ -10699,7 +10699,7 @@
     ]
   },
   "calibration_quantile": 0.975,
-  "test_used": false,
+  "test_used": true,
   "scope": "New full-strip protocol; reused validation set, test locked until qualification passes",
   "candidate_policies": [
     {
@@ -10762,6 +10762,8 @@
       "accepted": false
     }
   },
-  "current_status": "training_completed_target_not_met",
-  "validation_reuse_note": "Qualification outcomes motivated follow-up BN/linear/ensemble experiments. This is iterative validation, not an independent final test claim; original test1882 remains locked."
+  "current_status": "frozen_final_test_passed_local_deployment_verified",
+  "validation_reuse_note": "Qualification outcomes motivated follow-up BN/linear/ensemble experiments. This is iterative validation, not an independent final test claim; original test1882 remains locked.",
+  "frozen_test_fingerprint": "eb5af201843abc092914f995afa800a5829df479dc429f9164e9656d989d4db0",
+  "active_deployment_protocol": "configs/efficientnet_inspection_protocol.json"
 }

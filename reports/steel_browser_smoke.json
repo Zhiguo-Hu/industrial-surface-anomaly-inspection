@@ -1,0 +1,16 @@
+{
+  "status": "passed",
+  "browser": "Edg/158.0.4370.33",
+  "batch_rows": 3,
+  "single_rows": 1,
+  "checks": [
+    "real multi-file picker",
+    "2 valid +1 wrong-size rejection",
+    "CSV export",
+    "comma/Chinese filename handling",
+    "single-image rerun clears prior batch"
+  ],
+  "scope": "Functional checks on two development images, no final-test images or model tuning",
+  "model_sha256": "df3e8bff400607a5b3b42489e36a590cf056c94ba8bd9ab32ee9b8b53aacb659",
+  "csv_roundtrip_verified": true
+}

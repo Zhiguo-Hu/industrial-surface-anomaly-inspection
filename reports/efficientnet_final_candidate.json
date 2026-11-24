@@ -58,5 +58,6 @@
     "normal_pixel_fpr": 0.0013845000685307018
   },
   "test_used": false,
-  "next_step": "One original final test after code/reload verification"
+  "next_step": "One original final test after code/reload verification",
+  "record_scope": "Historical snapshot before final test; current acceptance is reports/strip_final_test.json"
 }

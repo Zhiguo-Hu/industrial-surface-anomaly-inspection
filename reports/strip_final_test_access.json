@@ -1,0 +1,39 @@
+{
+  "frozen_fingerprint": "eb5af201843abc092914f995afa800a5829df479dc429f9164e9656d989d4db0",
+  "model_sha256": "df3e8bff400607a5b3b42489e36a590cf056c94ba8bd9ab32ee9b8b53aacb659",
+  "policy": {
+    "flip4": true,
+    "normal_calibration_quantile": null,
+    "threshold": -0.3139572739601135,
+    "pixel_threshold": 0.4,
+    "normal_fpr_calibration": {
+      "method": "normal_only_np_order_statistic",
+      "normal_calibration_images": 400,
+      "rank_one_based": 388,
+      "threshold": -0.3139572739601135,
+      "target_normal_fpr": 0.05,
+      "violation_probability_design": 0.05,
+      "binomial_tail_bound": 0.0355059041776179,
+      "normal_fpr_upper_at_design_confidence": 0.04815392102222603,
+      "calibration_observed_fp": 12,
+      "scope": "Design bound assumes an independent normal calibration set and a fixed score under matching iid acquisition; iterative validation and production distribution shift require independent acceptance, not a universal guarantee"
+    },
+    "fusion": {
+      "method": "linear",
+      "feature_names": [
+        "image_logit",
+        "mask_max_logit",
+        "top41_mean_logit",
+        "top410_mean_logit",
+        "top4096_mean_logit",
+        "mask_area_above_0p1",
+        "mask_area_above_0p3",
+        "mask_area_above_0p5",
+        "mask_area_above_0p7"
+      ],
+      "parameters_sha256": "19eb8468cf2132f4f1af47fbf6559f779f30aa1298f72442c3e61f5f38d7d3c3",
+      "parameters_saved_with_local_candidate": true
+    }
+  },
+  "test_images": 1882
+}

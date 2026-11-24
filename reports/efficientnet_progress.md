@@ -1,12 +1,12 @@
 # EfficientNetV2-S训练与部署入口 / Training and deployment entry
 
-2026-11-24，正在训练；**不是验收通过的部署模型**。既有组合候选召回92.87%/正常FPR7.02%，本轮目标仍为至少95%/至多5%。
+2026-11-24：**已通过最终独立图像报警验收并完成本机单张/批量部署。** test召回98.80%、正常FPR3.50%，满足95%/5%目标；完整结果见[最终验收报告](efficientnet_acceptance.md)。
 
-Training in progress; **not an accepted deployment model**. Previous ensemble recall92.87% / normal FPR7.02% fails the unchanged95%/5% target.
+**Frozen final-test image alarms passed; local single/batch deployment completed.** Test recall98.80%, normal FPR3.50%, meeting95%/5% targets. See the final report.
 
-当前已完成4轮、触发预声明的提前资格验证；开发召回98.67%/FPR4.5%，不代表最终验收。用户选择本机单张/批量图片部署，已补充网页多选、CSV导出与文件夹批量CLI。70项检查通过，真实模型服务与独立最终test仍待验收流程执行。
+完成4轮后触发预声明提前验证，随后完成正常样本NP阈值校准、一次原始test、真实模型HTTP/批量CLI联调、独立打包和浏览器界面检查。71项检查通过。以下保留方法和训练过程，不表示训练仍在运行。
 
-Four epochs trigger the predefined early-qualification gate: development recall98.67%/FPR4.5%, not final acceptance. User selected local single/batch images. Multi-file web upload, CSV export and folder CLI are implemented;70 checks pass. Accepted-model service/end-to-end and final-test checks remain pending.
+Four epochs trigger the predefined gate, followed by normal-only NP calibration, one original test, real HTTP/batch CLI, standalone packaging and browser checks. All71 tests pass. The method/training notes below do not mean training is still active.
 
 ## 本轮改动 / Changes
 
@@ -32,6 +32,8 @@ GPU probes pass for micro8/micro4 at5711/3006MiB. Choose micro4 with accumulatio
 
 One predefined early qualification attempt: from epoch3, two consecutive development epochs at recall≥97% and AUROC≥0.99. Otherwise complete12 epochs. If early qualification fails, record it and resume the same schedule. Unlock final test once only after qualification and freezing weights/policy.
 
+下面仅为研究训练中断后的恢复入口；当前已验收模型保持冻结。 / Research resume entry only; the accepted model remains frozen.
+
 ```powershell
 # 项目根目录；已有完整状态后恢复 / Resume matching state at project root
 .\scripts\run_efficient_training.ps1 -Resume
@@ -39,10 +41,10 @@ One predefined early qualification attempt: from epoch3, two consecutive develop
 
 ## 本机服务 / Local service
 
-已实现仅监听127.0.0.1的推理入口、上传页面、`GET /health`和原始PNG/JPEG字节的`POST /predict`；图片与结果留本机。拒绝错误尺寸、超过10MB图片，以及未通过最终测试的模型。当前尚无通过验收的模型，服务不会把研究候选作为部署模型启动。
+已实现仅监听127.0.0.1的推理入口、多选上传、CSV导出、`GET /health`和原始PNG/JPEG字节的`POST /predict`；图片与结果留本机。拒绝错误尺寸、超过10MB图片，以及未通过最终测试的模型。当前已验收模型由`configs/strip_deployment_current.json`指向。
 
-Implemented a loopback-only upload page/API: `GET /health`, `POST /predict` with raw PNG/JPEG bytes. Images/results stay local. Reject wrong geometry, payloads over10MB and models lacking passed final-test acceptance. No accepted artifact exists yet; research models cannot start as deployment models.
+Implemented loopback-only multi-file upload/CSV, health and raw-image prediction APIs. Results stay local. Wrong geometry, payloads over10MB and unaccepted models are rejected. The accepted artifact has a dedicated deployment pointer.
 
-67项测试已通过，含新编码器梯度/复载、输入合同、验收门槛，以及实际回环HTTP路由/文件隔离测试。此处HTTP合同测试使用替身推理器；真实验收模型的端到端服务验证须等训练和验收后执行，尚未完成。
+71项测试通过。HTTP合同单元测试使用替身推理器；另已通过真实验收模型的HTTP/批量CLI及独立部署包端到端验证，详见`steel_service_smoke.json`和`steel_package_smoke.json`。
 
-All67 tests pass, covering encoder gradients/reload, input/acceptance contracts and real loopback HTTP routes/file isolation. HTTP contract tests use a stub inference object; accepted-model end-to-end verification remains pending.
+All71 tests pass. HTTP contract unit tests use a stub; separate real accepted-model HTTP/batch CLI and standalone bundle end-to-end checks pass, as recorded in their reports.

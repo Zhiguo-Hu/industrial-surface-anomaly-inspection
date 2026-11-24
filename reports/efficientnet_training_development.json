@@ -58,5 +58,6 @@
   ],
   "scope": "Development500 only; not final acceptance",
   "model_sha256": "df3e8bff400607a5b3b42489e36a590cf056c94ba8bd9ab32ee9b8b53aacb659",
-  "test_used": false
+  "test_used": false,
+  "record_scope": "Historical snapshot before final test; current acceptance is reports/strip_final_test.json"
 }

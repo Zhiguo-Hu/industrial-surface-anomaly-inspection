@@ -1,11 +1,12 @@
 {
   "model": "runs/strip_inspector_ensemble/candidate.pt",
   "model_sha256": "fbdf017d6620b29d8cf3ea1bea426d71999fa0a1d5fca9f612ad38b6a06a4e79",
-  "status": "research_only_target_not_met",
+  "status": "historical_research_candidate_superseded_by_accepted_model",
   "selection": "Highest development-OOF recall among the linear single-stage and two-stage candidates; qualification not used to rank them",
   "target": {
     "recall_min": 0.95,
     "fpr_max": 0.05
   },
-  "test_used": false
+  "test_used": false,
+  "superseded_by": "configs/strip_deployment_current.json"
 }

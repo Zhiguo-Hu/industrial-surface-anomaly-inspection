@@ -1,10 +1,26 @@
 # 工业表面异常检测与定位 / Industrial Surface Anomaly Inspection
 
-新一轮 / New experiment: [EfficientNetV2-S训练与本机部署入口进度 / Training and local deployment progress](reports/efficientnet_progress.md)。正在训练，仍未通过最终验收；下文保留已完成实验的结果。
+2026-11-24：**已完成本机单张/批量图片部署，并通过指定图像报警门槛。** 独立test1882张：缺陷召回98.80%（985/997）、正常误报3.50%（31/885）、AUROC0.99705。采用EfficientNetV2-S＋轻量U-Net，原尺度1600×256。71项测试、真实HTTP/批量CLI、独立部署包复载验证通过。完整方法、冻结证据和定位指标见[中英文最终报告](reports/efficientnet_acceptance.md)及[完整数值](reports/efficientnet_final_summary.json)。
 
-基于 PyTorch 的工业表面视觉检测项目。2026-11-24已断点恢复并完成全幅检测第二阶段8轮训练、BN统计校正对照、窗口/掩码/类别融合及两阶段组合。当前研究组合在986张资格验证图上召回92.87%（651/701）、正常误报7.02%（20/285），**未达到召回≥95%、正常误报≤5%的门槛，不能称为可部署成品**。62项测试、独立进程重载与全分辨率输出检查通过；原1882张最终test仍封存。详见[中英文训练验证报告](reports/strip_refinement_results.md)和[完整数值](reports/strip_refinement_summary.json)。
+**Local single/batch image deployment is complete and meets the specified image-alarm targets.** Frozen independent test1882: recall98.80% (985/997), normal FPR3.50% (31/885), AUROC0.99705. EfficientNetV2-S/small U-Net preserves native1600×256 geometry. All71 tests, real HTTP/batch CLI checks and standalone package verification pass. See the [bilingual final report](reports/efficientnet_acceptance.md). Production-camera validation remains separate; masks provide auxiliary localization, mean defective-test-image Dice0.7063.
 
-A PyTorch surface-inspection project. Resumed and completed eight refinement epochs on2026-11-24, plus BN controls, feature fusion and a frozen two-stage ensemble. Its qualification recall is92.87% (651/701), normal FPR7.02% (20/285): **below the recall≥95% / FPR≤5% acceptance target; not deployable**. All62 tests, independent-process reload and full-resolution output checks pass. Original test1882 remains locked. See the [bilingual report](reports/strip_refinement_results.md) and [complete metrics](reports/strip_refinement_summary.json).
+## 本机使用 / Local use
+
+在已有本地验收模型和验证Python环境的项目根目录运行 / At project root with the local accepted artifact/environment:
+
+```powershell
+.\scripts\run_steel_deployment.ps1
+```
+
+浏览器打开 http://127.0.0.1:8765 ，单选或多选1600×256 PNG/JPEG钢材图，查看定位响应并导出CSV。图片、缓存和模型权重保留本机，GitHub提供代码、协议和数值；推理入口拒绝未通过验收的研究模型。正常误报指图像级误报，不是像素误报。
+
+Open the loopback URL, select one/multiple native steel images, inspect localization and export CSV. Data/model artifacts remain local; GitHub contains code, protocol and metrics. Runtime rejects unaccepted research artifacts. Image-alarm FPR and pixel FPR are distinct.
+
+![本机界面 / Local interface](reports/steel_local_ui.png)
+
+此前ResNet阶段的失败和完整数值保留在[历史训练验证报告](reports/strip_refinement_results.md)，不作为当前部署模型的指标。以下为完整开发历程。
+
+Earlier failed ResNet experiments are preserved in the linked historical report; they are not the deployed model's metrics. The full development history follows.
 
 ## 进展 / Progress
 
@@ -24,9 +40,14 @@ A PyTorch surface-inspection project. Resumed and completed eight refinement epo
 | 稀有类别与小缺陷抽样 / Rare-class and small-tile sampling | 类别平衡改善本轮小面积检出，强小分块偏好失败 / Better small-area detection with class balance; strong small bias fails |
 | 类别平衡复验 / Class-balanced replication | 类别2收益复现，整体误报与定位退步 / Class-2 gains replicate; overall alarms/localization regress |
 | 完整正常特征库 / Normal steel feature memory | 已建成，独立加载/来源/检索通过 / Built; independent reload, provenance and retrieval verified |
+| EfficientNetV2-S原尺度联合训练 / Native joint training | 4轮触发预声明提前验证，最终test召回98.80%/FPR3.50% / Four-epoch predefined gate; frozen test passed |
+| 本机单张/批量推理 / Local single/batch deployment | 真实HTTP、CSV批量、独立部署包与界面检查通过 / Real HTTP, batch CSV, standalone bundle and UI checks pass |
 | 实际采集验证 / Field validation | 待实现 / Planned |
 
 ## 方法 / Methods
+
+- 当前部署：ImageNet预训练EfficientNetV2-S、轻量U-Net及任务头；四翻转图像logit均值、400正常图NP阈值校准，开发集选择像素阈值0.4。以下为历史对照方法。
+  Current runtime: generic pretrained encoder/small U-Net, four-flip mean logits, normal-only NP calibration and development-selected mask threshold0.4. Methods below are historical controls.
 
 - 全局基线：冻结 ResNet18，512 维特征 L2 单位化，计算到正常特征库的最近邻距离。
   Global baseline: frozen ResNet18, unit-normalized 512-D embeddings, nearest-normal-neighbor distance.

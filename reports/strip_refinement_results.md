@@ -1,5 +1,7 @@
 # 全幅钢材检测训练与验证 / Full-strip training and validation
 
+后续EfficientNet阶段已通过最终验收并本机部署，见[当前报告](efficientnet_acceptance.md)。本文件保留旧ResNet阶段的未达标结果。 / The later EfficientNet stage passes acceptance; this file preserves the failed ResNet stage.
+
 2026-11-24：已从昨天第2轮50批的断点恢复，完成第二阶段全部8轮训练及推理验证。**尚未达到缺陷召回≥95%、正常误报≤5%的部署门槛，未解锁最终test，未生成验收通过的部署包。**
 
 Resumed from epoch2/batch50 and completed all eight refinement epochs. **The recall≥95% / normal-FPR≤5% target remains unmet. Final test is locked; no accepted deployment package was created.**

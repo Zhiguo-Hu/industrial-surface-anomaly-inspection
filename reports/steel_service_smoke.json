@@ -1,0 +1,30 @@
+{
+  "status": "passed",
+  "standalone_package": false,
+  "model_sha256": "df3e8bff400607a5b3b42489e36a590cf056c94ba8bd9ab32ee9b8b53aacb659",
+  "checks": [
+    "accepted-model startup",
+    "loopback health",
+    "two real development images via HTTP",
+    "native-resolution PNG results",
+    "invalid-size HTTP rejection",
+    "real CLI batch2valid+1invalid",
+    "HTTP/CLI frozen-score agreement"
+  ],
+  "images": [
+    {
+      "image_id": "739cf8127.jpg",
+      "label": 0,
+      "score": -10.703709602355957,
+      "prediction": 0
+    },
+    {
+      "image_id": "61be1f51b.jpg",
+      "label": 1,
+      "score": 7.789052963256836,
+      "prediction": 1
+    }
+  ],
+  "test_images_reused": false,
+  "scope": "Functional deployment verification; accuracy acceptance remains the one frozen original final test"
+}
