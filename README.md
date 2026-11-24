@@ -6,6 +6,10 @@
 
 ## 本机使用 / Local use
 
+2026-11-24：已完成冻结v1全部12张漏检、31张误报的[中英文错误复核](reports/steel_frozen_error_review.md)，保留逐例数值与视觉观察。模型、阈值和验收记录不变。本地图册入口为`runs/frozen_error_review_v1/index.html`，照片与图册包保留本机。
+
+All 43 frozen-v1 mistakes now have a [bilingual error review](reports/steel_frozen_error_review.md). Weights, thresholds and acceptance records are unchanged. The image atlas remains local; GitHub contains code, numerical evidence and observations.
+
 在已有本地验收模型和验证Python环境的项目根目录运行 / At project root with the local accepted artifact/environment:
 
 ```powershell
@@ -42,6 +46,7 @@ Earlier failed ResNet experiments are preserved in the linked historical report;
 | 完整正常特征库 / Normal steel feature memory | 已建成，独立加载/来源/检索通过 / Built; independent reload, provenance and retrieval verified |
 | EfficientNetV2-S原尺度联合训练 / Native joint training | 4轮触发预声明提前验证，最终test召回98.80%/FPR3.50% / Four-epoch predefined gate; frozen test passed |
 | 本机单张/批量推理 / Local single/batch deployment | 真实HTTP、CSV批量、独立部署包与界面检查通过 / Real HTTP, batch CSV, standalone bundle and UI checks pass |
+| 冻结模型错误复核 / Frozen-model error review | 12张漏检＋31张误报图册与中英文观察完成，75项测试通过 / All 43 mistakes reviewed; 75 tests pass |
 | 实际采集验证 / Field validation | 待实现 / Planned |
 
 ## 方法 / Methods

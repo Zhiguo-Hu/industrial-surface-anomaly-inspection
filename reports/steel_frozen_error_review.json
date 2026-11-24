@@ -1,0 +1,1816 @@
+{
+  "model_sha256": "df3e8bff400607a5b3b42489e36a590cf056c94ba8bd9ab32ee9b8b53aacb659",
+  "frozen_fingerprint": "eb5af201843abc092914f995afa800a5829df479dc429f9164e9656d989d4db0",
+  "image_threshold": -0.3139572739601135,
+  "pixel_threshold": 0.4,
+  "readonly_integrity_verified": true,
+  "protected_file_sha256": {
+    "configs\\strip_deployment_current.json": "05c357c957ce64eb6ba7d73be373d0c78625b58ea50fb4ababb274cb38c50fb2",
+    "runs\\steel_efficientnet_v2_s\\deployment\\model.pt": "003e54c3a5637acf1f43868b8992441f16effe99cf2cacdf5d40c0379b0b688e",
+    "configs\\severstal_manifest.json": "aa6b563d0cbc48c5be78f74b00bfd8c9072e2d2a5e26bda82dbaed205c2e5d5c",
+    "reports\\strip_final_test.json": "36d8a2b24e918c26b16c7e8ba0abf0f6d82bcbef3ea69a7739c3b4249ab7a5cf",
+    "reports\\strip_final_test_access.json": "91cfb1efd9e29851f0b5a1483f12808caee3427caa21f3588b3179830276025b",
+    "runs\\steel_efficientnet_v2_s\\final_test_predictions.csv": "d27d7563305090f6ac7d478c0ef726316be540a3e12b14f06846fdd9d4adf30a"
+  },
+  "gradcam_scope": "Positive final-encoder-layer attribution, aligned/averaged over frozen views; multiscale head branches are not fully represented; normalized per image, not probabilities or causal evidence",
+  "attribution_source": "https://arxiv.org/abs/1610.02391",
+  "test_used_for_tuning": false,
+  "replayed_archived_errors": 43,
+  "acceptance_metrics_unchanged": {
+    "auroc": 0.9970533068130947,
+    "threshold": -0.3139572739601135,
+    "tn": 854,
+    "fp": 31,
+    "fn": 12,
+    "tp": 985,
+    "recall": 0.9879638916750251,
+    "fpr": 0.03502824858757062
+  },
+  "case_counts": {
+    "FN": 12,
+    "FP": 31
+  },
+  "descriptive_flag_counts": {
+    "FN": {
+      "low_local_mean_contrast": 7,
+      "localized_overlap_without_image_alarm": 4,
+      "flip_view_disagreement": 4,
+      "gt_near_side_edge_32px": 2,
+      "near_threshold_0p5_logit": 1
+    },
+    "FP": {
+      "flip_view_disagreement": 12,
+      "image_alarm_with_sparse_pixel_mask": 1,
+      "near_threshold_0p5_logit": 1
+    }
+  },
+  "reviewed_cases": 43,
+  "primary_review_groups": {
+    "FN_not_localized": 5,
+    "FN_partial_localization": 3,
+    "FN_localization_alarm_disagreement": 4,
+    "FP_local_spot": 8,
+    "FP_longitudinal_texture": 12,
+    "FP_edge_response": 8,
+    "FP_bright_patch": 3
+  },
+  "case_statistics": [
+    {
+      "case_id": "FN01",
+      "image_id": "b8be43898.jpg",
+      "kind": "FN",
+      "classes": [
+        3
+      ],
+      "score": -8.27804183959961,
+      "evidence": {
+        "gt_pixels": 48959,
+        "gt_area_fraction": 0.11952880859375,
+        "predicted_pixels": 57,
+        "predicted_area_fraction": 0.00013916015625,
+        "overlap_pixels": 0,
+        "pixel_dice": 0.0,
+        "pixel_recall": 0.0,
+        "mask_max": 0.607474148273468,
+        "near_black_column_fraction": 0.0,
+        "score_margin": -7.964084565639496,
+        "view_logits": [
+          -7.751465320587158,
+          -8.903523445129395,
+          -7.50534725189209,
+          -8.95183277130127
+        ],
+        "views_cross_frozen_threshold": false,
+        "cam_positive_energy_present": true,
+        "cam_energy_fraction_in_gt": 0.002059551887214184,
+        "gt_side_distance_px": 599,
+        "gt_to_dark_boundary_px": null,
+        "local_mean_contrast_snr": 0.8057816028594971,
+        "largest_component_min_side_px": 131,
+        "gt_components": 2,
+        "descriptive_flags": []
+      },
+      "review": {
+        "primary": "FN_not_localized",
+        "observation_zh": "两块面积明显的深色斑驳区域已有类别3标注，分割和最深层CAM响应均很弱；不能归结为缺陷太小。",
+        "observation_en": "Two substantial dark mottled regions carry class-3 annotations; segmentation and deepest-layer CAM are weak. Small defect size is not an adequate explanation."
+      }
+    },
+    {
+      "case_id": "FN02",
+      "image_id": "10c05e806.jpg",
+      "kind": "FN",
+      "classes": [
+        3
+      ],
+      "score": -7.7281880378723145,
+      "evidence": {
+        "gt_pixels": 633,
+        "gt_area_fraction": 0.00154541015625,
+        "predicted_pixels": 0,
+        "predicted_area_fraction": 0.0,
+        "overlap_pixels": 0,
+        "pixel_dice": 0.0,
+        "pixel_recall": 0.0,
+        "mask_max": 0.003244394902139902,
+        "near_black_column_fraction": 0.30125,
+        "score_margin": -7.414230763912201,
+        "view_logits": [
+          -8.035348892211914,
+          -7.367161273956299,
+          -8.470322608947754,
+          -7.039921760559082
+        ],
+        "views_cross_frozen_threshold": false,
+        "cam_positive_energy_present": true,
+        "cam_energy_fraction_in_gt": 0.012348574586212635,
+        "gt_side_distance_px": 775,
+        "gt_to_dark_boundary_px": 330,
+        "local_mean_contrast_snr": 0.19955705106258392,
+        "largest_component_min_side_px": 14,
+        "gt_components": 1,
+        "descriptive_flags": [
+          "low_local_mean_contrast"
+        ]
+      },
+      "review": {
+        "primary": "FN_not_localized",
+        "observation_zh": "标注是靠右的细小竖向暗痕；更显眼的中部深色纹理未被标注。标注位置的分割响应弱，存在目标与背景外观相近的现象。",
+        "observation_en": "The annotation covers a small narrow dark mark toward the right, whereas a more prominent central dark pattern is unannotated. Segmentation is weak at the annotated target; target and background appearance overlap."
+      }
+    },
+    {
+      "case_id": "FN03",
+      "image_id": "b162a9cb2.jpg",
+      "kind": "FN",
+      "classes": [
+        3
+      ],
+      "score": -6.40293025970459,
+      "evidence": {
+        "gt_pixels": 27627,
+        "gt_area_fraction": 0.06744873046875,
+        "predicted_pixels": 0,
+        "predicted_area_fraction": 0.0,
+        "overlap_pixels": 0,
+        "pixel_dice": 0.0,
+        "pixel_recall": 0.0,
+        "mask_max": 0.0289179515093565,
+        "near_black_column_fraction": 0.0,
+        "score_margin": -6.088972985744476,
+        "view_logits": [
+          -6.883939743041992,
+          -6.8815693855285645,
+          -6.453217029571533,
+          -5.392993450164795
+        ],
+        "views_cross_frozen_threshold": false,
+        "cam_positive_energy_present": true,
+        "cam_energy_fraction_in_gt": 0.20460771024227142,
+        "gt_side_distance_px": 589,
+        "gt_to_dark_boundary_px": null,
+        "local_mean_contrast_snr": 1.365470051765442,
+        "largest_component_min_side_px": 98,
+        "gt_components": 2,
+        "descriptive_flags": []
+      },
+      "review": {
+        "primary": "FN_not_localized",
+        "observation_zh": "中部两片横向深色斑块已有类别3标注，分割基本未响应；CAM仅在局部小区域出现响应，没有覆盖主要标注。",
+        "observation_en": "Two central horizontal dark patches are annotated as class 3 but receive almost no segmentation response. CAM highlights a small region rather than the main annotation."
+      }
+    },
+    {
+      "case_id": "FN04",
+      "image_id": "1346c8ba2.jpg",
+      "kind": "FN",
+      "classes": [
+        3
+      ],
+      "score": -6.185147285461426,
+      "evidence": {
+        "gt_pixels": 20538,
+        "gt_area_fraction": 0.0501416015625,
+        "predicted_pixels": 5458,
+        "predicted_area_fraction": 0.0133251953125,
+        "overlap_pixels": 4604,
+        "pixel_dice": 0.3542083397445761,
+        "pixel_recall": 0.22416983153179473,
+        "mask_max": 0.9982220530509949,
+        "near_black_column_fraction": 0.0,
+        "score_margin": -5.871190011501312,
+        "view_logits": [
+          -5.97119140625,
+          -8.140022277832031,
+          -4.5635986328125,
+          -6.065779685974121
+        ],
+        "views_cross_frozen_threshold": false,
+        "cam_positive_energy_present": true,
+        "cam_energy_fraction_in_gt": 0.16149944067001343,
+        "gt_side_distance_px": 209,
+        "gt_to_dark_boundary_px": null,
+        "local_mean_contrast_snr": 0.04649212211370468,
+        "largest_component_min_side_px": 55,
+        "gt_components": 1,
+        "descriptive_flags": [
+          "low_local_mean_contrast"
+        ]
+      },
+      "review": {
+        "primary": "FN_partial_localization",
+        "observation_zh": "横向低对比度条带标注较长，分割只覆盖中部一段，CAM也集中在中部；整图报警同时失败。",
+        "observation_en": "A long low-contrast horizontal band is annotated. Segmentation and CAM cover mainly its central portion, and the image alarm also fails."
+      }
+    },
+    {
+      "case_id": "FN05",
+      "image_id": "646a22b43.jpg",
+      "kind": "FN",
+      "classes": [
+        3
+      ],
+      "score": -5.990468978881836,
+      "evidence": {
+        "gt_pixels": 1281,
+        "gt_area_fraction": 0.00312744140625,
+        "predicted_pixels": 407,
+        "predicted_area_fraction": 0.00099365234375,
+        "overlap_pixels": 407,
+        "pixel_dice": 0.4822274881516588,
+        "pixel_recall": 0.31772053083528495,
+        "mask_max": 0.9821608066558838,
+        "near_black_column_fraction": 0.0,
+        "score_margin": -5.676511704921722,
+        "view_logits": [
+          -4.43773078918457,
+          -6.071379661560059,
+          -6.194035530090332,
+          -7.2587409019470215
+        ],
+        "views_cross_frozen_threshold": false,
+        "cam_positive_energy_present": true,
+        "cam_energy_fraction_in_gt": 0.07067010551691055,
+        "gt_side_distance_px": 720,
+        "gt_to_dark_boundary_px": null,
+        "local_mean_contrast_snr": 0.40659916400909424,
+        "largest_component_min_side_px": 23,
+        "gt_components": 1,
+        "descriptive_flags": [
+          "low_local_mean_contrast",
+          "localized_overlap_without_image_alarm"
+        ]
+      },
+      "review": {
+        "primary": "FN_localization_alarm_disagreement",
+        "observation_zh": "缺陷紧邻下方明亮边带；分割与CAM在标注附近有响应，但整图分数仍远低于阈值。局部响应没有转化为整图报警。",
+        "observation_en": "The target lies beside the bright lower border. Segmentation and CAM respond near the annotation, yet the image score is well below threshold. Local evidence does not translate into an image alarm."
+      }
+    },
+    {
+      "case_id": "FN06",
+      "image_id": "398bf3c20.jpg",
+      "kind": "FN",
+      "classes": [
+        3
+      ],
+      "score": -3.3264384269714355,
+      "evidence": {
+        "gt_pixels": 2703,
+        "gt_area_fraction": 0.00659912109375,
+        "predicted_pixels": 4202,
+        "predicted_area_fraction": 0.0102587890625,
+        "overlap_pixels": 0,
+        "pixel_dice": 0.0,
+        "pixel_recall": 0.0,
+        "mask_max": 0.9936296343803406,
+        "near_black_column_fraction": 0.0,
+        "score_margin": -3.012481153011322,
+        "view_logits": [
+          -2.4541726112365723,
+          -3.094944953918457,
+          -3.1638755798339844,
+          -4.592756748199463
+        ],
+        "views_cross_frozen_threshold": false,
+        "cam_positive_energy_present": true,
+        "cam_energy_fraction_in_gt": 0.02802387811243534,
+        "gt_side_distance_px": 326,
+        "gt_to_dark_boundary_px": null,
+        "local_mean_contrast_snr": 0.34981951117515564,
+        "largest_component_min_side_px": 35,
+        "gt_components": 1,
+        "descriptive_flags": [
+          "low_local_mean_contrast"
+        ]
+      },
+      "review": {
+        "primary": "FN_not_localized",
+        "observation_zh": "标注位于密集竖向深色纹理中的下部小区域；该处响应弱，其他未标注纹理出现少量预测轮廓。",
+        "observation_en": "The annotated lower region sits within dense vertical dark texture. Its response is weak while a few unannotated texture regions receive predicted outlines."
+      }
+    },
+    {
+      "case_id": "FN07",
+      "image_id": "54738099a.jpg",
+      "kind": "FN",
+      "classes": [
+        1
+      ],
+      "score": -2.3141932487487793,
+      "evidence": {
+        "gt_pixels": 930,
+        "gt_area_fraction": 0.0022705078125,
+        "predicted_pixels": 0,
+        "predicted_area_fraction": 0.0,
+        "overlap_pixels": 0,
+        "pixel_dice": 0.0,
+        "pixel_recall": 0.0,
+        "mask_max": 0.0021756410133093596,
+        "near_black_column_fraction": 0.8675,
+        "score_margin": -2.0002359747886658,
+        "view_logits": [
+          -2.7690811157226562,
+          -1.4528849124908447,
+          -2.7096433639526367,
+          -2.3251702785491943
+        ],
+        "views_cross_frozen_threshold": false,
+        "cam_positive_energy_present": true,
+        "cam_energy_fraction_in_gt": 0.0003641202056314796,
+        "gt_side_distance_px": 53,
+        "gt_to_dark_boundary_px": 140,
+        "local_mean_contrast_snr": 0.24560128152370453,
+        "largest_component_min_side_px": 19,
+        "gt_components": 1,
+        "descriptive_flags": [
+          "low_local_mean_contrast"
+        ]
+      },
+      "review": {
+        "primary": "FN_not_localized",
+        "observation_zh": "约87%的图像列接近黑色，仅右侧窄条可见钢材；标注区域分割弱，CAM部分响应落在可见钢材上端边界。",
+        "observation_en": "About 87% of columns are near black, leaving a narrow visible steel strip on the right. Segmentation is weak at the annotation; part of CAM responds to the upper boundary of visible steel."
+      }
+    },
+    {
+      "case_id": "FN08",
+      "image_id": "24ae96cd5.jpg",
+      "kind": "FN",
+      "classes": [
+        4
+      ],
+      "score": -1.8717399835586548,
+      "evidence": {
+        "gt_pixels": 10212,
+        "gt_area_fraction": 0.024931640625,
+        "predicted_pixels": 2076,
+        "predicted_area_fraction": 0.005068359375,
+        "overlap_pixels": 1445,
+        "pixel_dice": 0.23518880208333334,
+        "pixel_recall": 0.14150019584802193,
+        "mask_max": 0.9974250793457031,
+        "near_black_column_fraction": 0.0,
+        "score_margin": -1.5577827095985413,
+        "view_logits": [
+          -6.0889811515808105,
+          -1.4410085678100586,
+          -0.27203619480133057,
+          0.31506118178367615
+        ],
+        "views_cross_frozen_threshold": true,
+        "cam_positive_energy_present": true,
+        "cam_energy_fraction_in_gt": 0.299938440322876,
+        "gt_side_distance_px": 0,
+        "gt_to_dark_boundary_px": null,
+        "local_mean_contrast_snr": 1.6191333532333374,
+        "largest_component_min_side_px": 114,
+        "gt_components": 3,
+        "descriptive_flags": [
+          "flip_view_disagreement",
+          "gt_near_side_edge_32px"
+        ]
+      },
+      "review": {
+        "primary": "FN_partial_localization",
+        "observation_zh": "左端不规则深色斑块有类别4标注，预测主要覆盖其下部，主要斑块仍遗漏；四翻转视图对报警结论不一致。",
+        "observation_en": "The irregular dark patch near the left end has a class-4 annotation. Predictions cover mainly its lower part and miss much of the patch. Four flip views straddle the alarm threshold."
+      }
+    },
+    {
+      "case_id": "FN09",
+      "image_id": "8f4a566fb.jpg",
+      "kind": "FN",
+      "classes": [
+        1
+      ],
+      "score": -1.7393172979354858,
+      "evidence": {
+        "gt_pixels": 793,
+        "gt_area_fraction": 0.00193603515625,
+        "predicted_pixels": 1671,
+        "predicted_area_fraction": 0.00407958984375,
+        "overlap_pixels": 766,
+        "pixel_dice": 0.6217532467532467,
+        "pixel_recall": 0.9659520807061791,
+        "mask_max": 0.9972028732299805,
+        "near_black_column_fraction": 0.819375,
+        "score_margin": -1.4253600239753723,
+        "view_logits": [
+          -0.929189920425415,
+          -2.026575803756714,
+          -2.1901283264160156,
+          -1.8113809823989868
+        ],
+        "views_cross_frozen_threshold": false,
+        "cam_positive_energy_present": true,
+        "cam_energy_fraction_in_gt": 0.11519540846347809,
+        "gt_side_distance_px": 180,
+        "gt_to_dark_boundary_px": 87,
+        "local_mean_contrast_snr": 1.5743812322616577,
+        "largest_component_min_side_px": 22,
+        "gt_components": 1,
+        "descriptive_flags": [
+          "localized_overlap_without_image_alarm"
+        ]
+      },
+      "review": {
+        "primary": "FN_localization_alarm_disagreement",
+        "observation_zh": "大部分图像是黑背景，右侧窄钢带上的标注已被分割覆盖约97%，但整图仍判正常。",
+        "observation_en": "Most of the image is black background. Segmentation covers about 97% of the annotation on the narrow right steel strip, but the image is still classified as normal."
+      }
+    },
+    {
+      "case_id": "FN10",
+      "image_id": "86e80375f.jpg",
+      "kind": "FN",
+      "classes": [
+        1
+      ],
+      "score": -1.0923198461532593,
+      "evidence": {
+        "gt_pixels": 3666,
+        "gt_area_fraction": 0.0089501953125,
+        "predicted_pixels": 2443,
+        "predicted_area_fraction": 0.00596435546875,
+        "overlap_pixels": 1055,
+        "pixel_dice": 0.3453920445244721,
+        "pixel_recall": 0.2877795962902346,
+        "mask_max": 0.9964753985404968,
+        "near_black_column_fraction": 0.0,
+        "score_margin": -0.7783625721931458,
+        "view_logits": [
+          1.5364314317703247,
+          -0.1401330977678299,
+          -3.134901523590088,
+          -2.630675792694092
+        ],
+        "views_cross_frozen_threshold": true,
+        "cam_positive_energy_present": true,
+        "cam_energy_fraction_in_gt": 0.049749698489904404,
+        "gt_side_distance_px": 99,
+        "gt_to_dark_boundary_px": null,
+        "local_mean_contrast_snr": 0.39385998249053955,
+        "largest_component_min_side_px": 37,
+        "gt_components": 4,
+        "descriptive_flags": [
+          "flip_view_disagreement",
+          "low_local_mean_contrast",
+          "localized_overlap_without_image_alarm"
+        ]
+      },
+      "review": {
+        "primary": "FN_localization_alarm_disagreement",
+        "observation_zh": "斜向纹理与散布亮点并存，多个小区域有标注；分割仅覆盖部分标注，仍有可量化重合，四视图判断不一致。",
+        "observation_en": "Diagonal texture and scattered bright points coexist with several annotated regions. Segmentation overlaps some targets but misses others; four-view alarm decisions disagree."
+      }
+    },
+    {
+      "case_id": "FN11",
+      "image_id": "a430d56ba.jpg",
+      "kind": "FN",
+      "classes": [
+        3
+      ],
+      "score": -0.9576261043548584,
+      "evidence": {
+        "gt_pixels": 10708,
+        "gt_area_fraction": 0.026142578125,
+        "predicted_pixels": 1736,
+        "predicted_area_fraction": 0.00423828125,
+        "overlap_pixels": 1736,
+        "pixel_dice": 0.27900996464159433,
+        "pixel_recall": 0.16212177810982442,
+        "mask_max": 0.9831142425537109,
+        "near_black_column_fraction": 0.0,
+        "score_margin": -0.6436688303947449,
+        "view_logits": [
+          -4.1761155128479,
+          -2.1442131996154785,
+          -1.2930326461791992,
+          3.78287410736084
+        ],
+        "views_cross_frozen_threshold": true,
+        "cam_positive_energy_present": true,
+        "cam_energy_fraction_in_gt": 0.252427339553833,
+        "gt_side_distance_px": 714,
+        "gt_to_dark_boundary_px": null,
+        "local_mean_contrast_snr": 0.9751766324043274,
+        "largest_component_min_side_px": 58,
+        "gt_components": 2,
+        "descriptive_flags": [
+          "flip_view_disagreement"
+        ]
+      },
+      "review": {
+        "primary": "FN_partial_localization",
+        "observation_zh": "中部竖向斑驳带已有标注，分割主要覆盖左侧细条，CAM覆盖更宽区域；主要标注仍漏掉，四视图判断不一致。",
+        "observation_en": "The central vertical mottled band is annotated. Segmentation covers mainly a thin left strip, while CAM is broader. Much of the annotation is missed and flip-view decisions disagree."
+      }
+    },
+    {
+      "case_id": "FN12",
+      "image_id": "077f0256d.jpg",
+      "kind": "FN",
+      "classes": [
+        1
+      ],
+      "score": -0.626258373260498,
+      "evidence": {
+        "gt_pixels": 859,
+        "gt_area_fraction": 0.00209716796875,
+        "predicted_pixels": 1248,
+        "predicted_area_fraction": 0.003046875,
+        "overlap_pixels": 660,
+        "pixel_dice": 0.6264831514000949,
+        "pixel_recall": 0.7683352735739232,
+        "mask_max": 0.9962736368179321,
+        "near_black_column_fraction": 0.865,
+        "score_margin": -0.3123010993003845,
+        "view_logits": [
+          0.08071620762348175,
+          -1.1642680168151855,
+          -0.32001569867134094,
+          -1.1014716625213623
+        ],
+        "views_cross_frozen_threshold": true,
+        "cam_positive_energy_present": true,
+        "cam_energy_fraction_in_gt": 0.10732411593198776,
+        "gt_side_distance_px": 13,
+        "gt_to_dark_boundary_px": 157,
+        "local_mean_contrast_snr": 0.46406927704811096,
+        "largest_component_min_side_px": 25,
+        "gt_components": 1,
+        "descriptive_flags": [
+          "near_threshold_0p5_logit",
+          "flip_view_disagreement",
+          "gt_near_side_edge_32px",
+          "low_local_mean_contrast",
+          "localized_overlap_without_image_alarm"
+        ]
+      },
+      "review": {
+        "primary": "FN_localization_alarm_disagreement",
+        "observation_zh": "仅右端窄钢带可见；上端标注有明显分割与CAM响应，像素召回约77%，但平均整图分数略低于冻结阈值。",
+        "observation_en": "Only a narrow right steel strip is visible. The upper annotation has clear segmentation/CAM support and about 77% pixel recall, but the mean image score remains slightly below the frozen threshold."
+      }
+    },
+    {
+      "case_id": "FP01",
+      "image_id": "97d7de56a.jpg",
+      "kind": "FP",
+      "classes": [],
+      "score": 6.732229232788086,
+      "evidence": {
+        "gt_pixels": 0,
+        "gt_area_fraction": 0.0,
+        "predicted_pixels": 5348,
+        "predicted_area_fraction": 0.013056640625,
+        "overlap_pixels": 0,
+        "pixel_dice": null,
+        "pixel_recall": null,
+        "mask_max": 0.9995848536491394,
+        "near_black_column_fraction": 0.04875,
+        "score_margin": 7.0461865067481995,
+        "view_logits": [
+          6.215092658996582,
+          5.434262275695801,
+          7.668818473815918,
+          7.610748767852783
+        ],
+        "views_cross_frozen_threshold": false,
+        "cam_positive_energy_present": true,
+        "cam_energy_fraction_in_gt": null,
+        "gt_side_distance_px": null,
+        "gt_to_dark_boundary_px": null,
+        "local_mean_contrast_snr": null,
+        "largest_component_min_side_px": null,
+        "gt_components": 0,
+        "descriptive_flags": []
+      },
+      "review": {
+        "primary": "FP_local_spot",
+        "observation_zh": "靠左的深色点串伴有亮点，分割与CAM均在此响应；原标注为正常，尚无工艺复核证明标签错误。",
+        "observation_en": "A dark dotted streak with bright points near the left attracts both segmentation and CAM. The reference is normal; no process review establishes a labeling error."
+      }
+    },
+    {
+      "case_id": "FP02",
+      "image_id": "fdf8a8fda.jpg",
+      "kind": "FP",
+      "classes": [],
+      "score": 5.275260925292969,
+      "evidence": {
+        "gt_pixels": 0,
+        "gt_area_fraction": 0.0,
+        "predicted_pixels": 10121,
+        "predicted_area_fraction": 0.02470947265625,
+        "overlap_pixels": 0,
+        "pixel_dice": null,
+        "pixel_recall": null,
+        "mask_max": 0.9996845722198486,
+        "near_black_column_fraction": 0.0,
+        "score_margin": 5.589218199253082,
+        "view_logits": [
+          3.919234037399292,
+          6.5418782234191895,
+          5.143438339233398,
+          5.496501922607422
+        ],
+        "views_cross_frozen_threshold": false,
+        "cam_positive_energy_present": true,
+        "cam_energy_fraction_in_gt": null,
+        "gt_side_distance_px": null,
+        "gt_to_dark_boundary_px": null,
+        "local_mean_contrast_snr": null,
+        "largest_component_min_side_px": null,
+        "gt_components": 0,
+        "descriptive_flags": []
+      },
+      "review": {
+        "primary": "FP_longitudinal_texture",
+        "observation_zh": "中左部细长竖向暗纹触发分割和CAM；该图没有缺陷标注。",
+        "observation_en": "A narrow vertical dark streak toward the left triggers segmentation and CAM despite the absence of defect annotations."
+      }
+    },
+    {
+      "case_id": "FP03",
+      "image_id": "02c7f44d9.jpg",
+      "kind": "FP",
+      "classes": [],
+      "score": 4.981733322143555,
+      "evidence": {
+        "gt_pixels": 0,
+        "gt_area_fraction": 0.0,
+        "predicted_pixels": 52143,
+        "predicted_area_fraction": 0.12730224609375,
+        "overlap_pixels": 0,
+        "pixel_dice": null,
+        "pixel_recall": null,
+        "mask_max": 0.9976268410682678,
+        "near_black_column_fraction": 0.0,
+        "score_margin": 5.295690596103668,
+        "view_logits": [
+          5.040306091308594,
+          3.7085118293762207,
+          5.46743106842041,
+          5.710679054260254
+        ],
+        "views_cross_frozen_threshold": false,
+        "cam_positive_energy_present": true,
+        "cam_energy_fraction_in_gt": null,
+        "gt_side_distance_px": null,
+        "gt_to_dark_boundary_px": null,
+        "local_mean_contrast_snr": null,
+        "largest_component_min_side_px": null,
+        "gt_components": 0,
+        "descriptive_flags": []
+      },
+      "review": {
+        "primary": "FP_longitudinal_texture",
+        "observation_zh": "多条竖向暗纹被成片预测，CAM聚焦其中一条；正常纹理与模型所学缺陷外观存在混淆。",
+        "observation_en": "Several vertical dark streaks receive predicted masks and CAM focuses on one of them. Reference-normal texture overlaps the learned defect appearance."
+      }
+    },
+    {
+      "case_id": "FP04",
+      "image_id": "d7f6f26c4.jpg",
+      "kind": "FP",
+      "classes": [],
+      "score": 4.822545051574707,
+      "evidence": {
+        "gt_pixels": 0,
+        "gt_area_fraction": 0.0,
+        "predicted_pixels": 18210,
+        "predicted_area_fraction": 0.0444580078125,
+        "overlap_pixels": 0,
+        "pixel_dice": null,
+        "pixel_recall": null,
+        "mask_max": 0.9996638298034668,
+        "near_black_column_fraction": 0.26375,
+        "score_margin": 5.136502325534821,
+        "view_logits": [
+          4.936350345611572,
+          4.673828125,
+          4.299860954284668,
+          5.3801445960998535
+        ],
+        "views_cross_frozen_threshold": false,
+        "cam_positive_energy_present": true,
+        "cam_energy_fraction_in_gt": null,
+        "gt_side_distance_px": null,
+        "gt_to_dark_boundary_px": null,
+        "local_mean_contrast_snr": null,
+        "largest_component_min_side_px": null,
+        "gt_components": 0,
+        "descriptive_flags": []
+      },
+      "review": {
+        "primary": "FP_longitudinal_texture",
+        "observation_zh": "黑背景旁的钢面亮度变化明显，内部竖向暗带产生较强响应；主要响应位于钢面纹理，而非纯黑背景。",
+        "observation_en": "Steel beside black background has strong brightness variation. An internal vertical dark band receives strong response; the main response is on steel texture rather than pure black background."
+      }
+    },
+    {
+      "case_id": "FP05",
+      "image_id": "4bf305cdc.jpg",
+      "kind": "FP",
+      "classes": [],
+      "score": 4.485483169555664,
+      "evidence": {
+        "gt_pixels": 0,
+        "gt_area_fraction": 0.0,
+        "predicted_pixels": 6818,
+        "predicted_area_fraction": 0.0166455078125,
+        "overlap_pixels": 0,
+        "pixel_dice": null,
+        "pixel_recall": null,
+        "mask_max": 0.9999361038208008,
+        "near_black_column_fraction": 0.0,
+        "score_margin": 4.799440443515778,
+        "view_logits": [
+          5.586795330047607,
+          3.8146567344665527,
+          3.494938850402832,
+          5.045546054840088
+        ],
+        "views_cross_frozen_threshold": false,
+        "cam_positive_energy_present": true,
+        "cam_energy_fraction_in_gt": null,
+        "gt_side_distance_px": null,
+        "gt_to_dark_boundary_px": null,
+        "local_mean_contrast_snr": null,
+        "largest_component_min_side_px": null,
+        "gt_components": 0,
+        "descriptive_flags": []
+      },
+      "review": {
+        "primary": "FP_local_spot",
+        "observation_zh": "下部一处不规则深色斑点及周围小亮点触发响应；根据现有正常标注计为误报。",
+        "observation_en": "An irregular dark spot near the lower edge and nearby bright points attract the response. It remains a false alarm under the existing normal reference."
+      }
+    },
+    {
+      "case_id": "FP06",
+      "image_id": "684b34ac4.jpg",
+      "kind": "FP",
+      "classes": [],
+      "score": 4.052554607391357,
+      "evidence": {
+        "gt_pixels": 0,
+        "gt_area_fraction": 0.0,
+        "predicted_pixels": 6317,
+        "predicted_area_fraction": 0.01542236328125,
+        "overlap_pixels": 0,
+        "pixel_dice": null,
+        "pixel_recall": null,
+        "mask_max": 0.9994261264801025,
+        "near_black_column_fraction": 0.33,
+        "score_margin": 4.366511881351471,
+        "view_logits": [
+          3.843726396560669,
+          3.283665657043457,
+          5.038729190826416,
+          4.044105529785156
+        ],
+        "views_cross_frozen_threshold": false,
+        "cam_positive_energy_present": true,
+        "cam_energy_fraction_in_gt": null,
+        "gt_side_distance_px": null,
+        "gt_to_dark_boundary_px": null,
+        "local_mean_contrast_snr": null,
+        "largest_component_min_side_px": null,
+        "gt_components": 0,
+        "descriptive_flags": []
+      },
+      "review": {
+        "primary": "FP_edge_response",
+        "observation_zh": "右侧钢材与黑背景交界处的细长边带产生分割和CAM响应。",
+        "observation_en": "A thin elongated band along the right steel-to-black-background boundary attracts segmentation and CAM."
+      }
+    },
+    {
+      "case_id": "FP07",
+      "image_id": "386ee8a22.jpg",
+      "kind": "FP",
+      "classes": [],
+      "score": 3.7742912769317627,
+      "evidence": {
+        "gt_pixels": 0,
+        "gt_area_fraction": 0.0,
+        "predicted_pixels": 2233,
+        "predicted_area_fraction": 0.00545166015625,
+        "overlap_pixels": 0,
+        "pixel_dice": null,
+        "pixel_recall": null,
+        "mask_max": 0.9990302324295044,
+        "near_black_column_fraction": 0.489375,
+        "score_margin": 4.088248550891876,
+        "view_logits": [
+          3.531628370285034,
+          4.400774002075195,
+          2.9989047050476074,
+          4.1658616065979
+        ],
+        "views_cross_frozen_threshold": false,
+        "cam_positive_energy_present": true,
+        "cam_energy_fraction_in_gt": null,
+        "gt_side_distance_px": null,
+        "gt_to_dark_boundary_px": null,
+        "local_mean_contrast_snr": null,
+        "largest_component_min_side_px": null,
+        "gt_components": 0,
+        "descriptive_flags": []
+      },
+      "review": {
+        "primary": "FP_edge_response",
+        "observation_zh": "大块黑背景旁、可见钢材上端的局部亮斑触发响应，响应位置靠近可见钢面边缘。",
+        "observation_en": "A local bright patch near the upper end of visible steel beside extensive black background attracts the response close to the steel boundary."
+      }
+    },
+    {
+      "case_id": "FP08",
+      "image_id": "c7dc8ae5d.jpg",
+      "kind": "FP",
+      "classes": [],
+      "score": 3.580104112625122,
+      "evidence": {
+        "gt_pixels": 0,
+        "gt_area_fraction": 0.0,
+        "predicted_pixels": 5289,
+        "predicted_area_fraction": 0.01291259765625,
+        "overlap_pixels": 0,
+        "pixel_dice": null,
+        "pixel_recall": null,
+        "mask_max": 0.9996966123580933,
+        "near_black_column_fraction": 0.105625,
+        "score_margin": 3.8940613865852356,
+        "view_logits": [
+          3.5293116569519043,
+          4.048839569091797,
+          4.024685382843018,
+          2.7175850868225098
+        ],
+        "views_cross_frozen_threshold": false,
+        "cam_positive_energy_present": true,
+        "cam_energy_fraction_in_gt": null,
+        "gt_side_distance_px": null,
+        "gt_to_dark_boundary_px": null,
+        "local_mean_contrast_snr": null,
+        "largest_component_min_side_px": null,
+        "gt_components": 0,
+        "descriptive_flags": []
+      },
+      "review": {
+        "primary": "FP_longitudinal_texture",
+        "observation_zh": "靠右的竖向纹理带被分割为长条，CAM在相邻纹理上有宽响应。",
+        "observation_en": "The vertical texture band near the right becomes an elongated predicted region, with broader CAM support on nearby texture."
+      }
+    },
+    {
+      "case_id": "FP09",
+      "image_id": "2858af68b.jpg",
+      "kind": "FP",
+      "classes": [],
+      "score": 3.467215061187744,
+      "evidence": {
+        "gt_pixels": 0,
+        "gt_area_fraction": 0.0,
+        "predicted_pixels": 6938,
+        "predicted_area_fraction": 0.0169384765625,
+        "overlap_pixels": 0,
+        "pixel_dice": null,
+        "pixel_recall": null,
+        "mask_max": 0.9999574422836304,
+        "near_black_column_fraction": 0.0,
+        "score_margin": 3.7811723351478577,
+        "view_logits": [
+          3.9633102416992188,
+          3.7272777557373047,
+          3.471217393875122,
+          2.707059383392334
+        ],
+        "views_cross_frozen_threshold": false,
+        "cam_positive_energy_present": true,
+        "cam_energy_fraction_in_gt": null,
+        "gt_side_distance_px": null,
+        "gt_to_dark_boundary_px": null,
+        "local_mean_contrast_snr": null,
+        "largest_component_min_side_px": null,
+        "gt_components": 0,
+        "descriptive_flags": []
+      },
+      "review": {
+        "primary": "FP_local_spot",
+        "observation_zh": "竖向纹理间的点状暗斑与亮点被预测，CAM集中在其中一簇。",
+        "observation_en": "Small dark and bright spots among vertical texture receive masks; CAM concentrates on one cluster."
+      }
+    },
+    {
+      "case_id": "FP10",
+      "image_id": "b77466d80.jpg",
+      "kind": "FP",
+      "classes": [],
+      "score": 3.2046215534210205,
+      "evidence": {
+        "gt_pixels": 0,
+        "gt_area_fraction": 0.0,
+        "predicted_pixels": 3128,
+        "predicted_area_fraction": 0.00763671875,
+        "overlap_pixels": 0,
+        "pixel_dice": null,
+        "pixel_recall": null,
+        "mask_max": 0.998854398727417,
+        "near_black_column_fraction": 0.12625,
+        "score_margin": 3.518578827381134,
+        "view_logits": [
+          3.785320281982422,
+          2.1167335510253906,
+          2.6677627563476562,
+          4.248666286468506
+        ],
+        "views_cross_frozen_threshold": false,
+        "cam_positive_energy_present": true,
+        "cam_energy_fraction_in_gt": null,
+        "gt_side_distance_px": null,
+        "gt_to_dark_boundary_px": null,
+        "local_mean_contrast_snr": null,
+        "largest_component_min_side_px": null,
+        "gt_components": 0,
+        "descriptive_flags": []
+      },
+      "review": {
+        "primary": "FP_edge_response",
+        "observation_zh": "右下靠近钢材与黑背景边界的一簇亮点触发分割和CAM。",
+        "observation_en": "A bright-point cluster near the lower-right steel/background boundary triggers segmentation and CAM."
+      }
+    },
+    {
+      "case_id": "FP11",
+      "image_id": "001982b08.jpg",
+      "kind": "FP",
+      "classes": [],
+      "score": 3.0961456298828125,
+      "evidence": {
+        "gt_pixels": 0,
+        "gt_area_fraction": 0.0,
+        "predicted_pixels": 2839,
+        "predicted_area_fraction": 0.00693115234375,
+        "overlap_pixels": 0,
+        "pixel_dice": null,
+        "pixel_recall": null,
+        "mask_max": 0.9999825954437256,
+        "near_black_column_fraction": 0.0,
+        "score_margin": 3.410102903842926,
+        "view_logits": [
+          1.9274680614471436,
+          1.3665705919265747,
+          3.919064998626709,
+          5.1714887619018555
+        ],
+        "views_cross_frozen_threshold": false,
+        "cam_positive_energy_present": true,
+        "cam_energy_fraction_in_gt": null,
+        "gt_side_distance_px": null,
+        "gt_to_dark_boundary_px": null,
+        "local_mean_contrast_snr": null,
+        "largest_component_min_side_px": null,
+        "gt_components": 0,
+        "descriptive_flags": []
+      },
+      "review": {
+        "primary": "FP_local_spot",
+        "observation_zh": "弧形暗纹附近的亮点有强局部响应，周围较大的纹理没有同等响应。",
+        "observation_en": "A bright point beside an arcuate dark pattern attracts a strong local response, unlike much of the surrounding pattern."
+      }
+    },
+    {
+      "case_id": "FP12",
+      "image_id": "f42768e5d.jpg",
+      "kind": "FP",
+      "classes": [],
+      "score": 2.9780001640319824,
+      "evidence": {
+        "gt_pixels": 0,
+        "gt_area_fraction": 0.0,
+        "predicted_pixels": 9262,
+        "predicted_area_fraction": 0.0226123046875,
+        "overlap_pixels": 0,
+        "pixel_dice": null,
+        "pixel_recall": null,
+        "mask_max": 0.9989116191864014,
+        "near_black_column_fraction": 0.0125,
+        "score_margin": 3.291957437992096,
+        "view_logits": [
+          0.7136514186859131,
+          2.089266061782837,
+          5.560427665710449,
+          3.5486409664154053
+        ],
+        "views_cross_frozen_threshold": false,
+        "cam_positive_energy_present": true,
+        "cam_energy_fraction_in_gt": null,
+        "gt_side_distance_px": null,
+        "gt_to_dark_boundary_px": null,
+        "local_mean_contrast_snr": null,
+        "largest_component_min_side_px": null,
+        "gt_components": 0,
+        "descriptive_flags": []
+      },
+      "review": {
+        "primary": "FP_local_spot",
+        "observation_zh": "右上不规则深色斑块被分割，CAM聚焦其内部；现有标注将整图列为正常。",
+        "observation_en": "An irregular upper-right dark patch receives a mask and internal CAM support, although the image is reference-normal."
+      }
+    },
+    {
+      "case_id": "FP13",
+      "image_id": "2d778a4c9.jpg",
+      "kind": "FP",
+      "classes": [],
+      "score": 2.3915414810180664,
+      "evidence": {
+        "gt_pixels": 0,
+        "gt_area_fraction": 0.0,
+        "predicted_pixels": 3907,
+        "predicted_area_fraction": 0.00953857421875,
+        "overlap_pixels": 0,
+        "pixel_dice": null,
+        "pixel_recall": null,
+        "mask_max": 0.999485969543457,
+        "near_black_column_fraction": 0.0,
+        "score_margin": 2.70549875497818,
+        "view_logits": [
+          1.2823344469070435,
+          2.1529786586761475,
+          2.4488778114318848,
+          3.6819586753845215
+        ],
+        "views_cross_frozen_threshold": false,
+        "cam_positive_energy_present": true,
+        "cam_energy_fraction_in_gt": null,
+        "gt_side_distance_px": null,
+        "gt_to_dark_boundary_px": null,
+        "local_mean_contrast_snr": null,
+        "largest_component_min_side_px": null,
+        "gt_components": 0,
+        "descriptive_flags": []
+      },
+      "review": {
+        "primary": "FP_longitudinal_texture",
+        "observation_zh": "较细的竖向暗线触发长条分割与CAM，属于正常标注下的纹理混淆。",
+        "observation_en": "A fine vertical dark line triggers an elongated mask and CAM, a texture confusion relative to the normal reference."
+      }
+    },
+    {
+      "case_id": "FP14",
+      "image_id": "aba64bfab.jpg",
+      "kind": "FP",
+      "classes": [],
+      "score": 2.1237332820892334,
+      "evidence": {
+        "gt_pixels": 0,
+        "gt_area_fraction": 0.0,
+        "predicted_pixels": 8333,
+        "predicted_area_fraction": 0.02034423828125,
+        "overlap_pixels": 0,
+        "pixel_dice": null,
+        "pixel_recall": null,
+        "mask_max": 0.9987567663192749,
+        "near_black_column_fraction": 0.0,
+        "score_margin": 2.437690556049347,
+        "view_logits": [
+          2.115931987762451,
+          2.2415380477905273,
+          2.290858268737793,
+          1.8466081619262695
+        ],
+        "views_cross_frozen_threshold": false,
+        "cam_positive_energy_present": true,
+        "cam_energy_fraction_in_gt": null,
+        "gt_side_distance_px": null,
+        "gt_to_dark_boundary_px": null,
+        "local_mean_contrast_snr": null,
+        "largest_component_min_side_px": null,
+        "gt_components": 0,
+        "descriptive_flags": []
+      },
+      "review": {
+        "primary": "FP_bright_patch",
+        "observation_zh": "斑驳钢面上的横向高亮区域触发分割和CAM；视觉上显眼不能证明是目标缺陷。",
+        "observation_en": "A horizontal bright patch on mottled steel attracts segmentation and CAM. Visual prominence does not establish that it is a target defect."
+      }
+    },
+    {
+      "case_id": "FP15",
+      "image_id": "6a7b866b8.jpg",
+      "kind": "FP",
+      "classes": [],
+      "score": 2.014197826385498,
+      "evidence": {
+        "gt_pixels": 0,
+        "gt_area_fraction": 0.0,
+        "predicted_pixels": 1478,
+        "predicted_area_fraction": 0.0036083984375,
+        "overlap_pixels": 0,
+        "pixel_dice": null,
+        "pixel_recall": null,
+        "mask_max": 0.9989249110221863,
+        "near_black_column_fraction": 0.0,
+        "score_margin": 2.3281551003456116,
+        "view_logits": [
+          0.06830646097660065,
+          3.0570285320281982,
+          1.8622373342514038,
+          3.069222927093506
+        ],
+        "views_cross_frozen_threshold": false,
+        "cam_positive_energy_present": true,
+        "cam_energy_fraction_in_gt": null,
+        "gt_side_distance_px": null,
+        "gt_to_dark_boundary_px": null,
+        "local_mean_contrast_snr": null,
+        "largest_component_min_side_px": null,
+        "gt_components": 0,
+        "descriptive_flags": []
+      },
+      "review": {
+        "primary": "FP_local_spot",
+        "observation_zh": "中部散布的小亮点被预测为小区域，CAM聚焦其中一组。",
+        "observation_en": "Scattered central bright points receive small masks; CAM focuses on one group."
+      }
+    },
+    {
+      "case_id": "FP16",
+      "image_id": "d7446a2b2.jpg",
+      "kind": "FP",
+      "classes": [],
+      "score": 1.3037660121917725,
+      "evidence": {
+        "gt_pixels": 0,
+        "gt_area_fraction": 0.0,
+        "predicted_pixels": 2426,
+        "predicted_area_fraction": 0.0059228515625,
+        "overlap_pixels": 0,
+        "pixel_dice": null,
+        "pixel_recall": null,
+        "mask_max": 0.9974810481071472,
+        "near_black_column_fraction": 0.078125,
+        "score_margin": 1.617723286151886,
+        "view_logits": [
+          0.357298880815506,
+          1.3068567514419556,
+          1.465391755104065,
+          2.085522174835205
+        ],
+        "views_cross_frozen_threshold": false,
+        "cam_positive_energy_present": true,
+        "cam_energy_fraction_in_gt": null,
+        "gt_side_distance_px": null,
+        "gt_to_dark_boundary_px": null,
+        "local_mean_contrast_snr": null,
+        "largest_component_min_side_px": null,
+        "gt_components": 0,
+        "descriptive_flags": []
+      },
+      "review": {
+        "primary": "FP_local_spot",
+        "observation_zh": "钢面上的孤立小斑点产生局部响应；其他斑点并非全部触发。",
+        "observation_en": "An isolated small spot on steel attracts the local response; not all other visible spots trigger equally."
+      }
+    },
+    {
+      "case_id": "FP17",
+      "image_id": "7e56364ce.jpg",
+      "kind": "FP",
+      "classes": [],
+      "score": 1.0527193546295166,
+      "evidence": {
+        "gt_pixels": 0,
+        "gt_area_fraction": 0.0,
+        "predicted_pixels": 5488,
+        "predicted_area_fraction": 0.0133984375,
+        "overlap_pixels": 0,
+        "pixel_dice": null,
+        "pixel_recall": null,
+        "mask_max": 0.9991927742958069,
+        "near_black_column_fraction": 0.03875,
+        "score_margin": 1.3666766285896301,
+        "view_logits": [
+          3.2494912147521973,
+          1.3326280117034912,
+          1.240707516670227,
+          -1.6119515895843506
+        ],
+        "views_cross_frozen_threshold": true,
+        "cam_positive_energy_present": true,
+        "cam_energy_fraction_in_gt": null,
+        "gt_side_distance_px": null,
+        "gt_to_dark_boundary_px": null,
+        "local_mean_contrast_snr": null,
+        "largest_component_min_side_px": null,
+        "gt_components": 0,
+        "descriptive_flags": [
+          "flip_view_disagreement"
+        ]
+      },
+      "review": {
+        "primary": "FP_longitudinal_texture",
+        "observation_zh": "中部竖向明亮条带产生分割与CAM响应；四视图判断不一致。",
+        "observation_en": "A central bright vertical band attracts segmentation and CAM; flip-view decisions disagree."
+      }
+    },
+    {
+      "case_id": "FP18",
+      "image_id": "c479762d3.jpg",
+      "kind": "FP",
+      "classes": [],
+      "score": 0.9622056484222412,
+      "evidence": {
+        "gt_pixels": 0,
+        "gt_area_fraction": 0.0,
+        "predicted_pixels": 4316,
+        "predicted_area_fraction": 0.010537109375,
+        "overlap_pixels": 0,
+        "pixel_dice": null,
+        "pixel_recall": null,
+        "mask_max": 0.9932429194450378,
+        "near_black_column_fraction": 0.8575,
+        "score_margin": 1.2761629223823547,
+        "view_logits": [
+          -0.5670323967933655,
+          1.6906481981277466,
+          1.0285636186599731,
+          1.69664466381073
+        ],
+        "views_cross_frozen_threshold": true,
+        "cam_positive_energy_present": true,
+        "cam_energy_fraction_in_gt": null,
+        "gt_side_distance_px": null,
+        "gt_to_dark_boundary_px": null,
+        "local_mean_contrast_snr": null,
+        "largest_component_min_side_px": null,
+        "gt_components": 0,
+        "descriptive_flags": [
+          "flip_view_disagreement"
+        ]
+      },
+      "review": {
+        "primary": "FP_edge_response",
+        "observation_zh": "图像大部分为黑色，右端窄钢带与亮边附近响应明显；四视图判断不一致。",
+        "observation_en": "Most of the image is black. The narrow right steel strip and its bright edge attract response; flip-view decisions disagree."
+      }
+    },
+    {
+      "case_id": "FP19",
+      "image_id": "27e3c4a82.jpg",
+      "kind": "FP",
+      "classes": [],
+      "score": 0.9471347332000732,
+      "evidence": {
+        "gt_pixels": 0,
+        "gt_area_fraction": 0.0,
+        "predicted_pixels": 7271,
+        "predicted_area_fraction": 0.01775146484375,
+        "overlap_pixels": 0,
+        "pixel_dice": null,
+        "pixel_recall": null,
+        "mask_max": 0.999220609664917,
+        "near_black_column_fraction": 0.0,
+        "score_margin": 1.2610920071601868,
+        "view_logits": [
+          2.5886220932006836,
+          -0.18240059912204742,
+          1.9396990537643433,
+          -0.5573852062225342
+        ],
+        "views_cross_frozen_threshold": true,
+        "cam_positive_energy_present": true,
+        "cam_energy_fraction_in_gt": null,
+        "gt_side_distance_px": null,
+        "gt_to_dark_boundary_px": null,
+        "local_mean_contrast_snr": null,
+        "largest_component_min_side_px": null,
+        "gt_components": 0,
+        "descriptive_flags": [
+          "flip_view_disagreement"
+        ]
+      },
+      "review": {
+        "primary": "FP_longitudinal_texture",
+        "observation_zh": "左侧深色竖带产生响应，钢面同时有大片斑驳纹理；四视图判断不一致。",
+        "observation_en": "A dark vertical band on the left attracts response amid extensive mottled texture; flip-view decisions disagree."
+      }
+    },
+    {
+      "case_id": "FP20",
+      "image_id": "e0a10c8dc.jpg",
+      "kind": "FP",
+      "classes": [],
+      "score": 0.9423747062683105,
+      "evidence": {
+        "gt_pixels": 0,
+        "gt_area_fraction": 0.0,
+        "predicted_pixels": 7928,
+        "predicted_area_fraction": 0.01935546875,
+        "overlap_pixels": 0,
+        "pixel_dice": null,
+        "pixel_recall": null,
+        "mask_max": 0.9993869066238403,
+        "near_black_column_fraction": 0.0,
+        "score_margin": 1.256331980228424,
+        "view_logits": [
+          2.5647993087768555,
+          0.5938986539840698,
+          1.8891652822494507,
+          -1.278379201889038
+        ],
+        "views_cross_frozen_threshold": true,
+        "cam_positive_energy_present": true,
+        "cam_energy_fraction_in_gt": null,
+        "gt_side_distance_px": null,
+        "gt_to_dark_boundary_px": null,
+        "local_mean_contrast_snr": null,
+        "largest_component_min_side_px": null,
+        "gt_components": 0,
+        "descriptive_flags": [
+          "flip_view_disagreement"
+        ]
+      },
+      "review": {
+        "primary": "FP_longitudinal_texture",
+        "observation_zh": "靠左的一条细长明暗线产生长条分割，CAM聚焦其上部；四视图判断不一致。",
+        "observation_en": "An elongated bright/dark line toward the left receives a mask with CAM concentrated toward its top; flip-view decisions disagree."
+      }
+    },
+    {
+      "case_id": "FP21",
+      "image_id": "748167e1a.jpg",
+      "kind": "FP",
+      "classes": [],
+      "score": 0.8310298919677734,
+      "evidence": {
+        "gt_pixels": 0,
+        "gt_area_fraction": 0.0,
+        "predicted_pixels": 0,
+        "predicted_area_fraction": 0.0,
+        "overlap_pixels": 0,
+        "pixel_dice": null,
+        "pixel_recall": null,
+        "mask_max": 0.29818639159202576,
+        "near_black_column_fraction": 0.563125,
+        "score_margin": 1.144987165927887,
+        "view_logits": [
+          0.04122080281376839,
+          0.8556492924690247,
+          1.3754268884658813,
+          1.0518232583999634
+        ],
+        "views_cross_frozen_threshold": false,
+        "cam_positive_energy_present": true,
+        "cam_energy_fraction_in_gt": null,
+        "gt_side_distance_px": null,
+        "gt_to_dark_boundary_px": null,
+        "local_mean_contrast_snr": null,
+        "largest_component_min_side_px": null,
+        "gt_components": 0,
+        "descriptive_flags": [
+          "image_alarm_with_sparse_pixel_mask"
+        ]
+      },
+      "review": {
+        "primary": "FP_edge_response",
+        "observation_zh": "大块黑背景旁的窄钢面几乎没有超过0.4的分割像素，但分类头仍报警；CAM分布在可见钢面边缘附近。",
+        "observation_en": "The narrow steel region beside extensive black background has almost no mask pixels above 0.4, yet the image head alarms. CAM lies near the visible steel boundary."
+      }
+    },
+    {
+      "case_id": "FP22",
+      "image_id": "524015c26.jpg",
+      "kind": "FP",
+      "classes": [],
+      "score": 0.7059416770935059,
+      "evidence": {
+        "gt_pixels": 0,
+        "gt_area_fraction": 0.0,
+        "predicted_pixels": 3176,
+        "predicted_area_fraction": 0.00775390625,
+        "overlap_pixels": 0,
+        "pixel_dice": null,
+        "pixel_recall": null,
+        "mask_max": 0.9975211024284363,
+        "near_black_column_fraction": 0.794375,
+        "score_margin": 1.0198989510536194,
+        "view_logits": [
+          0.3393504321575165,
+          -0.14101694524288177,
+          0.39834246039390564,
+          2.227108955383301
+        ],
+        "views_cross_frozen_threshold": false,
+        "cam_positive_energy_present": true,
+        "cam_energy_fraction_in_gt": null,
+        "gt_side_distance_px": null,
+        "gt_to_dark_boundary_px": null,
+        "local_mean_contrast_snr": null,
+        "largest_component_min_side_px": null,
+        "gt_components": 0,
+        "descriptive_flags": []
+      },
+      "review": {
+        "primary": "FP_edge_response",
+        "observation_zh": "可见钢材左边缘附近出现长条分割，CAM也集中在边缘附近。",
+        "observation_en": "An elongated mask and CAM appear near the left boundary of the visible steel strip."
+      }
+    },
+    {
+      "case_id": "FP23",
+      "image_id": "419abb453.jpg",
+      "kind": "FP",
+      "classes": [],
+      "score": 0.6968782544136047,
+      "evidence": {
+        "gt_pixels": 0,
+        "gt_area_fraction": 0.0,
+        "predicted_pixels": 4127,
+        "predicted_area_fraction": 0.01007568359375,
+        "overlap_pixels": 0,
+        "pixel_dice": null,
+        "pixel_recall": null,
+        "mask_max": 0.9953336119651794,
+        "near_black_column_fraction": 0.75,
+        "score_margin": 1.0108355283737183,
+        "view_logits": [
+          1.3088704347610474,
+          1.0070840120315552,
+          0.40449780225753784,
+          0.06706036627292633
+        ],
+        "views_cross_frozen_threshold": false,
+        "cam_positive_energy_present": true,
+        "cam_energy_fraction_in_gt": null,
+        "gt_side_distance_px": null,
+        "gt_to_dark_boundary_px": null,
+        "local_mean_contrast_snr": null,
+        "largest_component_min_side_px": null,
+        "gt_components": 0,
+        "descriptive_flags": []
+      },
+      "review": {
+        "primary": "FP_edge_response",
+        "observation_zh": "右端钢带靠近明亮边缘的竖向纹理触发分割与CAM，绝大部分图像为黑背景。",
+        "observation_en": "Vertical texture beside the bright boundary of the right steel strip triggers mask/CAM while most of the image is black background."
+      }
+    },
+    {
+      "case_id": "FP24",
+      "image_id": "cd3cb2083.jpg",
+      "kind": "FP",
+      "classes": [],
+      "score": 0.5144472718238831,
+      "evidence": {
+        "gt_pixels": 0,
+        "gt_area_fraction": 0.0,
+        "predicted_pixels": 42,
+        "predicted_area_fraction": 0.0001025390625,
+        "overlap_pixels": 0,
+        "pixel_dice": null,
+        "pixel_recall": null,
+        "mask_max": 0.5485419631004333,
+        "near_black_column_fraction": 0.0,
+        "score_margin": 0.8284045457839966,
+        "view_logits": [
+          -2.937666177749634,
+          -1.0145683288574219,
+          2.6217727661132812,
+          3.388249397277832
+        ],
+        "views_cross_frozen_threshold": true,
+        "cam_positive_energy_present": true,
+        "cam_energy_fraction_in_gt": null,
+        "gt_side_distance_px": null,
+        "gt_to_dark_boundary_px": null,
+        "local_mean_contrast_snr": null,
+        "largest_component_min_side_px": null,
+        "gt_components": 0,
+        "descriptive_flags": [
+          "flip_view_disagreement"
+        ]
+      },
+      "review": {
+        "primary": "FP_local_spot",
+        "observation_zh": "深色斑驳纹理中的细小亮点附近出现CAM响应，分割仅有少量局部响应；四视图判断不一致。",
+        "observation_en": "CAM responds near tiny bright points amid dark mottled texture, with only small local segmentation response; flip-view decisions disagree."
+      }
+    },
+    {
+      "case_id": "FP25",
+      "image_id": "5c2495c58.jpg",
+      "kind": "FP",
+      "classes": [],
+      "score": 0.44706839323043823,
+      "evidence": {
+        "gt_pixels": 0,
+        "gt_area_fraction": 0.0,
+        "predicted_pixels": 1354,
+        "predicted_area_fraction": 0.0033056640625,
+        "overlap_pixels": 0,
+        "pixel_dice": null,
+        "pixel_recall": null,
+        "mask_max": 0.993378221988678,
+        "near_black_column_fraction": 0.47625,
+        "score_margin": 0.7610256671905518,
+        "view_logits": [
+          -5.917381763458252,
+          2.662914276123047,
+          0.4778761565685272,
+          4.564868450164795
+        ],
+        "views_cross_frozen_threshold": true,
+        "cam_positive_energy_present": true,
+        "cam_energy_fraction_in_gt": null,
+        "gt_side_distance_px": null,
+        "gt_to_dark_boundary_px": null,
+        "local_mean_contrast_snr": null,
+        "largest_component_min_side_px": null,
+        "gt_components": 0,
+        "descriptive_flags": [
+          "flip_view_disagreement"
+        ]
+      },
+      "review": {
+        "primary": "FP_longitudinal_texture",
+        "observation_zh": "黑背景旁钢面上的竖向暗纹产生局部响应，四视图判断不一致。",
+        "observation_en": "A vertical dark streak on steel beside black background attracts a local response; flip-view decisions disagree."
+      }
+    },
+    {
+      "case_id": "FP26",
+      "image_id": "f675eb92e.jpg",
+      "kind": "FP",
+      "classes": [],
+      "score": 0.4347686767578125,
+      "evidence": {
+        "gt_pixels": 0,
+        "gt_area_fraction": 0.0,
+        "predicted_pixels": 3669,
+        "predicted_area_fraction": 0.00895751953125,
+        "overlap_pixels": 0,
+        "pixel_dice": null,
+        "pixel_recall": null,
+        "mask_max": 0.9977241158485413,
+        "near_black_column_fraction": 0.859375,
+        "score_margin": 0.748725950717926,
+        "view_logits": [
+          1.9068055152893066,
+          -0.9099178910255432,
+          0.8847829103469849,
+          -0.1425963193178177
+        ],
+        "views_cross_frozen_threshold": true,
+        "cam_positive_energy_present": true,
+        "cam_energy_fraction_in_gt": null,
+        "gt_side_distance_px": null,
+        "gt_to_dark_boundary_px": null,
+        "local_mean_contrast_snr": null,
+        "largest_component_min_side_px": null,
+        "gt_components": 0,
+        "descriptive_flags": [
+          "flip_view_disagreement"
+        ]
+      },
+      "review": {
+        "primary": "FP_longitudinal_texture",
+        "observation_zh": "仅有窄条钢面可见，其内部竖向深色纹理触发响应，四视图判断不一致。",
+        "observation_en": "Only a narrow steel strip is visible; its internal vertical dark texture attracts response and flip-view decisions disagree."
+      }
+    },
+    {
+      "case_id": "FP27",
+      "image_id": "32f8b72ec.jpg",
+      "kind": "FP",
+      "classes": [],
+      "score": 0.41361290216445923,
+      "evidence": {
+        "gt_pixels": 0,
+        "gt_area_fraction": 0.0,
+        "predicted_pixels": 3396,
+        "predicted_area_fraction": 0.008291015625,
+        "overlap_pixels": 0,
+        "pixel_dice": null,
+        "pixel_recall": null,
+        "mask_max": 0.9967464208602905,
+        "near_black_column_fraction": 0.03875,
+        "score_margin": 0.7275701761245728,
+        "view_logits": [
+          2.127845525741577,
+          1.0432692766189575,
+          -0.21442736685276031,
+          -1.3022302389144897
+        ],
+        "views_cross_frozen_threshold": true,
+        "cam_positive_energy_present": true,
+        "cam_energy_fraction_in_gt": null,
+        "gt_side_distance_px": null,
+        "gt_to_dark_boundary_px": null,
+        "local_mean_contrast_snr": null,
+        "largest_component_min_side_px": null,
+        "gt_components": 0,
+        "descriptive_flags": [
+          "flip_view_disagreement"
+        ]
+      },
+      "review": {
+        "primary": "FP_longitudinal_texture",
+        "observation_zh": "中部弱竖向暗痕产生局部响应，左侧明亮条带仅有部分分割；四视图判断不一致。",
+        "observation_en": "A faint central vertical dark mark attracts a local response, with some segmentation also on the bright left band; flip-view decisions disagree."
+      }
+    },
+    {
+      "case_id": "FP28",
+      "image_id": "20b5096a5.jpg",
+      "kind": "FP",
+      "classes": [],
+      "score": 0.34918075799942017,
+      "evidence": {
+        "gt_pixels": 0,
+        "gt_area_fraction": 0.0,
+        "predicted_pixels": 2863,
+        "predicted_area_fraction": 0.00698974609375,
+        "overlap_pixels": 0,
+        "pixel_dice": null,
+        "pixel_recall": null,
+        "mask_max": 0.9959388971328735,
+        "near_black_column_fraction": 0.7425,
+        "score_margin": 0.6631380319595337,
+        "view_logits": [
+          -0.44864997267723083,
+          -0.23380424082279205,
+          1.1953885555267334,
+          0.8837839365005493
+        ],
+        "views_cross_frozen_threshold": true,
+        "cam_positive_energy_present": true,
+        "cam_energy_fraction_in_gt": null,
+        "gt_side_distance_px": null,
+        "gt_to_dark_boundary_px": null,
+        "local_mean_contrast_snr": null,
+        "largest_component_min_side_px": null,
+        "gt_components": 0,
+        "descriptive_flags": [
+          "flip_view_disagreement"
+        ]
+      },
+      "review": {
+        "primary": "FP_longitudinal_texture",
+        "observation_zh": "窄钢面内部细竖向暗线触发长条分割与CAM；四视图判断不一致。",
+        "observation_en": "A fine vertical dark line inside the narrow visible steel region triggers mask/CAM; flip-view decisions disagree."
+      }
+    },
+    {
+      "case_id": "FP29",
+      "image_id": "69cf6690b.jpg",
+      "kind": "FP",
+      "classes": [],
+      "score": 0.30140990018844604,
+      "evidence": {
+        "gt_pixels": 0,
+        "gt_area_fraction": 0.0,
+        "predicted_pixels": 25274,
+        "predicted_area_fraction": 0.0617041015625,
+        "overlap_pixels": 0,
+        "pixel_dice": null,
+        "pixel_recall": null,
+        "mask_max": 0.9992839694023132,
+        "near_black_column_fraction": 0.0,
+        "score_margin": 0.6153671741485596,
+        "view_logits": [
+          3.492722272872925,
+          0.15842778980731964,
+          -0.561867356300354,
+          -1.8836456537246704
+        ],
+        "views_cross_frozen_threshold": true,
+        "cam_positive_energy_present": true,
+        "cam_energy_fraction_in_gt": null,
+        "gt_side_distance_px": null,
+        "gt_to_dark_boundary_px": null,
+        "local_mean_contrast_snr": null,
+        "largest_component_min_side_px": null,
+        "gt_components": 0,
+        "descriptive_flags": [
+          "flip_view_disagreement"
+        ]
+      },
+      "review": {
+        "primary": "FP_bright_patch",
+        "observation_zh": "左端波纹状高亮反光区域触发大片分割，CAM偏向其下部；不能仅凭图像判定其工艺性质。",
+        "observation_en": "A bright rippled reflective region on the left receives a large mask, with CAM toward its lower part. Its process significance cannot be established from this image alone."
+      }
+    },
+    {
+      "case_id": "FP30",
+      "image_id": "070037b64.jpg",
+      "kind": "FP",
+      "classes": [],
+      "score": 0.24039725959300995,
+      "evidence": {
+        "gt_pixels": 0,
+        "gt_area_fraction": 0.0,
+        "predicted_pixels": 7081,
+        "predicted_area_fraction": 0.01728759765625,
+        "overlap_pixels": 0,
+        "pixel_dice": null,
+        "pixel_recall": null,
+        "mask_max": 0.9987093210220337,
+        "near_black_column_fraction": 0.0,
+        "score_margin": 0.5543545335531235,
+        "view_logits": [
+          0.3516954779624939,
+          0.5400086045265198,
+          -1.0488885641098022,
+          1.1187726259231567
+        ],
+        "views_cross_frozen_threshold": true,
+        "cam_positive_energy_present": true,
+        "cam_energy_fraction_in_gt": null,
+        "gt_side_distance_px": null,
+        "gt_to_dark_boundary_px": null,
+        "local_mean_contrast_snr": null,
+        "largest_component_min_side_px": null,
+        "gt_components": 0,
+        "descriptive_flags": [
+          "flip_view_disagreement"
+        ]
+      },
+      "review": {
+        "primary": "FP_bright_patch",
+        "observation_zh": "斑驳纹理中的横向高亮斑块触发分割与CAM，与FP14外观相近；仅记录相似性，未证明两图来自同一工件。",
+        "observation_en": "A horizontal bright patch in mottled texture attracts mask/CAM and resembles FP14 visually. This does not establish a shared workpiece."
+      }
+    },
+    {
+      "case_id": "FP31",
+      "image_id": "6a922ea4a.jpg",
+      "kind": "FP",
+      "classes": [],
+      "score": 0.028725415468215942,
+      "evidence": {
+        "gt_pixels": 0,
+        "gt_area_fraction": 0.0,
+        "predicted_pixels": 1464,
+        "predicted_area_fraction": 0.00357421875,
+        "overlap_pixels": 0,
+        "pixel_dice": null,
+        "pixel_recall": null,
+        "mask_max": 0.9918951392173767,
+        "near_black_column_fraction": 0.161875,
+        "score_margin": 0.34268268942832947,
+        "view_logits": [
+          -1.32003653049469,
+          -3.706364154815674,
+          3.2768971920013428,
+          1.8644083738327026
+        ],
+        "views_cross_frozen_threshold": true,
+        "cam_positive_energy_present": true,
+        "cam_energy_fraction_in_gt": null,
+        "gt_side_distance_px": null,
+        "gt_to_dark_boundary_px": null,
+        "local_mean_contrast_snr": null,
+        "largest_component_min_side_px": null,
+        "gt_components": 0,
+        "descriptive_flags": [
+          "near_threshold_0p5_logit",
+          "flip_view_disagreement"
+        ]
+      },
+      "review": {
+        "primary": "FP_edge_response",
+        "observation_zh": "钢材斜向亮边只在图像上方露出，左端边缘触发响应；整图分数接近阈值。",
+        "observation_en": "Only a slanted bright steel edge is visible along the image top; its left end attracts the response and the image score lies near threshold."
+      }
+    }
+  ],
+  "scope": "Post-acceptance descriptive review of43 known mistakes; not a new independent test or causal proof. No tuning/retraining or label changes."
+}

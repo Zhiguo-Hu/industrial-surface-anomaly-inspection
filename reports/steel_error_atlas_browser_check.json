@@ -1,0 +1,19 @@
+{
+  "status": "passed",
+  "browser": "Edg/158.0.4370.33",
+  "all_cases": 43,
+  "FN": 12,
+  "FP": 31,
+  "search_results": 1,
+  "export_scope": "all 43 records even when filtered",
+  "checks": [
+    "offline file URL",
+    "FN/FP filters",
+    "image ID search",
+    "expanded panel loads",
+    "bilingual observation text",
+    "CSV export"
+  ],
+  "csv_roundtrip_verified": true,
+  "frozen_files_unchanged": true
+}
