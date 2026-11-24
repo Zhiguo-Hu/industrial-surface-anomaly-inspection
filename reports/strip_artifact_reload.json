@@ -1,23 +1,23 @@
 {
   "status": "passed",
-  "model_sha256": "fbdf017d6620b29d8cf3ea1bea426d71999fa0a1d5fca9f612ad38b6a06a4e79",
+  "model_sha256": "df3e8bff400607a5b3b42489e36a590cf056c94ba8bd9ab32ee9b8b53aacb659",
   "checks": [
     {
       "image_id": "739cf8127.jpg",
       "label": 0,
       "prediction": 0,
-      "score": -6.581134143763231,
-      "cached_qualification_score": -6.581134726510769,
-      "absolute_score_difference": 5.827475382247371e-07,
+      "score": -10.703709602355957,
+      "cached_qualification_score": -10.70371150970459,
+      "absolute_score_difference": 1.9073486328125e-06,
       "finite_full_resolution_outputs": true
     },
     {
       "image_id": "61be1f51b.jpg",
       "label": 1,
       "prediction": 1,
-      "score": 1.6710207186161157,
-      "cached_qualification_score": 1.6710205421024868,
-      "absolute_score_difference": 1.7651362882453725e-07,
+      "score": 7.789052963256836,
+      "cached_qualification_score": 7.789052963256836,
+      "absolute_score_difference": 0.0,
       "finite_full_resolution_outputs": true
     }
   ],

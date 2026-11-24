@@ -32,7 +32,8 @@
     "calibration": "400 normal images; q95/q97.5 selected with development labels",
     "qualification": "986 reused validation images; target gate before one frozen original test1882",
     "simplicity_rule": "Prefer raw frozen head when development recall is within0.01 of best fusion candidate and AUROC within0.005. OOF applies only to learned fusion, not to the development-selected CNN.",
-    "threshold_safety_rule": "Prefer q97.5 calibration if its development recall remains>=0.97 and FPR<=0.05; otherwise maximize eligible development recall. Qualification/test labels never choose the threshold."
+    "threshold_safety_rule": "Prefer q97.5 calibration if its development recall remains>=0.97 and FPR<=0.05; otherwise maximize eligible development recall. Qualification/test labels never choose the threshold.",
+    "np_control_followup": "After initial q95 qualification passed, apply a normal-only NP order statistic with alpha=delta=0.05, n400 rank388. This follow-up uses calibration normal scores only, no qualification/test labels to choose threshold. Initial q95 result is archived; final test remains unopened."
   },
   "visual_error_review": {
     "common_misses_previous_three_candidates": 45,

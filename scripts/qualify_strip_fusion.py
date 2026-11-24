@@ -17,6 +17,7 @@ from src.strip_inference import MASK_FEATURE_NAMES,feature_names,mask_score_feat
 from src.strip_cache import CachedStrips
 from src.inspection_protocol import partition,development_metrics,operating_metrics
 from src.reproducibility import configure,state_hash
+from src.np_calibration import normal_fpr_threshold
 
 OUTPUT=ROOT/'runs/strip_inspector';CACHE=ROOT/'runs/strip_training_cache'
 
@@ -30,6 +31,7 @@ def main():
     parser.add_argument('--include-raw-head',action='store_true')
     parser.add_argument('--prefer-raw-within',type=float,default=0.)
     parser.add_argument('--calibration-safety-margin',action='store_true')
+    parser.add_argument('--np-fpr-control',action='store_true')
     parser.add_argument('--reuse-features',action='store_true');args=parser.parse_args()
     if Path(args.run_name).name!=args.run_name:parser.error('Invalid run-name')
     if Path(args.checkpoint).name!=args.checkpoint:parser.error('Invalid checkpoint name')
@@ -136,8 +138,14 @@ def main():
     if args.calibration_safety_margin:
         safe=[t for t in eligible if t['q']>=.975 and t['development']['recall']>=.97 and t['development']['fpr']<=.05]
         if safe:selected=max(safe,key=lambda t:(t['development']['recall'],-t['development']['fpr']))
+    np_control=None
+    if args.np_fpr_control:
+        np_control=normal_fpr_threshold(chosen['scores'][ndev:ndev+ncal],alpha=.05,delta=.05)
+        selected={'q':None,'threshold':np_control['threshold'],
+                  'development':operating_metrics(labels[:ndev],chosen['scores'][:ndev],np_control['threshold'])}
     policy={'flip4':chosen['flip4'],'normal_calibration_quantile':selected['q'],'threshold':selected['threshold'],'fusion':chosen['fusion']}
     policy['pixel_threshold']=saved.get('pixel_threshold',.5)
+    if np_control:policy['normal_fpr_calibration']=np_control
     qmetrics=operating_metrics(labels[ndev+ncal:],chosen['scores'][ndev+ncal:],policy['threshold'])
     diagnostic=development_metrics(labels[ndev+ncal:],chosen['scores'][ndev+ncal:])
     qstart=ndev+ncal;qpred=chosen['scores'][qstart:]>policy['threshold'];qlabel=labels[qstart:]
@@ -163,7 +171,9 @@ def main():
             'model_sha256':saved['model_sha256'],'source_epoch':saved['epoch'],'source_steps':saved['steps'],
             'source_run':args.run_name,'source_checkpoint':args.checkpoint,'selected_oof_development':chosen.get('oof_development'),
             'selected_development_metric':chosen['selection_metric'],'selected_method':chosen['method'],
+            'selected_operating_development':selected['development'],
             'raw_preference_within':args.prefer_raw_within,'calibration_safety_margin':args.calibration_safety_margin,
+            'normal_fpr_control':np_control,
             'selection_candidates':[{k:v for k,v in o.items() if k not in ['scores','fusion']} for o in options],
             'selected_policy':policy,'threshold_candidates':thresholds,'qualification':qmetrics,'test_used':False,
             'qualification_per_class':class_metrics,'qualification_by_defect_area':area_metrics,

@@ -10,6 +10,7 @@ from src.steel_runtime import SteelRuntime,decode_steel_image,MAX_IMAGE_BYTES
 from scripts.serve_steel_inspection import Handler
 from scripts.batch_steel_inspection import inspect_files
 from src.localization_metrics import localization_metrics
+from src.np_calibration import normal_fpr_threshold
 
 
 def png(size=(1600,256),mode='RGB'):
@@ -17,6 +18,16 @@ def png(size=(1600,256),mode='RGB'):
 
 
 class RuntimeContractTests(unittest.TestCase):
+    def test_np_calibration_rank_satisfies_exact_minimal_binomial_bound(self):
+        import math
+        result=normal_fpr_threshold(np.arange(100,dtype=float),alpha=.1,delta=.05);k=result['rank_one_based']
+        def exact_tail(rank):return sum(math.comb(100,j)*(.9**j)*(.1**(100-j)) for j in range(rank,101))
+        self.assertLessEqual(exact_tail(k),.05);self.assertGreater(exact_tail(k-1),.05)
+        self.assertAlmostEqual(result['binomial_tail_bound'],exact_tail(k),places=12)
+        self.assertEqual(result['threshold'],k-1)
+        with self.assertRaises(ValueError):normal_fpr_threshold(np.arange(10,dtype=float))
+        with self.assertRaises(ValueError):normal_fpr_threshold([1.,float('nan')])
+
     def test_localization_counts_include_normal_false_positive_pixels(self):
         metrics=localization_metrics([[4,5,8],[0,0,2]],.3,pixels_per_image=10)
         self.assertAlmostEqual(metrics['global_dice'],8/15);self.assertAlmostEqual(metrics['global_iou'],4/11)
