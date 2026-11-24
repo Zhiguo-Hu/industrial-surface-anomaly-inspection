@@ -4,72 +4,231 @@
     "recall_min": 0.95,
     "fpr_max": 0.05
   },
-  "model_sha256": "892ccfbfaf7e81546a2a89ed5195ec5c5dfe31cca45be7b20ac789d0a3c93049",
-  "source_epoch": 6,
-  "source_steps": 3300,
+  "model_sha256": "fbdf017d6620b29d8cf3ea1bea426d71999fa0a1d5fca9f612ad38b6a06a4e79",
+  "source_run": "strip_inspector_ensemble",
+  "source_members": [
+    {
+      "run": "strip_inspector",
+      "model_sha256": "bcbd81273fee8de27fe638f2825d7a5a32202ad6c7f1508607ecf2ac6db34f9e",
+      "epoch": 12
+    },
+    {
+      "run": "strip_inspector_refined",
+      "model_sha256": "0b0cf998ee5e74cc25eba52b7630a136cac2a2cb2ed3203e42b7477f6af29622",
+      "epoch": 4
+    }
+  ],
+  "source_epoch": 0,
+  "source_steps": 0,
+  "selected_oof_development": {
+    "auroc": 0.9816166666666667,
+    "threshold": 0.6241750717163086,
+    "tn": 191,
+    "fp": 9,
+    "fn": 18,
+    "tp": 282,
+    "recall": 0.94,
+    "fpr": 0.045
+  },
+  "selected_policy": {
+    "flip4": true,
+    "normal_calibration_quantile": 0.95,
+    "threshold": 0.7675990082889322,
+    "fusion": {
+      "method": "linear",
+      "feature_names": [
+        "member0/image_logit",
+        "member0/mask_max_logit",
+        "member0/top41_mean_logit",
+        "member0/top410_mean_logit",
+        "member0/top4096_mean_logit",
+        "member0/mask_area_above_0p1",
+        "member0/mask_area_above_0p3",
+        "member0/mask_area_above_0p5",
+        "member0/mask_area_above_0p7",
+        "member1/image_logit",
+        "member1/mask_max_logit",
+        "member1/top41_mean_logit",
+        "member1/top410_mean_logit",
+        "member1/top4096_mean_logit",
+        "member1/mask_area_above_0p1",
+        "member1/mask_area_above_0p3",
+        "member1/mask_area_above_0p5",
+        "member1/mask_area_above_0p7"
+      ],
+      "parameters_sha256": "ca496efb16cd5ff74d2441e990956b95cd061c743ef5174cc043882dc983bc0c",
+      "parameters_saved_with_local_candidate": true
+    }
+  },
   "selection_candidates": [
     {
       "flip4": false,
+      "semantic": false,
+      "pyramid": false,
       "regularization_C": 0.01,
       "oof_development": {
-        "auroc": 0.96045,
-        "threshold": 0.8257107734680176,
+        "auroc": 0.97025,
+        "threshold": 0.8704462051391602,
         "tn": 191,
         "fp": 9,
-        "fn": 60,
-        "tp": 240,
-        "recall": 0.8,
+        "fn": 50,
+        "tp": 250,
+        "recall": 0.8333333333333334,
         "fpr": 0.045
       }
     },
     {
       "flip4": false,
+      "semantic": false,
+      "pyramid": false,
       "regularization_C": 0.1,
       "oof_development": {
-        "auroc": 0.9708,
-        "threshold": 1.1374797821044922,
+        "auroc": 0.9775,
+        "threshold": 0.8932116031646729,
         "tn": 191,
         "fp": 9,
-        "fn": 57,
-        "tp": 243,
-        "recall": 0.81,
+        "fn": 33,
+        "tp": 267,
+        "recall": 0.89,
         "fpr": 0.045
       }
     },
     {
       "flip4": false,
+      "semantic": false,
+      "pyramid": false,
       "regularization_C": 1.0,
       "oof_development": {
-        "auroc": 0.9755666666666667,
-        "threshold": 1.3543484210968018,
+        "auroc": 0.9795333333333334,
+        "threshold": 1.015336275100708,
         "tn": 191,
         "fp": 9,
-        "fn": 42,
-        "tp": 258,
-        "recall": 0.86,
+        "fn": 26,
+        "tp": 274,
+        "recall": 0.9133333333333333,
         "fpr": 0.045
       }
     },
     {
-      "flip4": true,
+      "flip4": false,
+      "semantic": false,
+      "pyramid": true,
       "regularization_C": 0.01,
       "oof_development": {
-        "auroc": 0.9613833333333334,
-        "threshold": 0.7748339176177979,
+        "auroc": 0.9742166666666667,
+        "threshold": 0.9702178239822388,
         "tn": 191,
         "fp": 9,
-        "fn": 59,
-        "tp": 241,
-        "recall": 0.8033333333333333,
+        "fn": 51,
+        "tp": 249,
+        "recall": 0.83,
         "fpr": 0.045
       }
     },
     {
-      "flip4": true,
+      "flip4": false,
+      "semantic": false,
+      "pyramid": true,
       "regularization_C": 0.1,
       "oof_development": {
-        "auroc": 0.9724833333333334,
-        "threshold": 0.9028293490409851,
+        "auroc": 0.9765166666666666,
+        "threshold": 1.203192949295044,
+        "tn": 191,
+        "fp": 9,
+        "fn": 41,
+        "tp": 259,
+        "recall": 0.8633333333333333,
+        "fpr": 0.045
+      }
+    },
+    {
+      "flip4": false,
+      "semantic": false,
+      "pyramid": true,
+      "regularization_C": 1.0,
+      "oof_development": {
+        "auroc": 0.97835,
+        "threshold": 1.0377976894378662,
+        "tn": 191,
+        "fp": 9,
+        "fn": 29,
+        "tp": 271,
+        "recall": 0.9033333333333333,
+        "fpr": 0.045
+      }
+    },
+    {
+      "flip4": false,
+      "semantic": true,
+      "pyramid": false,
+      "regularization_C": 0.01,
+      "oof_development": {
+        "auroc": 0.9728833333333334,
+        "threshold": 0.731741726398468,
+        "tn": 191,
+        "fp": 9,
+        "fn": 38,
+        "tp": 262,
+        "recall": 0.8733333333333333,
+        "fpr": 0.045
+      }
+    },
+    {
+      "flip4": false,
+      "semantic": true,
+      "pyramid": false,
+      "regularization_C": 0.1,
+      "oof_development": {
+        "auroc": 0.9782833333333333,
+        "threshold": 0.9310027360916138,
+        "tn": 191,
+        "fp": 9,
+        "fn": 31,
+        "tp": 269,
+        "recall": 0.8966666666666666,
+        "fpr": 0.045
+      }
+    },
+    {
+      "flip4": false,
+      "semantic": true,
+      "pyramid": false,
+      "regularization_C": 1.0,
+      "oof_development": {
+        "auroc": 0.9793333333333333,
+        "threshold": 1.7172904014587402,
+        "tn": 191,
+        "fp": 9,
+        "fn": 46,
+        "tp": 254,
+        "recall": 0.8466666666666667,
+        "fpr": 0.045
+      }
+    },
+    {
+      "flip4": false,
+      "semantic": true,
+      "pyramid": true,
+      "regularization_C": 0.01,
+      "oof_development": {
+        "auroc": 0.9751000000000001,
+        "threshold": 1.1011850833892822,
+        "tn": 191,
+        "fp": 9,
+        "fn": 56,
+        "tp": 244,
+        "recall": 0.8133333333333334,
+        "fpr": 0.045
+      }
+    },
+    {
+      "flip4": false,
+      "semantic": true,
+      "pyramid": true,
+      "regularization_C": 0.1,
+      "oof_development": {
+        "auroc": 0.9772333333333333,
+        "threshold": 1.2215559482574463,
         "tn": 191,
         "fp": 9,
         "fn": 43,
@@ -79,113 +238,317 @@
       }
     },
     {
-      "flip4": true,
+      "flip4": false,
+      "semantic": true,
+      "pyramid": true,
       "regularization_C": 1.0,
       "oof_development": {
-        "auroc": 0.97675,
-        "threshold": 1.131544828414917,
+        "auroc": 0.9784333333333333,
+        "threshold": 1.5630391836166382,
         "tn": 191,
         "fp": 9,
-        "fn": 32,
-        "tp": 268,
-        "recall": 0.8933333333333333,
+        "fn": 44,
+        "tp": 256,
+        "recall": 0.8533333333333334,
+        "fpr": 0.045
+      }
+    },
+    {
+      "flip4": true,
+      "semantic": false,
+      "pyramid": false,
+      "regularization_C": 0.01,
+      "oof_development": {
+        "auroc": 0.97195,
+        "threshold": 0.6750182509422302,
+        "tn": 191,
+        "fp": 9,
+        "fn": 38,
+        "tp": 262,
+        "recall": 0.8733333333333333,
+        "fpr": 0.045
+      }
+    },
+    {
+      "flip4": true,
+      "semantic": false,
+      "pyramid": false,
+      "regularization_C": 0.1,
+      "oof_development": {
+        "auroc": 0.9799833333333333,
+        "threshold": 0.7220546007156372,
+        "tn": 191,
+        "fp": 9,
+        "fn": 25,
+        "tp": 275,
+        "recall": 0.9166666666666666,
+        "fpr": 0.045
+      }
+    },
+    {
+      "flip4": true,
+      "semantic": false,
+      "pyramid": false,
+      "regularization_C": 1.0,
+      "oof_development": {
+        "auroc": 0.9816166666666667,
+        "threshold": 0.6241750717163086,
+        "tn": 191,
+        "fp": 9,
+        "fn": 18,
+        "tp": 282,
+        "recall": 0.94,
+        "fpr": 0.045
+      }
+    },
+    {
+      "flip4": true,
+      "semantic": false,
+      "pyramid": true,
+      "regularization_C": 0.01,
+      "oof_development": {
+        "auroc": 0.97555,
+        "threshold": 0.9708880186080933,
+        "tn": 191,
+        "fp": 9,
+        "fn": 51,
+        "tp": 249,
+        "recall": 0.83,
+        "fpr": 0.045
+      }
+    },
+    {
+      "flip4": true,
+      "semantic": false,
+      "pyramid": true,
+      "regularization_C": 0.1,
+      "oof_development": {
+        "auroc": 0.97825,
+        "threshold": 0.8121698498725891,
+        "tn": 191,
+        "fp": 9,
+        "fn": 28,
+        "tp": 272,
+        "recall": 0.9066666666666666,
+        "fpr": 0.045
+      }
+    },
+    {
+      "flip4": true,
+      "semantic": false,
+      "pyramid": true,
+      "regularization_C": 1.0,
+      "oof_development": {
+        "auroc": 0.9803,
+        "threshold": 0.7761117219924927,
+        "tn": 191,
+        "fp": 9,
+        "fn": 21,
+        "tp": 279,
+        "recall": 0.93,
+        "fpr": 0.045
+      }
+    },
+    {
+      "flip4": true,
+      "semantic": true,
+      "pyramid": false,
+      "regularization_C": 0.01,
+      "oof_development": {
+        "auroc": 0.9747,
+        "threshold": 0.758314847946167,
+        "tn": 191,
+        "fp": 9,
+        "fn": 37,
+        "tp": 263,
+        "recall": 0.8766666666666667,
+        "fpr": 0.045
+      }
+    },
+    {
+      "flip4": true,
+      "semantic": true,
+      "pyramid": false,
+      "regularization_C": 0.1,
+      "oof_development": {
+        "auroc": 0.9805,
+        "threshold": 0.9018021821975708,
+        "tn": 191,
+        "fp": 9,
+        "fn": 35,
+        "tp": 265,
+        "recall": 0.8833333333333333,
+        "fpr": 0.045
+      }
+    },
+    {
+      "flip4": true,
+      "semantic": true,
+      "pyramid": false,
+      "regularization_C": 1.0,
+      "oof_development": {
+        "auroc": 0.9813000000000001,
+        "threshold": 0.8624151945114136,
+        "tn": 191,
+        "fp": 9,
+        "fn": 25,
+        "tp": 275,
+        "recall": 0.9166666666666666,
+        "fpr": 0.045
+      }
+    },
+    {
+      "flip4": true,
+      "semantic": true,
+      "pyramid": true,
+      "regularization_C": 0.01,
+      "oof_development": {
+        "auroc": 0.9761666666666666,
+        "threshold": 0.9741418957710266,
+        "tn": 191,
+        "fp": 9,
+        "fn": 50,
+        "tp": 250,
+        "recall": 0.8333333333333334,
+        "fpr": 0.045
+      }
+    },
+    {
+      "flip4": true,
+      "semantic": true,
+      "pyramid": true,
+      "regularization_C": 0.1,
+      "oof_development": {
+        "auroc": 0.9784833333333333,
+        "threshold": 0.797974705696106,
+        "tn": 191,
+        "fp": 9,
+        "fn": 29,
+        "tp": 271,
+        "recall": 0.9033333333333333,
+        "fpr": 0.045
+      }
+    },
+    {
+      "flip4": true,
+      "semantic": true,
+      "pyramid": true,
+      "regularization_C": 1.0,
+      "oof_development": {
+        "auroc": 0.9802333333333333,
+        "threshold": 1.2094056606292725,
+        "tn": 191,
+        "fp": 9,
+        "fn": 34,
+        "tp": 266,
+        "recall": 0.8866666666666667,
         "fpr": 0.045
       }
     }
   ],
-  "selected_policy": {
-    "flip4": true,
-    "normal_calibration_quantile": 0.95,
-    "threshold": 1.1298428559847098,
-    "fusion": {
-      "feature_names": [
-        "image_logit",
-        "mask_max_logit",
-        "top41_mean_logit",
-        "top410_mean_logit",
-        "top4096_mean_logit",
-        "mask_area_above_0p1",
-        "mask_area_above_0p3",
-        "mask_area_above_0p5",
-        "mask_area_above_0p7"
-      ],
-      "mean": [
-        0.45765067567676304,
-        5.460521219342947,
-        5.352487123534083,
-        4.780669323652983,
-        2.8022056692622135,
-        0.05987185916217277,
-        0.04485573142708745,
-        0.037749291074593204,
-        0.03154538989802313
-      ],
-      "scale": [
-        6.410066759152322,
-        2.090288623450115,
-        2.087017915532015,
-        2.004224766427375,
-        2.0623544423362623,
-        0.0961465290655004,
-        0.07245790161121374,
-        0.06102594764642068,
-        0.050897870293911254
-      ],
-      "coefficient": [
-        3.7662599086761475,
-        0.46780529618263245,
-        0.4937938451766968,
-        -0.19221167266368866,
-        0.11719983071088791,
-        0.10717251151800156,
-        0.07906467467546463,
-        0.03950553387403488,
-        -0.03799745440483093
-      ],
-      "intercept": 0.5964491367340088
-    }
-  },
   "threshold_candidates": [
     {
       "q": 0.95,
-      "threshold": 1.1298428559847098,
+      "threshold": 0.7675990082889322,
       "development": {
-        "auroc": 0.9784666666666667,
-        "threshold": 1.1298428559847098,
-        "tn": 190,
-        "fp": 10,
-        "fn": 33,
-        "tp": 267,
-        "recall": 0.89,
-        "fpr": 0.05
+        "auroc": 0.9837,
+        "threshold": 0.7675990082889322,
+        "tn": 191,
+        "fp": 9,
+        "fn": 19,
+        "tp": 281,
+        "recall": 0.9366666666666666,
+        "fpr": 0.045
       }
     },
     {
       "q": 0.975,
-      "threshold": 1.6978853285218307,
+      "threshold": 1.737304697019967,
       "development": {
-        "auroc": 0.9784666666666667,
-        "threshold": 1.6978853285218307,
-        "tn": 193,
-        "fp": 7,
-        "fn": 49,
-        "tp": 251,
-        "recall": 0.8366666666666667,
-        "fpr": 0.035
+        "auroc": 0.9837,
+        "threshold": 1.737304697019967,
+        "tn": 192,
+        "fp": 8,
+        "fn": 41,
+        "tp": 259,
+        "recall": 0.8633333333333333,
+        "fpr": 0.04
       }
     }
   ],
   "qualification": {
-    "auroc": 0.9805240633681207,
-    "threshold": 1.1298428559847098,
-    "tn": 268,
-    "fp": 17,
-    "fn": 73,
-    "tp": 628,
-    "recall": 0.8958630527817404,
-    "fpr": 0.05964912280701754
+    "auroc": 0.9834522111269615,
+    "threshold": 0.7675990082889322,
+    "tn": 265,
+    "fp": 20,
+    "fn": 50,
+    "tp": 651,
+    "recall": 0.9286733238231099,
+    "fpr": 0.07017543859649122
+  },
+  "qualification_per_class": {
+    "1": {
+      "defective_images": 89,
+      "detected": 82,
+      "recall": 0.9213483146067416
+    },
+    "2": {
+      "defective_images": 22,
+      "detected": 17,
+      "recall": 0.7727272727272727
+    },
+    "3": {
+      "defective_images": 548,
+      "detected": 519,
+      "recall": 0.9470802919708029
+    },
+    "4": {
+      "defective_images": 85,
+      "detected": 73,
+      "recall": 0.8588235294117647
+    }
+  },
+  "qualification_by_defect_area": {
+    "0-0.001": {
+      "defective_images": 5,
+      "detected": 5,
+      "recall": 1.0
+    },
+    "0.001-0.01": {
+      "defective_images": 158,
+      "detected": 142,
+      "recall": 0.8987341772151899
+    },
+    "0.01-0.05": {
+      "defective_images": 325,
+      "detected": 305,
+      "recall": 0.9384615384615385
+    },
+    "0.05-1.00001": {
+      "defective_images": 213,
+      "detected": 199,
+      "recall": 0.9342723004694836
+    }
+  },
+  "qualification_localization": {
+    "threshold": 0.5,
+    "ungated": true,
+    "global_dice": 0.6165760477625909,
+    "pixel_recall": 0.6024787748832379,
+    "mean_positive_image_dice": 0.6261786191426874,
+    "normal_pixel_fpr": 0.017358843887061402
+  },
+  "diagnostic_only_qualification_roc_at_5pct_fpr": {
+    "not_applied_to_policy": true,
+    "auroc": 0.9834522111269615,
+    "threshold": 0.9345175472872667,
+    "tn": 271,
+    "fp": 14,
+    "fn": 52,
+    "tp": 649,
+    "recall": 0.9258202567760342,
+    "fpr": 0.04912280701754386
   },
   "test_used": false,
-  "inference_precision": "float32",
-  "scope": "Meta model trained on 500 development images, 5-fold OOF selects C/view; calibration400normal; qualification986 is validation, final test untouched"
+  "scope": "Two frozen stages, linear meta model trained on development500 only; 5-fold OOF selects features/C/view; calibration400 normal; reused qualification986; refined member mask retained; no test access"
 }

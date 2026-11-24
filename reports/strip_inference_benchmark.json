@@ -1,0 +1,46 @@
+{
+  "model_sha256": "fbdf017d6620b29d8cf3ea1bea426d71999fa0a1d5fca9f612ad38b6a06a4e79",
+  "gpu": "NVIDIA GeForce RTX 5060 Laptop GPU",
+  "precision": "float32",
+  "batch_size": 1,
+  "image_size_wh": [
+    1600,
+    256
+  ],
+  "warmup": 5,
+  "iterations": 20,
+  "latency_ms_median": 123.86729999980162,
+  "latency_ms_p95": 148.04173499976514,
+  "peak_allocated_mib": 360.3525390625,
+  "policy": {
+    "flip4": true,
+    "normal_calibration_quantile": 0.95,
+    "threshold": 0.7675990082889322,
+    "fusion": {
+      "method": "linear",
+      "feature_names": [
+        "member0/image_logit",
+        "member0/mask_max_logit",
+        "member0/top41_mean_logit",
+        "member0/top410_mean_logit",
+        "member0/top4096_mean_logit",
+        "member0/mask_area_above_0p1",
+        "member0/mask_area_above_0p3",
+        "member0/mask_area_above_0p5",
+        "member0/mask_area_above_0p7",
+        "member1/image_logit",
+        "member1/mask_max_logit",
+        "member1/top41_mean_logit",
+        "member1/top410_mean_logit",
+        "member1/top4096_mean_logit",
+        "member1/mask_area_above_0p1",
+        "member1/mask_area_above_0p3",
+        "member1/mask_area_above_0p5",
+        "member1/mask_area_above_0p7"
+      ],
+      "parameters_sha256": "ca496efb16cd5ff74d2441e990956b95cd061c743ef5174cc043882dc983bc0c",
+      "parameters_saved_with_local_candidate": true
+    }
+  },
+  "scope": "In-memory RGB -> preprocessing/transfer -> frozen scoring -> CPU score and raw mask; excludes JPEG decode, disk writes and camera. One development image; no test access."
+}

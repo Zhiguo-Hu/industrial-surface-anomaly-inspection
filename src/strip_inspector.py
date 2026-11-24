@@ -33,6 +33,11 @@ class StripInspector(ResNet18UNet):
 
 
 def inspector_from_saved(saved):
+    if saved.get('model_kind')=='strip_ensemble':
+        from src.strip_ensemble import StripEnsemble
+        states=[{k[len(f'members.{i}.'):]:v for k,v in saved['model'].items() if k.startswith(f'members.{i}.')} for i in (0,1)]
+        if sum(map(len,states))!=len(saved['model']) or not all(states):raise ValueError('Invalid ensemble state')
+        return StripEnsemble([inspector_from_saved({'model':state}) for state in states])
     model=StripInspector(auxiliary_classes=any(k.startswith('auxiliary.') for k in saved['model']))
     model.load_state_dict(saved['model'],strict=True)
     return model

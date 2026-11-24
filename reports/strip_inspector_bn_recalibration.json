@@ -1,0 +1,31 @@
+{
+  "source_model_sha256": "bcbd81273fee8de27fe638f2825d7a5a32202ad6c7f1508607ecf2ac6db34f9e",
+  "selected_model_sha256": "bcbd81273fee8de27fe638f2825d7a5a32202ad6c7f1508607ecf2ac6db34f9e",
+  "source_epoch": 12,
+  "source_run": "strip_inspector",
+  "original_development": {
+    "auroc": 0.9786666666666667,
+    "threshold": 1.564621925354004,
+    "tn": 191,
+    "fp": 9,
+    "fn": 32,
+    "tp": 268,
+    "recall": 0.8933333333333333,
+    "fpr": 0.045
+  },
+  "recalibrated_development": {
+    "auroc": 0.9783833333333334,
+    "threshold": 1.3268816471099854,
+    "tn": 191,
+    "fp": 9,
+    "fn": 34,
+    "tp": 266,
+    "recall": 0.8866666666666667,
+    "fpr": 0.045
+  },
+  "selected": "original",
+  "train_images": 8800,
+  "learned_parameters_unchanged": true,
+  "test_used": false,
+  "scope": "BN running moments only, all train images at native resolution without augmentation; selected on development500, no qualification or test labels"
+}

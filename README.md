@@ -1,8 +1,8 @@
 # 工业表面异常检测与定位 / Industrial Surface Anomaly Inspection
 
-基于 PyTorch 的工业表面视觉检测项目。已按顺序完成类别平衡两种子复验及正常特征库：4132张正常训练图提取、压缩为4096×384向量，提取器与库一并保存，独立加载/来源回放/图片检测验证通过。正常库开发AUROC 0.8403、检出57/100、误报10/100，尚不可部署。详见[正常库报告](reports/normal_feature_bank.md)和[复验报告](reports/class_balanced_replication.md)；最终test保留。
+基于 PyTorch 的工业表面视觉检测项目。2026-11-24已断点恢复并完成全幅检测第二阶段8轮训练、BN统计校正对照、窗口/掩码/类别融合及两阶段组合。当前研究组合在986张资格验证图上召回92.87%（651/701）、正常误报7.02%（20/285），**未达到召回≥95%、正常误报≤5%的门槛，不能称为可部署成品**。62项测试、独立进程重载与全分辨率输出检查通过；原1882张最终test仍封存。详见[中英文训练验证报告](reports/strip_refinement_results.md)和[完整数值](reports/strip_refinement_summary.json)。
 
-A PyTorch surface-inspection project. Completed the requested class-balanced seed replication followed by normal memory construction: extract all 4132 normal train images, compress to 4096×384 vectors, and save extractor plus memory together. Independent loading, source-vector replay and image prediction pass. Bank development AUROC 0.8403, TP=57/100, FP=10/100; not deployable. See the [bank report](reports/normal_feature_bank.md) and [replication report](reports/class_balanced_replication.md); final test data stays reserved.
+A PyTorch surface-inspection project. Resumed and completed eight refinement epochs on2026-11-24, plus BN controls, feature fusion and a frozen two-stage ensemble. Its qualification recall is92.87% (651/701), normal FPR7.02% (20/285): **below the recall≥95% / FPR≤5% acceptance target; not deployable**. All62 tests, independent-process reload and full-resolution output checks pass. Original test1882 remains locked. See the [bilingual report](reports/strip_refinement_results.md) and [complete metrics](reports/strip_refinement_summary.json).
 
 ## 进展 / Progress
 

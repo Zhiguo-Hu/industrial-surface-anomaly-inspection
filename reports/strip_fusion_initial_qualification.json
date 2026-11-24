@@ -1,0 +1,160 @@
+{
+  "status": "target_not_met",
+  "target": {
+    "recall_min": 0.95,
+    "fpr_max": 0.05
+  },
+  "model_sha256": "892ccfbfaf7e81546a2a89ed5195ec5c5dfe31cca45be7b20ac789d0a3c93049",
+  "source_epoch": 6,
+  "source_steps": 3300,
+  "selection_candidates": [
+    {
+      "flip4": false,
+      "regularization_C": 0.01,
+      "oof_development": {
+        "auroc": 0.96045,
+        "threshold": 0.8257107734680176,
+        "tn": 191,
+        "fp": 9,
+        "fn": 60,
+        "tp": 240,
+        "recall": 0.8,
+        "fpr": 0.045
+      }
+    },
+    {
+      "flip4": false,
+      "regularization_C": 0.1,
+      "oof_development": {
+        "auroc": 0.9708,
+        "threshold": 1.1374797821044922,
+        "tn": 191,
+        "fp": 9,
+        "fn": 57,
+        "tp": 243,
+        "recall": 0.81,
+        "fpr": 0.045
+      }
+    },
+    {
+      "flip4": false,
+      "regularization_C": 1.0,
+      "oof_development": {
+        "auroc": 0.9755666666666667,
+        "threshold": 1.3543484210968018,
+        "tn": 191,
+        "fp": 9,
+        "fn": 42,
+        "tp": 258,
+        "recall": 0.86,
+        "fpr": 0.045
+      }
+    },
+    {
+      "flip4": true,
+      "regularization_C": 0.01,
+      "oof_development": {
+        "auroc": 0.9613833333333334,
+        "threshold": 0.7748339176177979,
+        "tn": 191,
+        "fp": 9,
+        "fn": 59,
+        "tp": 241,
+        "recall": 0.8033333333333333,
+        "fpr": 0.045
+      }
+    },
+    {
+      "flip4": true,
+      "regularization_C": 0.1,
+      "oof_development": {
+        "auroc": 0.9724833333333334,
+        "threshold": 0.9028293490409851,
+        "tn": 191,
+        "fp": 9,
+        "fn": 43,
+        "tp": 257,
+        "recall": 0.8566666666666667,
+        "fpr": 0.045
+      }
+    },
+    {
+      "flip4": true,
+      "regularization_C": 1.0,
+      "oof_development": {
+        "auroc": 0.97675,
+        "threshold": 1.131544828414917,
+        "tn": 191,
+        "fp": 9,
+        "fn": 32,
+        "tp": 268,
+        "recall": 0.8933333333333333,
+        "fpr": 0.045
+      }
+    }
+  ],
+  "selected_policy": {
+    "flip4": true,
+    "normal_calibration_quantile": 0.95,
+    "threshold": 1.1298428559847098,
+    "fusion": {
+      "method": "linear",
+      "feature_names": [
+        "image_logit",
+        "mask_max_logit",
+        "top41_mean_logit",
+        "top410_mean_logit",
+        "top4096_mean_logit",
+        "mask_area_above_0p1",
+        "mask_area_above_0p3",
+        "mask_area_above_0p5",
+        "mask_area_above_0p7"
+      ],
+      "parameters_sha256": "8b76608450246c7e172e13be02e06a9c8f9908953df9a21c07e27058ac5d2af2",
+      "parameters_saved_with_local_candidate": true
+    }
+  },
+  "threshold_candidates": [
+    {
+      "q": 0.95,
+      "threshold": 1.1298428559847098,
+      "development": {
+        "auroc": 0.9784666666666667,
+        "threshold": 1.1298428559847098,
+        "tn": 190,
+        "fp": 10,
+        "fn": 33,
+        "tp": 267,
+        "recall": 0.89,
+        "fpr": 0.05
+      }
+    },
+    {
+      "q": 0.975,
+      "threshold": 1.6978853285218307,
+      "development": {
+        "auroc": 0.9784666666666667,
+        "threshold": 1.6978853285218307,
+        "tn": 193,
+        "fp": 7,
+        "fn": 49,
+        "tp": 251,
+        "recall": 0.8366666666666667,
+        "fpr": 0.035
+      }
+    }
+  ],
+  "qualification": {
+    "auroc": 0.9805240633681207,
+    "threshold": 1.1298428559847098,
+    "tn": 268,
+    "fp": 17,
+    "fn": 73,
+    "tp": 628,
+    "recall": 0.8958630527817404,
+    "fpr": 0.05964912280701754
+  },
+  "test_used": false,
+  "inference_precision": "float32",
+  "scope": "Meta model trained on 500 development images, 5-fold OOF selects C/view; calibration400normal; qualification986 is validation, final test untouched"
+}

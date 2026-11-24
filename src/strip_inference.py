@@ -1,4 +1,5 @@
 """Shared FP32 deployment path: same full-image score as qualification."""
+import hashlib,json
 import numpy as np
 import torch
 from src.strip_inspector import normalize_images
@@ -11,6 +12,21 @@ PYRAMID_FEATURE_NAMES=['crop800_max_logit','crop800_mean_logit','crop800_min_log
 
 def feature_names(semantic=False,pyramid=False):
     return (SEMANTIC_FEATURE_NAMES if semantic else MASK_FEATURE_NAMES)+(PYRAMID_FEATURE_NAMES if pyramid else [])
+
+
+def ensemble_feature_names(first,second):
+    return [f'member{i}/{name}' for i,names in enumerate((first,second)) for name in names]
+
+
+def public_policy(policy):
+    """Publish method/provenance, retaining fitted fusion parameters in local artifacts."""
+    result={k:v for k,v in policy.items() if k!='fusion'}
+    if policy.get('fusion') is not None:
+        fusion=policy['fusion'];result['fusion']={'method':fusion.get('method','linear'),'feature_names':fusion['feature_names'],
+            'parameters_sha256':hashlib.sha256(json.dumps(fusion,sort_keys=True).encode()).hexdigest(),
+            'parameters_saved_with_local_candidate':True}
+        if 'support_vectors' in fusion:result['fusion']['support_vector_count']=len(fusion['support_vectors'])
+    return result
 
 
 @torch.inference_mode()
@@ -30,10 +46,18 @@ def mask_score_features(logit,segmentation):
 
 
 def fused_score(features,spec):
-    if spec['feature_names'] not in [feature_names(s,p) for s in (False,True) for p in (False,True)]:raise ValueError('Unsupported inspection feature schema')
+    schemas=[feature_names(s,p) for s in (False,True) for p in (False,True)]
+    supported=schemas+[ensemble_feature_names(a,b) for a in schemas for b in schemas]
+    if spec['feature_names'] not in supported:raise ValueError('Unsupported inspection feature schema')
     if features.shape[1]!=len(spec['feature_names']):raise ValueError('Feature count does not match fusion schema')
     x=features.double();mean=x.new_tensor(spec['mean']);scale=x.new_tensor(spec['scale'])
-    return ((x-mean)/scale)@x.new_tensor(spec['coefficient'])+spec['intercept']
+    x=(x-mean)/scale
+    method=spec.get('method','linear')
+    if method=='linear':return x@x.new_tensor(spec['coefficient'])+spec['intercept']
+    if method=='rbf_svm':
+        support=x.new_tensor(spec['support_vectors']);distance=(x[:,None,:]-support[None,:,:]).square().sum(-1)
+        return torch.exp(-spec['gamma']*distance)@x.new_tensor(spec['dual_coefficient'])+spec['intercept']
+    raise ValueError('Unsupported decision fusion method')
 
 
 @torch.inference_mode()
@@ -52,6 +76,12 @@ def inspection_scores(model,x,policy):
 
 @torch.inference_mode()
 def decision_features(model,x,flip4,names):
+    if hasattr(model,'members'):
+        values=[]
+        for i,member in enumerate(model.members):
+            member_names=[name[len(f'member{i}/'):] for name in names if name.startswith(f'member{i}/')]
+            features,mask=decision_features(member,x,flip4,member_names);values.append(features)
+        return torch.cat(values,1),mask
     semantic='class1_logit' in names;pyramid='crop800_max_logit' in names
     if semantic:mask,original,aux=model.forward_joint(x,return_aux=True);auxvalues=[aux]
     else:mask,original=model.forward_joint(x)

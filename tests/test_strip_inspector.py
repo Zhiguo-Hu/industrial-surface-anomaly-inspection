@@ -6,7 +6,8 @@ from src.strip_inspector import StripInspector,strip_loss,normalize_images,inspe
 from src.strip_cache import CachedStrips,guided_crop
 import random
 from src.inspection_protocol import partition,operating_metrics,development_metrics,frozen_test_fingerprint,verify_test_identity
-from src.strip_inference import MASK_FEATURE_NAMES,mask_score_features,fused_score,inspect_image,inspection_scores,feature_names,pyramid_logits
+from src.strip_inference import MASK_FEATURE_NAMES,mask_score_features,fused_score,inspect_image,inspection_scores,feature_names,pyramid_logits,ensemble_feature_names,decision_features
+from src.strip_ensemble import StripEnsemble
 
 
 class StripInspectorTests(unittest.TestCase):
@@ -77,6 +78,20 @@ class StripInspectorTests(unittest.TestCase):
         expected=features.numpy().astype(np.float64)@np.arange(1,10)+.2
         np.testing.assert_allclose(fused_score(features,spec).numpy(),expected,rtol=1e-12)
 
+    def test_exported_rbf_fusion_matches_fitted_sklearn(self):
+        from sklearn.pipeline import make_pipeline
+        from sklearn.preprocessing import StandardScaler
+        from sklearn.svm import SVC
+        rng=np.random.default_rng(42);x=rng.normal(size=(70,9));y=(x[:,0]*x[:,1]>0).astype(int)
+        learner=make_pipeline(StandardScaler(),SVC(C=1.7));learner.fit(x,y)
+        scaler,decision=learner.steps[0][1],learner.steps[1][1]
+        spec={'feature_names':MASK_FEATURE_NAMES,'method':'rbf_svm','mean':scaler.mean_.tolist(),'scale':scaler.scale_.tolist(),
+              'support_vectors':decision.support_vectors_.tolist(),'dual_coefficient':decision.dual_coef_[0].tolist(),
+              'gamma':float(decision._gamma),'intercept':float(decision.intercept_[0])}
+        unseen=rng.normal(size=(12,9));actual=fused_score(torch.from_numpy(unseen),spec).numpy()
+        np.testing.assert_allclose(actual,learner.decision_function(unseen),rtol=1e-10,atol=1e-10)
+        with self.assertRaises(ValueError):fused_score(torch.from_numpy(unseen),{**spec,'method':'unknown'})
+
     def test_deployment_and_qualification_score_paths_agree(self):
         class Corners(torch.nn.Module):
             def __init__(self):
@@ -104,6 +119,25 @@ class StripInspectorTests(unittest.TestCase):
         torch.testing.assert_close(pyramid_logits(Widths(),x),torch.tensor([[800.,400.,0.]]))
         with self.assertRaises(ValueError):pyramid_logits(Widths(),x[...,:800])
 
+    def test_semantic_pyramid_batch_and_single_image_decisions_agree(self):
+        class SemanticCorners(torch.nn.Module):
+            def __init__(self):
+                super().__init__();self.detector=torch.nn.Linear(3,1);self.auxiliary=torch.nn.Linear(3,4)
+            def features(self,x):return x[:,:,0,0]
+            def forward_joint(self,x,return_aux=False):
+                p=self.features(x);out=(x[:,:1],self.detector(p).squeeze(1))
+                return (*out,self.auxiliary(p)) if return_aux else out
+        model=SemanticCorners().eval();array=np.zeros((256,1600,3),dtype=np.uint8)
+        array[:64,:400]=255;array[-64:,800:]=120
+        names=feature_names(True,True);n=len(names)
+        self.assertEqual(n,16)
+        spec={'feature_names':names,'mean':[.2]*n,'scale':[1.3]*n,'coefficient':[i/10 for i in range(n)],'intercept':-.3}
+        score,mask=inspect_image(model,array,'cpu',True,spec)
+        x=normalize_images(torch.from_numpy(array.transpose(2,0,1).copy())[None]).repeat(2,1,1,1)
+        batch=inspection_scores(model,x,{'flip4':True,'fusion':spec})
+        np.testing.assert_allclose(batch.numpy(),[score,score],rtol=1e-6,atol=1e-6)
+        self.assertEqual(mask.shape,(256,1600))
+
     def test_guided_crop_keeps_foreground_and_image_mask_pairing(self):
         image=torch.arange(16,dtype=torch.uint8).view(1,1,1,16).expand(3,3,8,16).clone()
         mask=torch.zeros(3,1,8,16,dtype=torch.uint8);mask[0,0,3,0]=1;mask[1,0,4,15]=1
@@ -120,3 +154,17 @@ class StripInspectorTests(unittest.TestCase):
         restored=inspector_from_saved({'model':model.state_dict()})
         self.assertTrue(hasattr(restored,'auxiliary'))
         torch.testing.assert_close(restored.auxiliary[-1].weight,model.auxiliary[-1].weight)
+
+    def test_ensemble_reload_and_refined_mask_preservation(self):
+        model=StripEnsemble([StripInspector(),StripInspector(auxiliary_classes=True)]).eval()
+        restored=inspector_from_saved({'model_kind':'strip_ensemble','model':model.state_dict()}).eval()
+        names=ensemble_feature_names(MASK_FEATURE_NAMES,feature_names(True,False));x=torch.randn(2,3,32,64)
+        features,mask=decision_features(restored,x,False,names)
+        self.assertEqual(features.shape,(2,22))
+        with torch.inference_mode():expected_mask=restored.members[1].forward_joint(x)[0]
+        torch.testing.assert_close(mask,expected_mask)
+        spec={'feature_names':names,'mean':[0.]*22,'scale':[1.]*22,'coefficient':[.1]*22,'intercept':.3}
+        actual=inspection_scores(restored,x,{'flip4':False,'fusion':spec})
+        torch.testing.assert_close(actual,.1*features.double().sum(1)+.3)
+        invalid={**model.state_dict(),'unclaimed.weight':torch.ones(1)}
+        with self.assertRaises(ValueError):inspector_from_saved({'model_kind':'strip_ensemble','model':invalid})

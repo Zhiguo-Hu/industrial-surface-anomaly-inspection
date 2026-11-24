@@ -1,8 +1,16 @@
-# 全幅检测暂停记录 / Full-strip inspection pause
+# 全幅检测训练记录 / Full-strip inspection progress
+
+**最新状态2026-11-24：8轮训练与推理验证已完成，当前未达部署目标。此前暂停内容保留为历史记录。完整结果见[本轮训练验证报告](strip_refinement_results.md)。**
+
+**Current2026-11-24: eight epochs and inference checks completed; deployment target unmet. Pause details below are historical. See the [completed-run report](strip_refinement_results.md).**
 
 2026-11-23：用户因电脑电量不足要求暂停。训练已停止，没有自动重启任务。目标为图像级缺陷召回≥95%、正常误报≤5%；**尚未达标**。
 
 Training stopped at the user's request due to low battery. No scheduled restart. Target: image-level recall≥95%, normal FPR≤5%. **Not yet achieved.**
+
+2026-11-24：用户要求继续训练，已从第2轮50批的断点恢复；GPU训练日志确认继续更新。下文的暂停位置是恢复起点，当前进度以本地日志与训练历史为准。
+
+On2026-11-24 the user requested resume. The matching checkpoint was restored and GPU training continued from epoch2/batch50. The pause position below records the restart point; local logs/history show subsequent progress.
 
 ## 已完成 / Completed
 

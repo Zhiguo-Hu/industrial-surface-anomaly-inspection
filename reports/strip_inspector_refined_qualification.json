@@ -1,0 +1,559 @@
+{
+  "status": "target_not_met",
+  "target": {
+    "recall_min": 0.95,
+    "fpr_max": 0.05
+  },
+  "model_sha256": "0b0cf998ee5e74cc25eba52b7630a136cac2a2cb2ed3203e42b7477f6af29622",
+  "source_epoch": 4,
+  "source_steps": 2200,
+  "source_run": "strip_inspector_refined",
+  "source_checkpoint": "inference_selected.pt",
+  "selected_oof_development": {
+    "auroc": 0.98005,
+    "threshold": 0.6731293797492981,
+    "tn": 191,
+    "fp": 9,
+    "fn": 22,
+    "tp": 278,
+    "recall": 0.9266666666666666,
+    "fpr": 0.045
+  },
+  "selection_candidates": [
+    {
+      "flip4": false,
+      "semantic": false,
+      "pyramid": false,
+      "method": "linear",
+      "regularization_C": 0.01,
+      "oof_development": {
+        "auroc": 0.96835,
+        "threshold": 0.665886640548706,
+        "tn": 191,
+        "fp": 9,
+        "fn": 41,
+        "tp": 259,
+        "recall": 0.8633333333333333,
+        "fpr": 0.045
+      }
+    },
+    {
+      "flip4": false,
+      "semantic": false,
+      "pyramid": false,
+      "method": "linear",
+      "regularization_C": 0.1,
+      "oof_development": {
+        "auroc": 0.976,
+        "threshold": 0.6593124866485596,
+        "tn": 191,
+        "fp": 9,
+        "fn": 29,
+        "tp": 271,
+        "recall": 0.9033333333333333,
+        "fpr": 0.045
+      }
+    },
+    {
+      "flip4": false,
+      "semantic": false,
+      "pyramid": false,
+      "method": "linear",
+      "regularization_C": 1.0,
+      "oof_development": {
+        "auroc": 0.98005,
+        "threshold": 0.6731293797492981,
+        "tn": 191,
+        "fp": 9,
+        "fn": 22,
+        "tp": 278,
+        "recall": 0.9266666666666666,
+        "fpr": 0.045
+      }
+    },
+    {
+      "flip4": false,
+      "semantic": false,
+      "pyramid": true,
+      "method": "linear",
+      "regularization_C": 0.01,
+      "oof_development": {
+        "auroc": 0.9753333333333334,
+        "threshold": 0.6339782476425171,
+        "tn": 191,
+        "fp": 9,
+        "fn": 33,
+        "tp": 267,
+        "recall": 0.89,
+        "fpr": 0.045
+      }
+    },
+    {
+      "flip4": false,
+      "semantic": false,
+      "pyramid": true,
+      "method": "linear",
+      "regularization_C": 0.1,
+      "oof_development": {
+        "auroc": 0.97675,
+        "threshold": 1.0931141376495361,
+        "tn": 191,
+        "fp": 9,
+        "fn": 42,
+        "tp": 258,
+        "recall": 0.86,
+        "fpr": 0.045
+      }
+    },
+    {
+      "flip4": false,
+      "semantic": false,
+      "pyramid": true,
+      "method": "linear",
+      "regularization_C": 1.0,
+      "oof_development": {
+        "auroc": 0.9784166666666667,
+        "threshold": 0.7832602262496948,
+        "tn": 191,
+        "fp": 9,
+        "fn": 24,
+        "tp": 276,
+        "recall": 0.92,
+        "fpr": 0.045
+      }
+    },
+    {
+      "flip4": false,
+      "semantic": true,
+      "pyramid": false,
+      "method": "linear",
+      "regularization_C": 0.01,
+      "oof_development": {
+        "auroc": 0.9721666666666667,
+        "threshold": 0.8577221632003784,
+        "tn": 191,
+        "fp": 9,
+        "fn": 51,
+        "tp": 249,
+        "recall": 0.83,
+        "fpr": 0.045
+      }
+    },
+    {
+      "flip4": false,
+      "semantic": true,
+      "pyramid": false,
+      "method": "linear",
+      "regularization_C": 0.1,
+      "oof_development": {
+        "auroc": 0.9776,
+        "threshold": 0.9407625794410706,
+        "tn": 191,
+        "fp": 9,
+        "fn": 35,
+        "tp": 265,
+        "recall": 0.8833333333333333,
+        "fpr": 0.045
+      }
+    },
+    {
+      "flip4": false,
+      "semantic": true,
+      "pyramid": false,
+      "method": "linear",
+      "regularization_C": 1.0,
+      "oof_development": {
+        "auroc": 0.9801,
+        "threshold": 0.977501392364502,
+        "tn": 191,
+        "fp": 9,
+        "fn": 26,
+        "tp": 274,
+        "recall": 0.9133333333333333,
+        "fpr": 0.045
+      }
+    },
+    {
+      "flip4": false,
+      "semantic": true,
+      "pyramid": true,
+      "method": "linear",
+      "regularization_C": 0.01,
+      "oof_development": {
+        "auroc": 0.97615,
+        "threshold": 0.8213990330696106,
+        "tn": 191,
+        "fp": 9,
+        "fn": 48,
+        "tp": 252,
+        "recall": 0.84,
+        "fpr": 0.045
+      }
+    },
+    {
+      "flip4": false,
+      "semantic": true,
+      "pyramid": true,
+      "method": "linear",
+      "regularization_C": 0.1,
+      "oof_development": {
+        "auroc": 0.9773833333333333,
+        "threshold": 1.1566615104675293,
+        "tn": 191,
+        "fp": 9,
+        "fn": 44,
+        "tp": 256,
+        "recall": 0.8533333333333334,
+        "fpr": 0.045
+      }
+    },
+    {
+      "flip4": false,
+      "semantic": true,
+      "pyramid": true,
+      "method": "linear",
+      "regularization_C": 1.0,
+      "oof_development": {
+        "auroc": 0.9781666666666666,
+        "threshold": 1.100097417831421,
+        "tn": 191,
+        "fp": 9,
+        "fn": 31,
+        "tp": 269,
+        "recall": 0.8966666666666666,
+        "fpr": 0.045
+      }
+    },
+    {
+      "flip4": true,
+      "semantic": false,
+      "pyramid": false,
+      "method": "linear",
+      "regularization_C": 0.01,
+      "oof_development": {
+        "auroc": 0.96975,
+        "threshold": 0.6668381690979004,
+        "tn": 191,
+        "fp": 9,
+        "fn": 40,
+        "tp": 260,
+        "recall": 0.8666666666666667,
+        "fpr": 0.045
+      }
+    },
+    {
+      "flip4": true,
+      "semantic": false,
+      "pyramid": false,
+      "method": "linear",
+      "regularization_C": 0.1,
+      "oof_development": {
+        "auroc": 0.9780166666666668,
+        "threshold": 0.5702139139175415,
+        "tn": 191,
+        "fp": 9,
+        "fn": 24,
+        "tp": 276,
+        "recall": 0.92,
+        "fpr": 0.045
+      }
+    },
+    {
+      "flip4": true,
+      "semantic": false,
+      "pyramid": false,
+      "method": "linear",
+      "regularization_C": 1.0,
+      "oof_development": {
+        "auroc": 0.9821,
+        "threshold": 0.9105004072189331,
+        "tn": 191,
+        "fp": 9,
+        "fn": 27,
+        "tp": 273,
+        "recall": 0.91,
+        "fpr": 0.045
+      }
+    },
+    {
+      "flip4": true,
+      "semantic": false,
+      "pyramid": true,
+      "method": "linear",
+      "regularization_C": 0.01,
+      "oof_development": {
+        "auroc": 0.9760333333333333,
+        "threshold": 0.6589792966842651,
+        "tn": 191,
+        "fp": 9,
+        "fn": 36,
+        "tp": 264,
+        "recall": 0.88,
+        "fpr": 0.045
+      }
+    },
+    {
+      "flip4": true,
+      "semantic": false,
+      "pyramid": true,
+      "method": "linear",
+      "regularization_C": 0.1,
+      "oof_development": {
+        "auroc": 0.9780166666666666,
+        "threshold": 0.7899935841560364,
+        "tn": 191,
+        "fp": 9,
+        "fn": 27,
+        "tp": 273,
+        "recall": 0.91,
+        "fpr": 0.045
+      }
+    },
+    {
+      "flip4": true,
+      "semantic": false,
+      "pyramid": true,
+      "method": "linear",
+      "regularization_C": 1.0,
+      "oof_development": {
+        "auroc": 0.9801333333333333,
+        "threshold": 0.905495822429657,
+        "tn": 191,
+        "fp": 9,
+        "fn": 27,
+        "tp": 273,
+        "recall": 0.91,
+        "fpr": 0.045
+      }
+    },
+    {
+      "flip4": true,
+      "semantic": true,
+      "pyramid": false,
+      "method": "linear",
+      "regularization_C": 0.01,
+      "oof_development": {
+        "auroc": 0.9739666666666666,
+        "threshold": 0.6631879806518555,
+        "tn": 191,
+        "fp": 9,
+        "fn": 38,
+        "tp": 262,
+        "recall": 0.8733333333333333,
+        "fpr": 0.045
+      }
+    },
+    {
+      "flip4": true,
+      "semantic": true,
+      "pyramid": false,
+      "method": "linear",
+      "regularization_C": 0.1,
+      "oof_development": {
+        "auroc": 0.9791166666666666,
+        "threshold": 0.8864715695381165,
+        "tn": 191,
+        "fp": 9,
+        "fn": 36,
+        "tp": 264,
+        "recall": 0.88,
+        "fpr": 0.045
+      }
+    },
+    {
+      "flip4": true,
+      "semantic": true,
+      "pyramid": false,
+      "method": "linear",
+      "regularization_C": 1.0,
+      "oof_development": {
+        "auroc": 0.9820833333333333,
+        "threshold": 0.8464950919151306,
+        "tn": 191,
+        "fp": 9,
+        "fn": 26,
+        "tp": 274,
+        "recall": 0.9133333333333333,
+        "fpr": 0.045
+      }
+    },
+    {
+      "flip4": true,
+      "semantic": true,
+      "pyramid": true,
+      "method": "linear",
+      "regularization_C": 0.01,
+      "oof_development": {
+        "auroc": 0.9771833333333334,
+        "threshold": 0.7700201869010925,
+        "tn": 191,
+        "fp": 9,
+        "fn": 44,
+        "tp": 256,
+        "recall": 0.8533333333333334,
+        "fpr": 0.045
+      }
+    },
+    {
+      "flip4": true,
+      "semantic": true,
+      "pyramid": true,
+      "method": "linear",
+      "regularization_C": 0.1,
+      "oof_development": {
+        "auroc": 0.97875,
+        "threshold": 0.749896764755249,
+        "tn": 191,
+        "fp": 9,
+        "fn": 27,
+        "tp": 273,
+        "recall": 0.91,
+        "fpr": 0.045
+      }
+    },
+    {
+      "flip4": true,
+      "semantic": true,
+      "pyramid": true,
+      "method": "linear",
+      "regularization_C": 1.0,
+      "oof_development": {
+        "auroc": 0.9802666666666666,
+        "threshold": 0.7540673017501831,
+        "tn": 191,
+        "fp": 9,
+        "fn": 25,
+        "tp": 275,
+        "recall": 0.9166666666666666,
+        "fpr": 0.045
+      }
+    }
+  ],
+  "selected_policy": {
+    "flip4": false,
+    "normal_calibration_quantile": 0.95,
+    "threshold": 0.8181105833627604,
+    "fusion": {
+      "method": "linear",
+      "feature_names": [
+        "image_logit",
+        "mask_max_logit",
+        "top41_mean_logit",
+        "top410_mean_logit",
+        "top4096_mean_logit",
+        "mask_area_above_0p1",
+        "mask_area_above_0p3",
+        "mask_area_above_0p5",
+        "mask_area_above_0p7"
+      ],
+      "parameters_sha256": "a415b41f774edd24d7c456f8d91511c29c6084a9bb5437e8d44f37833ae685ed",
+      "parameters_saved_with_local_candidate": true
+    }
+  },
+  "threshold_candidates": [
+    {
+      "q": 0.95,
+      "threshold": 0.8181105833627604,
+      "development": {
+        "auroc": 0.9818666666666667,
+        "threshold": 0.8181105833627604,
+        "tn": 191,
+        "fp": 9,
+        "fn": 24,
+        "tp": 276,
+        "recall": 0.92,
+        "fpr": 0.045
+      }
+    },
+    {
+      "q": 0.975,
+      "threshold": 1.9347159225833692,
+      "development": {
+        "auroc": 0.9818666666666667,
+        "threshold": 1.9347159225833692,
+        "tn": 193,
+        "fp": 7,
+        "fn": 57,
+        "tp": 243,
+        "recall": 0.81,
+        "fpr": 0.035
+      }
+    }
+  ],
+  "qualification": {
+    "auroc": 0.9827864954826437,
+    "threshold": 0.8181105833627604,
+    "tn": 266,
+    "fp": 19,
+    "fn": 51,
+    "tp": 650,
+    "recall": 0.927246790299572,
+    "fpr": 0.06666666666666667
+  },
+  "test_used": false,
+  "qualification_per_class": {
+    "1": {
+      "defective_images": 89,
+      "detected": 84,
+      "recall": 0.9438202247191011
+    },
+    "2": {
+      "defective_images": 22,
+      "detected": 17,
+      "recall": 0.7727272727272727
+    },
+    "3": {
+      "defective_images": 548,
+      "detected": 519,
+      "recall": 0.9470802919708029
+    },
+    "4": {
+      "defective_images": 85,
+      "detected": 71,
+      "recall": 0.8352941176470589
+    }
+  },
+  "qualification_by_defect_area": {
+    "0-0.001": {
+      "defective_images": 5,
+      "detected": 5,
+      "recall": 1.0
+    },
+    "0.001-0.01": {
+      "defective_images": 158,
+      "detected": 142,
+      "recall": 0.8987341772151899
+    },
+    "0.01-0.05": {
+      "defective_images": 325,
+      "detected": 304,
+      "recall": 0.9353846153846154
+    },
+    "0.05-1.00001": {
+      "defective_images": 213,
+      "detected": 199,
+      "recall": 0.9342723004694836
+    }
+  },
+  "qualification_localization": {
+    "threshold": 0.5,
+    "ungated": true,
+    "global_dice": 0.6165760477625909,
+    "pixel_recall": 0.6024787748832379,
+    "mean_positive_image_dice": 0.6261786191426874,
+    "normal_pixel_fpr": 0.017358843887061402
+  },
+  "diagnostic_only_qualification_roc_at_5pct_fpr": {
+    "not_applied_to_policy": true,
+    "auroc": 0.9827864954826437,
+    "threshold": 1.201240765075928,
+    "tn": 271,
+    "fp": 14,
+    "fn": 68,
+    "tp": 633,
+    "recall": 0.9029957203994294,
+    "fpr": 0.04912280701754386
+  },
+  "inference_precision": "float32 backbone / float64 decision fusion",
+  "scope": "Meta model trained on 500 development images, 5-fold OOF selects method/C/view/crop features; calibration400normal; qualification986 is validation, final test untouched"
+}

@@ -9,7 +9,7 @@ from torch.utils.data import Dataset,DataLoader
 
 ROOT=Path(__file__).resolve().parents[1];sys.path.insert(0,str(ROOT))
 from src.strip_inspector import inspector_from_saved,normalize_images
-from src.strip_inference import inspection_scores
+from src.strip_inference import inspection_scores,public_policy
 from src.inspection_protocol import operating_metrics,frozen_test_fingerprint,verify_test_identity
 from src.reproducibility import configure,state_hash
 
@@ -42,13 +42,14 @@ def main():
     saved=torch.load(OUTPUT/'candidate.pt',map_location='cpu',weights_only=True)
     assert state_hash(saved['model'])==qualification['model_sha256']==saved['model_sha256']
     policy=saved['inspection_policy'];manifest_path=ROOT/'configs/severstal_manifest.json'
+    if policy!=qualification['selected_policy']:raise ValueError('Candidate policy differs from qualification policy')
     assert hashlib.sha256(manifest_path.read_bytes()).hexdigest()==saved['manifest_sha256']
     manifest=json.loads(manifest_path.read_text());rows=[r for r in manifest['samples'] if r['split']=='test']
     assert len(rows)==1882
     fingerprint=frozen_test_fingerprint(saved['model_sha256'],policy)
     access=ROOT/'reports/strip_final_test_access.json'
     if access.exists():verify_test_identity(json.loads(access.read_text())['frozen_fingerprint'],fingerprint)
-    else:access.write_text(json.dumps({'frozen_fingerprint':fingerprint,'model_sha256':saved['model_sha256'],'policy':policy,'test_images':1882},indent=2),encoding='utf-8')
+    else:access.write_text(json.dumps({'frozen_fingerprint':fingerprint,'model_sha256':saved['model_sha256'],'policy':public_policy(policy),'test_images':1882},indent=2),encoding='utf-8')
     protocol_path=ROOT/'configs/strip_inspection_protocol.json';protocol=json.loads(protocol_path.read_text())
     protocol['test_used']=True;protocol['frozen_test_fingerprint']=fingerprint
     protocol_path.write_text(json.dumps(protocol,indent=2),encoding='utf-8')
@@ -64,7 +65,7 @@ def main():
     metrics=operating_metrics([r['label'] for r in predictions],[r['score'] for r in predictions],policy['threshold'])
     passed=metrics['recall']>=.95 and metrics['fpr']<=.05
     report={'status':'dataset_acceptance_passed' if passed else 'dataset_acceptance_failed','target':{'recall_min':.95,'fpr_max':.05},
-            'model_sha256':saved['model_sha256'],'frozen_fingerprint':fingerprint,'policy':policy,'metrics':metrics,
+            'model_sha256':saved['model_sha256'],'frozen_fingerprint':fingerprint,'policy':public_policy(policy),'metrics':metrics,
             'recall_wilson_95':wilson(metrics['tp'],metrics['tp']+metrics['fn']),
             'fpr_wilson_95':wilson(metrics['fp'],metrics['fp']+metrics['tn']),
             'scope':'One frozen candidate on original test; empirical overall image-alarm targets only, not production-camera or pixel-localization acceptance'}

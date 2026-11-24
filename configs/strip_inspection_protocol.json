@@ -10719,5 +10719,49 @@
       "normal_calibration_quantile": 0.975
     }
   ],
-  "policy_selection_data": "Development labels plus normal-only calibration; qualification excluded from policy selection"
+  "policy_selection_data": "Development labels plus normal-only calibration; qualification excluded from policy selection",
+  "fusion_selection": {
+    "training_partition": "development500 only",
+    "cross_validation": "5-fold stratified, seed42",
+    "linear_C": [
+      0.01,
+      0.1,
+      1.0
+    ],
+    "rbf_svm_C": [
+      0.1,
+      1.0,
+      10.0
+    ],
+    "rbf_gamma": "scale after StandardScaler",
+    "head_views": [
+      "original",
+      "four-flip mean logits"
+    ],
+    "feature_families": [
+      "mask statistics",
+      "mask + four class logits",
+      "mask + three native800 windows",
+      "mask + class logits + native800 windows"
+    ],
+    "checkpoint_inference_normalization": "Compare original and train8800-only BatchNorm recalibration using development500; learned parameters unchanged",
+    "qualification": "986 reused validation images, no final test access; no operating-policy selection using their labels",
+    "roc_diagnostic": "Qualification ROC diagnostic is reported only, never applied to the frozen operating policy",
+    "ensemble_followup": {
+      "members": [
+        "phase1 epoch12",
+        "refined epoch4"
+      ],
+      "method": "linear",
+      "C": [
+        0.01,
+        0.1,
+        1.0
+      ],
+      "selection": "5-fold development OOF recall then AUROC; same calibration/qualification partitions",
+      "accepted": false
+    }
+  },
+  "current_status": "training_completed_target_not_met",
+  "validation_reuse_note": "Qualification outcomes motivated follow-up BN/linear/ensemble experiments. This is iterative validation, not an independent final test claim; original test1882 remains locked."
 }

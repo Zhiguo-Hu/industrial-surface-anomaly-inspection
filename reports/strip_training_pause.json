@@ -1,15 +1,15 @@
 {
-  "status": "paused_by_user",
+  "status": "training_completed_target_not_met",
   "date": "2026-11-23",
   "reason": "Laptop battery low; safe to shut down",
   "run_name": "strip_inspector_refined",
   "checkpoint": "runs/strip_inspector_refined/last.pt",
   "checkpoint_load_verified": true,
   "training_schema": 2,
-  "completed_epochs": 1,
+  "completed_epochs": 8,
   "resume_epoch": 2,
   "resume_next_batch": 50,
-  "saved_update_attempts": 600,
+  "saved_update_attempts": 4400,
   "planned_epochs": 8,
   "target": {
     "recall_min": 0.95,
@@ -17,5 +17,9 @@
   },
   "test_used": false,
   "resume_command": ".\\scripts\\resume_strip_refinement.ps1",
-  "notes": "Resume from last saved checkpoint; work after that checkpoint is replayed. CPU/GPU RNG, optimizer, scaler and EMA are present. Training stopped; no scheduled restart."
+  "notes": "Original pause/restoration fields retained as history. Refinement completed all eight epochs. Qualification targets unmet; final test remains locked. No training or automatic restart running.",
+  "resumed_date": "2026-11-24",
+  "completed_date": "2026-11-24",
+  "amp_skips": 2,
+  "next_epoch_in_saved_checkpoint": 9
 }
