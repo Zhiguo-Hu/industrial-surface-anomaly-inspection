@@ -13,7 +13,7 @@ from sklearn.svm import SVC
 
 ROOT=Path(__file__).resolve().parents[1];sys.path.insert(0,str(ROOT))
 from src.strip_inspector import inspector_from_saved,normalize_images
-from src.strip_inference import feature_names,mask_score_features,fused_score,pyramid_logits,public_policy
+from src.strip_inference import MASK_FEATURE_NAMES,feature_names,mask_score_features,fused_score,pyramid_logits,public_policy
 from src.strip_cache import CachedStrips
 from src.inspection_protocol import partition,development_metrics,operating_metrics
 from src.reproducibility import configure,state_hash
@@ -27,6 +27,7 @@ def main():
     parser.add_argument('--checkpoint',default='best.pt')
     parser.add_argument('--include-pyramid',action='store_true')
     parser.add_argument('--include-nonlinear',action='store_true')
+    parser.add_argument('--include-raw-head',action='store_true')
     parser.add_argument('--reuse-features',action='store_true');args=parser.parse_args()
     if Path(args.run_name).name!=args.run_name:parser.error('Invalid run-name')
     if Path(args.checkpoint).name!=args.checkpoint:parser.error('Invalid checkpoint name')
@@ -105,8 +106,16 @@ def main():
             else:spec.update(support_vectors=decision.support_vectors_.tolist(),dual_coefficient=decision.dual_coef_[0].tolist(),gamma=float(decision._gamma))
             actual=fused_score(torch.from_numpy(x),spec).numpy()
             np.testing.assert_allclose(actual,learner.decision_function(x),rtol=1e-5,atol=1e-5)
-            options.append({'flip4':flip4,'semantic':use_semantic,'pyramid':pyramid,'method':method,'regularization_C':strength,'oof_development':metric,'fusion':spec,'scores':actual})
-    chosen=max(options,key=lambda r:(r['oof_development']['recall'],r['oof_development']['auroc']))
+            options.append({'flip4':flip4,'semantic':use_semantic,'pyramid':pyramid,'method':method,'regularization_C':strength,
+                            'oof_development':metric,'selection_metric':metric,'fusion':spec,'scores':actual})
+    if args.include_raw_head:
+        for flip4 in (False,True):
+            spec={'method':'linear','feature_names':MASK_FEATURE_NAMES,'mean':[0.]*9,'scale':[1.]*9,'coefficient':[1.]+[0.]*8,'intercept':0.}
+            scores=features[flip4][:,0].astype(float);metric=development_metrics(labels[:ndev],scores[:ndev])
+            options.append({'flip4':flip4,'semantic':False,'pyramid':False,'method':'raw_frozen_head','regularization_C':None,
+                            'selection_metric':metric,'metric_scope':'Direct development score of frozen CNN; no learned decision fusion, not OOF backbone validation',
+                            'fusion':spec,'scores':scores})
+    chosen=max(options,key=lambda r:(r['selection_metric']['recall'],r['selection_metric']['auroc']))
     # Quantile choice remains development-only after the OOF model choice.
     thresholds=[]
     for q in (.95,.975):
@@ -139,7 +148,8 @@ def main():
     frozen={**saved,'inspection_policy':policy};temporary=OUTPUT/'candidate.tmp';torch.save(frozen,temporary);temporary.replace(OUTPUT/'candidate.pt')
     report={'status':'qualification_passed' if passed else 'target_not_met','target':{'recall_min':.95,'fpr_max':.05},
             'model_sha256':saved['model_sha256'],'source_epoch':saved['epoch'],'source_steps':saved['steps'],
-            'source_run':args.run_name,'source_checkpoint':args.checkpoint,'selected_oof_development':chosen['oof_development'],
+            'source_run':args.run_name,'source_checkpoint':args.checkpoint,'selected_oof_development':chosen.get('oof_development'),
+            'selected_development_metric':chosen['selection_metric'],'selected_method':chosen['method'],
             'selection_candidates':[{k:v for k,v in o.items() if k not in ['scores','fusion']} for o in options],
             'selected_policy':policy,'threshold_candidates':thresholds,'qualification':qmetrics,'test_used':False,
             'qualification_per_class':class_metrics,'qualification_by_defect_area':area_metrics,'qualification_localization':localization,

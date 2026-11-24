@@ -1,0 +1,44 @@
+{
+  "date": "2026-11-24",
+  "objective": {
+    "image_defect_recall_min": 0.95,
+    "normal_image_fpr_max": 0.05
+  },
+  "scope": "Native1600x256 Severstal steel images; local RTX5060 deployment candidate, not production-camera acceptance",
+  "partition_reference": "configs/strip_inspection_protocol.json",
+  "manifest_sha256": "aa6b563d0cbc48c5be78f74b00bfd8c9072e2d2a5e26bda82dbaed205c2e5d5c",
+  "test_used": false,
+  "backbone": "TorchVision EfficientNetV2-S ImageNet1K V1",
+  "pretrained_provenance": "reports/efficientnet_pretrained_provenance.json",
+  "training": {
+    "train_images": 8800,
+    "max_epochs": 12,
+    "micro_batch": 4,
+    "gradient_accumulation": 4,
+    "precision": "bfloat16",
+    "classification": "binary BCE + four-class weighted BCE",
+    "localization": "native-resolution U-Net decoder, union-mask BCE+Dice",
+    "early_qualification": "once only, from epoch3 after two consecutive epochs with development recall>=0.97 and AUROC>=0.99"
+  },
+  "policy_selection": {
+    "views": [
+      "original",
+      "four-flip mean image logits"
+    ],
+    "learned_fusion": "linear C=0.01/0.1/1, mask stats with or without class logits, development five-fold OOF only",
+    "unfitted_baseline": "raw frozen image head, development only; not called OOF",
+    "pyramid_windows": false,
+    "nonlinear_svm": false,
+    "calibration": "400 normal images; q95/q97.5 selected with development labels",
+    "qualification": "986 reused validation images; target gate before one frozen original test1882"
+  },
+  "visual_error_review": {
+    "common_misses_previous_three_candidates": 45,
+    "findings": [
+      "Low-contrast thin defects close to strip edges are missed.",
+      "Large marked class4 patches are sometimes missed too; resolution alone is insufficient.",
+      "Some normal-labeled surfaces contain bright points or coarse texture similar to marked defects. This observation does not establish label error and labels are unchanged."
+    ],
+    "review_image": "runs/efficientnet_error_review/baseline_errors.png"
+  }
+}

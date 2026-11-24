@@ -1,0 +1,74 @@
+{
+  "baseline": "frozen two-stage linear ensemble",
+  "false_negatives_by_stage": [
+    56,
+    51,
+    50
+  ],
+  "common_misses_all_three": 45,
+  "common_miss_classes": {
+    "1": 4,
+    "2": 4,
+    "3": 27,
+    "4": 12
+  },
+  "review": [
+    {
+      "error": "FP",
+      "image_id": "b08f17760.jpg",
+      "score": 4.086330241340356,
+      "classes": []
+    },
+    {
+      "error": "FP",
+      "image_id": "167bea6b7.jpg",
+      "score": 3.209892932676217,
+      "classes": []
+    },
+    {
+      "error": "FP",
+      "image_id": "87b82c9cb.jpg",
+      "score": 3.1559960357169694,
+      "classes": []
+    },
+    {
+      "error": "FP",
+      "image_id": "cbd1444bd.jpg",
+      "score": 2.5388976398910152,
+      "classes": []
+    },
+    {
+      "error": "FN",
+      "image_id": "a3148f47c.jpg",
+      "score": 0.02400517815546399,
+      "classes": [
+        2
+      ]
+    },
+    {
+      "error": "FN",
+      "image_id": "0842fa725.jpg",
+      "score": 0.07909333871046709,
+      "classes": [
+        2
+      ]
+    },
+    {
+      "error": "FN",
+      "image_id": "708756850.jpg",
+      "score": -2.6591111136207575,
+      "classes": [
+        4
+      ]
+    },
+    {
+      "error": "FN",
+      "image_id": "dff14f87b.jpg",
+      "score": -2.2506065211231276,
+      "classes": [
+        4
+      ]
+    }
+  ],
+  "scope": "Qualification validation errors for diagnosis only; none moved into train; no test access"
+}

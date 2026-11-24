@@ -38,7 +38,10 @@ def inspector_from_saved(saved):
         states=[{k[len(f'members.{i}.'):]:v for k,v in saved['model'].items() if k.startswith(f'members.{i}.')} for i in (0,1)]
         if sum(map(len,states))!=len(saved['model']) or not all(states):raise ValueError('Invalid ensemble state')
         return StripEnsemble([inspector_from_saved({'model':state}) for state in states])
-    model=StripInspector(auxiliary_classes=any(k.startswith('auxiliary.') for k in saved['model']))
+    if saved.get('model_kind')=='efficientnet_v2_s' or 'encoder.0.0.weight' in saved['model']:
+        from src.efficient_strip import EfficientStripInspector
+        model=EfficientStripInspector()
+    else:model=StripInspector(auxiliary_classes=any(k.startswith('auxiliary.') for k in saved['model']))
     model.load_state_dict(saved['model'],strict=True)
     return model
 

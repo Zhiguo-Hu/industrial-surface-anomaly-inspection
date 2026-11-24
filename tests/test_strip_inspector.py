@@ -8,6 +8,7 @@ import random
 from src.inspection_protocol import partition,operating_metrics,development_metrics,frozen_test_fingerprint,verify_test_identity
 from src.strip_inference import MASK_FEATURE_NAMES,mask_score_features,fused_score,inspect_image,inspection_scores,feature_names,pyramid_logits,ensemble_feature_names,decision_features
 from src.strip_ensemble import StripEnsemble
+from src.efficient_strip import EfficientStripInspector
 
 
 class StripInspectorTests(unittest.TestCase):
@@ -168,3 +169,22 @@ class StripInspectorTests(unittest.TestCase):
         torch.testing.assert_close(actual,.1*features.double().sum(1)+.3)
         invalid={**model.state_dict(),'unclaimed.weight':torch.ones(1)}
         with self.assertRaises(ValueError):inspector_from_saved({'model_kind':'strip_ensemble','model':invalid})
+
+    def test_efficient_joint_shapes_gradients_and_implicit_reload(self):
+        model=EfficientStripInspector().eval();x=torch.randn(2,3,64,128)
+        mask,logit,aux=model.forward_joint(x,return_aux=True)
+        self.assertEqual(mask.shape,(2,1,64,128));self.assertEqual(aux.shape,(2,4))
+        self.assertEqual(model.features(x).shape,(2,3008))
+        target=torch.zeros_like(mask);target[0,:,:,20:24]=1
+        loss,_=strip_loss(mask,logit,target);loss=loss+.2*aux.square().mean();loss.backward()
+        self.assertTrue(torch.isfinite(model.encoder[0][0].weight.grad).all())
+        self.assertGreater(model.encoder[0][0].weight.grad.abs().sum().item(),0)
+        self.assertGreater(model.out.weight.grad.abs().sum().item(),0)
+        restored=inspector_from_saved({'model':model.state_dict()}).eval()
+        with torch.inference_mode():actual=restored.forward_joint(x,return_aux=True)
+        for a,b in zip(actual,(mask,logit,aux)):torch.testing.assert_close(a,b)
+
+    def test_efficient_pretraining_checksum_rejects_nonofficial_file(self):
+        with tempfile.TemporaryDirectory() as folder:
+            path=Path(folder)/'weights.pth';path.write_bytes(b'not official pretrained weights')
+            with self.assertRaises(ValueError):EfficientStripInspector(path)

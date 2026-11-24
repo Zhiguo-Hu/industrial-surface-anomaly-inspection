@@ -1,0 +1,31 @@
+{
+  "micro_batch": 4,
+  "accumulation": 4,
+  "effective_batch": 16,
+  "micro_step_seconds_warmed": 0.2155499499999678,
+  "peak_allocated_mib": 3006.31591796875,
+  "precision": "bfloat16",
+  "finite_loss_and_gradients": true,
+  "attempts": [
+    {
+      "micro_batch": 8,
+      "accumulation": 2,
+      "effective_batch": 16,
+      "micro_step_seconds_warmed": 0.44636205000006157,
+      "peak_allocated_mib": 5711.3046875,
+      "precision": "bfloat16",
+      "finite_loss_and_gradients": true
+    },
+    {
+      "micro_batch": 4,
+      "accumulation": 4,
+      "effective_batch": 16,
+      "micro_step_seconds_warmed": 0.2155499499999678,
+      "peak_allocated_mib": 3006.31591796875,
+      "precision": "bfloat16",
+      "finite_loss_and_gradients": true
+    }
+  ],
+  "gpu": "NVIDIA GeForce RTX 5060 Laptop GPU",
+  "pretrained_sha256": "dd5fe13b1d60ec15317ccc8ca158186e134d3366c3dde9cb9a4e301f2dc66c74"
+}

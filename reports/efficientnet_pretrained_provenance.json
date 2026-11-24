@@ -1,0 +1,8 @@
+{
+  "model": "efficientnet_v2_s",
+  "source": "https://download.pytorch.org/models/efficientnet_v2_s-dd5fe13b.pth",
+  "sha256": "dd5fe13b1d60ec15317ccc8ca158186e134d3366c3dde9cb9a4e301f2dc66c74",
+  "bytes": 86721253,
+  "pretraining": "TorchVision ImageNet1K V1 only; no Severstal-trained external weights",
+  "test_used": false
+}
